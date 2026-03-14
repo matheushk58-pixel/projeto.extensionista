@@ -1,0 +1,4015 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<!--
+   ______                            __
+  / ____/___  ____ ___  ____  __  __/ /____  _____
+ / /   / __ \/ __ `__ \/ __ \/ / / / __/ _ \/ ___/
+/ /___/ /_/ / / / / / / /_/ / /_/ / /_/  __/ /
+\____/\____/_/ /_/ /_/ .___/\__,_/\__/\___/_/
+                    /_/
+        Created with Perplexity Computer
+        https://www.perplexity.ai/computer
+-->
+<meta name="generator" content="Perplexity Computer">
+<meta name="author" content="Perplexity Computer">
+<meta property="og:see_also" content="https://www.perplexity.ai/computer">
+<link rel="author" href="https://www.perplexity.ai/computer">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Drogaria Runner — Corrida pela Saúde</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    width: 100%; height: 100%;
+    overflow: hidden;
+    background: #0a1628;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    touch-action: none;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+  }
+  canvas {
+    display: block;
+    width: 100%; height: 100%;
+  }
+  #footer-attr {
+    position: fixed; bottom: 4px; left: 0; right: 0;
+    text-align: center; z-index: 100;
+    pointer-events: none;
+  }
+  #footer-attr a {
+    font-size: 10px; color: rgba(255,255,255,0.3);
+    text-decoration: none; pointer-events: auto;
+  }
+  #footer-attr a:hover { color: rgba(255,255,255,0.6); }
+
+  /* Leaderboard overlay */
+  #leaderboard-overlay {
+    display: none;
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,10,20,0.92);
+    z-index: 200;
+    justify-content: center; align-items: center;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+  #leaderboard-overlay.visible { display: flex; }
+  .lb-container {
+    background: linear-gradient(135deg, #0d1b2a 0%, #1b2838 100%);
+    border: 2px solid rgba(34,139,34,0.5);
+    border-radius: 16px;
+    padding: 24px;
+    width: min(420px, 92vw);
+    max-height: 85vh;
+    overflow-y: auto;
+    color: #fff;
+    position: relative;
+  }
+  .lb-title {
+    font-size: 22px; font-weight: 800;
+    color: #2ecc40; text-align: center;
+    margin-bottom: 4px;
+  }
+  .lb-subtitle {
+    font-size: 12px; color: rgba(255,255,255,0.5);
+    text-align: center; margin-bottom: 16px;
+  }
+  .lb-close {
+    position: absolute; top: 12px; right: 16px;
+    background: none; border: none; color: rgba(255,255,255,0.5);
+    font-size: 22px; cursor: pointer;
+  }
+  .lb-close:hover { color: #fff; }
+  .lb-table { width: 100%; border-collapse: collapse; }
+  .lb-table th {
+    font-size: 11px; color: rgba(255,255,255,0.4);
+    text-align: left; padding: 6px 8px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .lb-table td {
+    font-size: 13px; padding: 8px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+  .lb-rank { font-weight: 700; color: #2ecc40; width: 36px; }
+  .lb-rank-1 { color: #FFD700; }
+  .lb-rank-2 { color: #C0C0C0; }
+  .lb-rank-3 { color: #CD7F32; }
+  .lb-name { font-weight: 600; }
+  .lb-score { font-weight: 700; color: #2ecc40; text-align: right; }
+  .lb-empty { text-align: center; color: rgba(255,255,255,0.3); padding: 24px; font-size: 14px; }
+
+  /* Submit name modal */
+  .lb-submit-form {
+    display: none; margin-top: 16px; padding-top: 16px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+  }
+  .lb-submit-form.visible { display: block; }
+  .lb-submit-form label {
+    font-size: 13px; color: rgba(255,255,255,0.7); display: block; margin-bottom: 6px;
+  }
+  .lb-submit-form input {
+    width: 100%; padding: 10px 12px;
+    background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 8px; color: #fff; font-size: 15px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    outline: none;
+  }
+  .lb-submit-form input:focus { border-color: #2ecc40; }
+  .lb-btn-row { display: flex; gap: 10px; margin-top: 12px; }
+  .lb-btn {
+    flex: 1; padding: 10px; border: none; border-radius: 8px;
+    font-size: 14px; font-weight: 700; cursor: pointer;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+  .lb-btn-submit {
+    background: #228B22; color: #fff;
+  }
+  .lb-btn-submit:hover { background: #2ecc40; }
+  .lb-btn-cancel {
+    background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.6);
+  }
+  .lb-btn-cancel:hover { background: rgba(255,255,255,0.15); color: #fff; }
+  .lb-success {
+    display: none; text-align: center; padding: 16px;
+    color: #2ecc40; font-weight: 600; font-size: 15px;
+  }
+  .lb-success.visible { display: block; }
+</style>
+</head>
+<body>
+<canvas id="gameCanvas"></canvas>
+
+<!-- Leaderboard overlay -->
+<div id="leaderboard-overlay">
+  <div class="lb-container">
+    <button class="lb-close" id="lb-close">&times;</button>
+    <div class="lb-title">🏆 PLACAR DE LÍDERES</div>
+    <div class="lb-subtitle">Melhores pontuações de todos os jogadores</div>
+    <table class="lb-table">
+      <thead><tr><th>#</th><th>Jogador</th><th style="text-align:right">Pontos</th></tr></thead>
+      <tbody id="lb-body"></tbody>
+    </table>
+    <div class="lb-empty" id="lb-empty" style="display:none">Nenhuma pontuação registrada ainda. Seja o primeiro!</div>
+    <div class="lb-submit-form" id="lb-submit-form">
+      <label>Sua pontuação: <strong id="lb-your-score"></strong></label>
+      <input type="text" id="lb-name-input" maxlength="20" placeholder="Digite seu nome..." autocomplete="off">
+      <div class="lb-btn-row">
+        <button class="lb-btn lb-btn-submit" id="lb-btn-submit">Salvar</button>
+        <button class="lb-btn lb-btn-cancel" id="lb-btn-skip">Pular</button>
+      </div>
+    </div>
+    <div class="lb-success" id="lb-success"></div>
+  </div>
+</div>
+
+<div id="footer-attr">
+  <a href="https://www.perplexity.ai/computer" target="_blank" rel="noopener noreferrer">Created with Perplexity Computer</a>
+</div>
+<script>
+'use strict';
+
+// ============================================================
+// CONSTANTS & CONFIG
+// ============================================================
+const PHARMACY_GREEN = '#228B22';
+const PHARMACY_GREEN_LIGHT = '#2ecc40';
+const PHARMACY_GREEN_DARK = '#1a6b1a';
+const SKY_BLUE = '#87CEEB';
+const SKY_BLUE_DARK = '#4a90b8';
+const GOLD = '#FFD700';
+const WHITE = '#FFFFFF';
+const RED = '#FF4444';
+const BLUE_PILL = '#4488FF';
+const GROUND_COLOR = '#555555';
+const SIDEWALK_COLOR = '#999999';
+
+const GRAVITY = 2600; // Mais gravidade para aterrissar mais rápido
+const JUMP_VELOCITY = -820; // Pulo mais ágil
+const DOUBLE_JUMP_VELOCITY = -700;
+const BASE_SPEED = 280;
+const MAX_SPEED = 800;
+
+const PLAYER_W = 36;
+const PLAYER_H = 52;
+const GROUND_OFFSET = 55;
+
+const CAMERA_ZOOM = 1.55;
+const CAMERA_LOOK_AHEAD = 180;
+
+const POWERUP_FP_DURATION = 5000;
+const POWERUP_DISCOUNT_DURATION = 3000;
+const POWERUP_GENERIC_DURATION = 3000;
+
+// Car color palette used for traffic vehicles
+const CAR_PALETTE = ['#e74c3c','#e67e22','#f1c40f','#2ecc71','#3498db','#9b59b6','#95a5a6','#34495e'];
+function getRandomCarColor() {
+  return CAR_PALETTE[Math.floor(Math.random() * CAR_PALETTE.length)];
+}
+function adjustColor(color, amount) {
+  // Simple lighten/darken helper for #rrggbb colors
+  const num = parseInt(color.slice(1), 16);
+  let r = (num >> 16) + amount;
+  let g = ((num >> 8) & 0x00FF) + amount;
+  let b = (num & 0x0000FF) + amount;
+  r = Math.min(255, Math.max(0, r));
+  g = Math.min(255, Math.max(0, g));
+  b = Math.min(255, Math.max(0, b));
+  return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
+}
+
+const PHASES = [
+  { name: "Fase 1 - Popular",   minDist:    0, maxDist:  4000, speedMult: 0.9,  obstacleRate: 0.008, powerUpRate: 0.004, hint: true  },
+  { name: "Fase 2 - Popular",   minDist: 4000, maxDist:  8000, speedMult: 1.0,  obstacleRate: 0.010, powerUpRate: 0.004, hint: false },
+  { name: "Fase 3 - Popular",   minDist: 8000, maxDist: 12000, speedMult: 1.1,  obstacleRate: 0.012, powerUpRate: 0.004, hint: false },
+  { name: "Fase 4 - Privada",   minDist:12000, maxDist: 16000, speedMult: 1.2,  obstacleRate: 0.014, powerUpRate: 0.003, hint: false },
+  { name: "Fase 5 - Privada",   minDist:16000, maxDist: 20000, speedMult: 1.25, obstacleRate: 0.016, powerUpRate: 0.003, hint: false },
+  { name: "Fase 6 - Hospital",  minDist:20000, maxDist: 24000, speedMult: 1.3,  obstacleRate: 0.020, powerUpRate: 0.003, hint: true  },
+  { name: "Fase 7 - Hospital",  minDist:24000, maxDist: 28000, speedMult: 1.35, obstacleRate: 0.022, powerUpRate: 0.003, hint: false },
+  { name: "Fase 8 - Hospital",  minDist:28000, maxDist: 32000, speedMult: 1.4,  obstacleRate: 0.024, powerUpRate: 0.003, hint: false },
+  { name: "Fase 9 - Rua",       minDist:32000, maxDist: 36000, speedMult: 1.45, obstacleRate: 0.026, powerUpRate: 0.003, hint: false },
+  { name: "Fase 10 - Rua",      minDist:36000, maxDist: 40000, speedMult: 1.5,  obstacleRate: 0.028, powerUpRate: 0.003, hint: false },
+  { name: "Fase 11 - Popular+", minDist:40000, maxDist: 44000, speedMult: 1.55, obstacleRate: 0.030, powerUpRate: 0.0025, hint: false },
+  { name: "Fase 12 - Privada+", minDist:44000, maxDist: 48000, speedMult: 1.6,  obstacleRate: 0.032, powerUpRate: 0.0025, hint: false },
+  { name: "Fase 13 - Hospital+",minDist:48000, maxDist: 52000, speedMult: 1.65, obstacleRate: 0.034, powerUpRate: 0.0025, hint: false },
+  { name: "Fase 14 - Rua Not.", minDist:52000, maxDist: 56000, speedMult: 1.7,  obstacleRate: 0.036, powerUpRate: 0.0025, hint: false },
+  { name: "Fase 15 - SUS",      minDist:56000, maxDist: 60000, speedMult: 1.75, obstacleRate: 0.038, powerUpRate: 0.0025, hint: false },
+  { name: "Fase 16 - UPA",      minDist:60000, maxDist: 64000, speedMult: 1.8,  obstacleRate: 0.040, powerUpRate: 0.002,  hint: false },
+  { name: "Fase 17 - CTI",      minDist:64000, maxDist: 68000, speedMult: 1.9,  obstacleRate: 0.042, powerUpRate: 0.002,  hint: false },
+  { name: "Fase 18 - Plantão",  minDist:68000, maxDist: 72000, speedMult: 2.0,  obstacleRate: 0.045, powerUpRate: 0.002,  hint: false },
+  { name: "Fase 19 - Crise",    minDist:72000, maxDist: 76000, speedMult: 2.1,  obstacleRate: 0.048, powerUpRate: 0.002,  hint: false },
+  { name: "Fase 20 - Caos",     minDist:76000, maxDist:999999, speedMult: 2.2,  obstacleRate: 0.050, powerUpRate: 0.002,  hint: false },
+];
+
+const NEUTRAL_SCENES = ["popular", "privada", "rua"];
+const CRISE_SCENES = ["crise"];
+const CAOS_SCENES = ["caos"];
+
+const PHASE_SCENES = [
+  "popular", "popular", "popular", "privada", "privada", "hospital", "hospital", "hospital", "rua", "rua",
+  "popular", "privada", "hospital", "noite", "sus", "upa", "cti", "plantao", "crise", "caos"
+];
+
+function getCurrentScene() {
+  if (typeof game === 'undefined') return "popular";
+  return PHASE_SCENES[game.currentPhase] || "popular";
+}
+
+const SAVE_KEY = "drogaria_runner_v5_save";
+
+function getDefaultSave() {
+  return {
+    totalCoins: 0,
+    bestScore: 0,
+    bestDistance: 0,
+    furthestPhase: 0,
+    selectedChar: "male",
+    equippedSkin: "default",
+    unlockedSkins: ["default"],
+    unlockedWeapons: ["soro", "tiro", "escudo"],
+    ownedItems: {},
+    boughtAutoSave: false,
+    boughtMoreAmmo: false,
+    boughtCoinBoost: false,
+    boughtDailyGift: false,
+  };
+}
+
+function loadProgress() {
+  try {
+    const raw = localStorage.getItem(SAVE_KEY);
+    if (!raw) return getDefaultSave();
+    const parsed = JSON.parse(raw);
+    return {
+      ...getDefaultSave(),
+      ...parsed,
+      unlockedSkins: Array.isArray(parsed.unlockedSkins) ? parsed.unlockedSkins : ["default"],
+      unlockedWeapons: Array.isArray(parsed.unlockedWeapons) ? parsed.unlockedWeapons : ["soro", "tiro", "escudo"],
+      boughtAutoSave: !!parsed.boughtAutoSave,
+      boughtMoreAmmo: !!parsed.boughtMoreAmmo,
+      boughtCoinBoost: !!parsed.boughtCoinBoost,
+      boughtDailyGift: !!parsed.boughtDailyGift,
+    };
+  } catch (e) {
+    console.warn("Falha ao carregar save:", e);
+    return getDefaultSave();
+  }
+}
+
+function saveProgress() {
+  try {
+    const data = {
+      totalCoins: game.totalCoins || 0,
+      bestScore: Math.max(game.bestScore || 0, Math.floor(game.score || 0)),
+      bestDistance: Math.max(game.bestDistance || 0, Math.floor(game.distance || 0)),
+      furthestPhase: Math.max(game.furthestPhase || 0, game.currentPhase || 0),
+      selectedChar: game.selectedChar || "male",
+      equippedSkin: game.skin || "default",
+      unlockedSkins: game.unlockedSkins || ["default"],
+      unlockedWeapons: game.unlockedWeapons || ["soro", "tiro", "escudo"],
+      ownedItems: game.ownedItems || {},
+      boughtAutoSave: !!game.boughtAutoSave,
+      boughtMoreAmmo: !!game.boughtMoreAmmo,
+      boughtCoinBoost: !!game.boughtCoinBoost,
+      boughtDailyGift: !!game.boughtDailyGift,
+    };
+    localStorage.setItem(SAVE_KEY, JSON.stringify(data));
+  } catch (e) {
+    console.warn("Falha ao salvar progresso:", e);
+  }
+}
+
+function awardCoins(amount) {
+  game.coins = (game.coins || 0) + amount;
+  game.totalCoins = (game.totalCoins || 0) + amount;
+  saveProgress();
+}
+
+function spendCoins(amount) {
+  if ((game.coins || 0) < amount) return false;
+  game.coins -= amount;
+  saveProgress();
+  return true;
+}
+
+const SKINS = [
+  { id: "default",   label: "Padrão Azul",        colorMale: "#4488cc", colorFemale: "#cc44aa" },
+  { id: "jaleco",    label: "Jaleco Branco",      colorMale: "#f5f5f5", colorFemale: "#f5f5f5" },
+  { id: "verde",     label: "Farmácia Verde",     colorMale: "#228B22", colorFemale: "#2ecc71" },
+  { id: "vermelho",  label: "Plantão Vermelho",   colorMale: "#c0392b", colorFemale: "#e74c3c" },
+  { id: "roxo",      label: "Noturno Roxo",       colorMale: "#8e44ad", colorFemale: "#9b59b6" },
+  { id: "laranja",   label: "Urgência Laranja",   colorMale: "#e67e22", colorFemale: "#f39c12" },
+  { id: "ciano",     label: "UTI Ciano",          colorMale: "#16a085", colorFemale: "#1abc9c" },
+  { id: "grafite",   label: "Clínica Grafite",    colorMale: "#2c3e50", colorFemale: "#34495e" },
+  { id: "dourado",   label: "Prêmio Dourado",     colorMale: "#f1c40f", colorFemale: "#f9e79f" },
+  { id: "rosa",      label: "Farmacêutica Rosa",  colorMale: "#ff6f91", colorFemale: "#ff9ec4" },
+];
+
+const WEAPON_TYPES = [
+  { id: "soro",    label: "SR", desc: "Soro Anti-Vírus", effect: "invincible", duration: 4000, color: "#9b59b6" },
+  { id: "tiro",    label: "TI", desc: "Tiro Anti-Vírus", effect: "bullet",     duration: 0,    color: "#e67e22" },
+  { id: "escudo",  label: "ES", desc: "Escudo",          effect: "shield",     duration: 0,    color: "#3498db" },
+  { id: "spray",   label: "SP", desc: "Spray Anti-Vírus", effect: "spray",      duration: 5000, color: "#1abc9c" },
+  { id: "pulse",   label: "PU", desc: "Onda Radial",      effect: "pulse",      duration: 0,    color: "#f1c40f" },
+  { id: "mascara", label: "MK", desc: "Máscara Prot.",   effect: "shield",     duration: 0,    color: "#ffffff" },
+];
+
+const DISEASES = {
+  influenza: { nome: "Influenza", agravante: "Infecção respiratória aguda que pode complicar." },
+  mrsa:      { nome: "MRSA",      agravante: "Bactéria resistente a vários antibióticos." },
+  dengue:    { nome: "Dengue",    agravante: "Febre alta e risco de hemorragia." },
+  pneumonia: { nome: "Pneumonia", agravante: "Comprometimento grave dos pulmões." },
+  variola:   { nome: "Varíola (erradicada)", agravante: "Controlada por vacinação em massa." },
+  polio:     { nome: "Polio (erradicada)",   agravante: "Causa paralisia, evitável com vacina." },
+};
+
+// ============================================================
+// CANVAS & GAME STATE SETUP
+// ============================================================
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+let W, H, GROUND_Y, scale;
+
+const game = {
+  state: 'title', 
+  score: 0,
+  distance: 0,
+  coins: 0,
+  totalCoins: 0,
+  bestScore: 0,
+  bestDistance: 0,
+  furthestPhase: 0,
+  skin: "default",
+  unlockedSkins: ["default"],
+  unlockedWeapons: ["soro", "tiro", "escudo"],
+  ownedItems: {},
+  saveLoaded: false,
+  phaseBannerTimer: 0,
+  lastSavedPhase: 0,
+  lives: 3,
+  highScore: 0,
+  lastDisease: null,
+  weaponSpawnCooldown: 8,
+  shieldHits: 0,
+  speed: BASE_SPEED,
+  currentPhase: 0,
+  lastMilestone: 0,
+  activePowerUp: null,
+  powerUpTimer: 0,
+  fireCooldown: 0.25,
+  bulletTimer: 0,
+  obstacles: [],
+  powerUps: [],
+  obstacleSpawnCooldown: 0,
+  nextObstacleDistanceMeters: 0,
+  powerUpSpawnCooldown: 0,
+  titleAlpha: 0,
+  titlePhase: 0,
+  gameOverAlpha: 0,
+  victoryAlpha: 0,
+  hintTimer: 0,
+  isMobile: false,
+  selectedChar: 'male', 
+  charSelectAlpha: 0,
+  charHover: null, 
+  pendingLeaderboard: false, 
+  boughtAutoSave: false,
+  boughtMoreAmmo: false,
+  boughtCoinBoost: false,
+  boughtDailyGift: false,
+};
+
+const loadedSave = loadProgress();
+game.totalCoins = loadedSave.totalCoins;
+game.bestScore = loadedSave.bestScore;
+game.bestDistance = loadedSave.bestDistance;
+game.furthestPhase = loadedSave.furthestPhase;
+game.selectedChar = loadedSave.selectedChar;
+game.skin = loadedSave.equippedSkin;
+game.unlockedSkins = loadedSave.unlockedSkins;
+game.unlockedWeapons = loadedSave.unlockedWeapons;
+game.ownedItems = loadedSave.ownedItems;
+game.boughtAutoSave = !!loadedSave.boughtAutoSave;
+game.boughtMoreAmmo = !!loadedSave.boughtMoreAmmo;
+game.boughtCoinBoost = !!loadedSave.boughtCoinBoost;
+game.boughtDailyGift = !!loadedSave.boughtDailyGift;
+game.saveLoaded = true;
+
+function checkMobile() {
+  game.isMobile = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || window.innerWidth < 768;
+}
+
+function resizeCanvas() {
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  W = window.innerWidth;
+  H = window.innerHeight;
+  canvas.width = W * dpr;
+  canvas.height = H * dpr;
+  canvas.style.width = W + 'px';
+  canvas.style.height = H + 'px';
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  GROUND_Y = H - GROUND_OFFSET;
+  scale = Math.min(W / 800, H / 600, 1.5);
+}
+
+resizeCanvas();
+checkMobile();
+window.addEventListener('resize', () => {
+  resizeCanvas();
+  checkMobile();
+});
+
+// roundRect polyfill for older browsers
+if (!CanvasRenderingContext2D.prototype.roundRect) {
+  CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
+    if (typeof r === 'number') r = [r, r, r, r];
+    if (Array.isArray(r) && r.length === 1) r = [r[0], r[0], r[0], r[0]];
+    const [tl, tr, br, bl] = r.length === 4 ? r : [r[0]||0, r[0]||0, r[0]||0, r[0]||0];
+    this.moveTo(x + tl, y);
+    this.lineTo(x + w - tr, y);
+    this.quadraticCurveTo(x + w, y, x + w, y + tr);
+    this.lineTo(x + w, y + h - br);
+    this.quadraticCurveTo(x + w, y + h, x + w - br, y + h);
+    this.lineTo(x + bl, y + h);
+    this.quadraticCurveTo(x, y + h, x, y + h - bl);
+    this.lineTo(x, y + tl);
+    this.quadraticCurveTo(x, y, x + tl, y);
+    this.closePath();
+    return this;
+  };
+}
+
+// Obstáculos por fase
+const OBSTACLE_TYPES_BY_PHASE = [
+  [ // 1 Popular
+    { label: "$$$", desc: "Preço Alto",     color: "#cc3333", w: 40, h: 36 },
+    { label: "Fila", desc: "Fila Longa",    color: "#995500", w: 46, h: 52, isNPC: true, role: "civil" },
+  ],
+  [ // 2 Popular
+    { label: "$$$", desc: "Preço Alto",     color: "#cc3333", w: 44, h: 40 },
+    { label: "Fila", desc: "Fila Longa",    color: "#995500", w: 46, h: 52, isNPC: true, role: "civil" },
+  ],
+  [ // 3 Popular
+    { label: "Buro", desc: "Burocracia",    color: "#666666", w: 50, h: 52, isNPC: true, role: "bem-vestido" },
+    { label: "Taxa", desc: "Taxas Extras",  color: "#993366", w: 42, h: 48 },
+  ],
+  [ // 4 Privada
+    { label: "Fisc", desc: "Fiscalização",  color: "#aa1111", w: 48, h: 52, isNPC: true, role: "policial" },
+    { label: "ICMS", desc: "Imposto Alto",  color: "#773333", w: 44, h: 60 },
+  ],
+  [ // 5 Privada
+    { label: "SEM", desc: "Sem Cobertura",  color: "#660000", w: 50, h: 50 },
+    { label: "Glos", desc: "Glosa Médica",  color: "#990000", w: 46, h: 52, isNPC: true, role: "bem-vestido" },
+  ],
+  [ // 6 Hospital
+    { label: "Fila", desc: "Emergência Lotada", color: "#884400", w: 56, h: 52, isNPC: true, role: "enfermeiro" },
+    { label: "🦠", desc: "Vírus Influenza",     color: "#00cc88", w: 34, h: 52, isNPC: true, role: "pathogen", diseaseId: "influenza" },
+    { label: "🦠", desc: "Vírus Respiratório",  color: "#44cc00", w: 34, h: 52, isNPC: true, role: "pathogen", diseaseId: "influenza" },
+  ],
+  [ // 7 Hospital
+    { label: "🧫", desc: "Bactéria MRSA",       color: "#cc00aa", w: 38, h: 52, isNPC: true, role: "pathogen", diseaseId: "mrsa" },
+    { label: "Med", desc: "Médico Ocupado",    color: "#aa6600", w: 52, h: 52, isNPC: true, role: "medico" },
+    { label: "🧫", desc: "Infecc. Hospitalar",  color: "#aa00ff", w: 38, h: 52, isNPC: true, role: "pathogen", diseaseId: "mrsa" },
+  ],
+  [ // 8 Hospital
+    { label: "🦠", desc: "Vírus Dengue",        color: "#ff8800", w: 36, h: 52, isNPC: true, role: "pathogen", diseaseId: "dengue" },
+    { label: "🧫", desc: "Bac. Pneumonia",      color: "#3366ff", w: 40, h: 52, isNPC: true, role: "pathogen", diseaseId: "pneumonia" },
+    { label: "🦠", desc: "Vírus Zika",          color: "#ffaa00", w: 36, h: 52, isNPC: true, role: "pathogen", diseaseId: "dengue" },
+  ],
+  [ // 9 Rua
+    { label: "Car", desc: "Trânsito",          color: "#555555", w: 60, h: 30 },
+    { label: "Pol", desc: "Blitz Policial",    color: "#333333", w: 40, h: 52, isNPC: true, role: "policial" },
+  ],
+  [ // 10 Rua
+    { label: "🦠", desc: "Vírus da Varíola",   color: "#ff4444", w: 36, h: 52, isNPC: true, role: "pathogen", diseaseId: "variola" },
+    { label: "🦠", desc: "Vírus da Pólio",     color: "#ffaa00", w: 36, h: 52, isNPC: true, role: "pathogen", diseaseId: "polio" },
+  ],
+  [ // 11 Popular+
+    { label: "Fila", desc: "Fila Gigante",     color: "#ff0000", w: 50, h: 52, isNPC: true, role: "civil" },
+    { label: "X",   desc: "Falta Geral",       color: "#552200", w: 40, h: 40 },
+  ],
+  [ // 12 Privada+
+    { label: "Glos", desc: "Glosa Total",      color: "#cc0000", w: 52, h: 60 },
+    { label: "Buro", desc: "Burocracia++",     color: "#aa00aa", w: 44, h: 52, isNPC: true, role: "bem-vestido" },
+  ],
+  [ // 13 Hospital+
+    { label: "🦠", desc: "Super-Vírus",        color: "#00ff88", w: 40, h: 52, isNPC: true, role: "pathogen", diseaseId: "mrsa" },
+    { label: "🧫", desc: "Super-Bactéria",     color: "#ff00ff", w: 45, h: 52, isNPC: true, role: "pathogen", diseaseId: "pneumonia" },
+  ],
+  [ // 14 Rua Noturna
+    { label: "Car", desc: "Engavetamento",     color: "#333333", w: 70, h: 35 },
+    { label: "Pol", desc: "Ronda Noturna",     color: "#111111", w: 50, h: 52, isNPC: true, role: "policial" },
+  ],
+  [ // 15 SUS
+    { label: "Fila", desc: "Fila Kilométrica",  color: "#774400", w: 65, h: 52, isNPC: true, role: "civil" },
+    { label: "Buro", desc: "Burocracia SUS",    color: "#444444", w: 55, h: 52, isNPC: true, role: "bem-vestido" },
+  ],
+  [ // 16 UPA
+    { label: "🦠", desc: "Surtos",             color: "#ff3300", w: 42, h: 52, isNPC: true, role: "pathogen", diseaseId: "influenza" },
+    { label: "Enf", desc: "Enf. Sobrecarregada",color: "#bb5500", w: 60, h: 52, isNPC: true, role: "enfermeiro" },
+  ],
+  [ // 17 CTI
+    { label: "🦠", desc: "Infecção CTI",       color: "#ff0000", w: 45, h: 52, isNPC: true, role: "pathogen", diseaseId: "mrsa" },
+    { label: "Med", desc: "Médico Exausto",    color: "#aa0000", w: 50, h: 52, isNPC: true, role: "medico" },
+  ],
+  [ // 18 Plantão
+    { label: "Fila", desc: "Caos no Plantão",   color: "#ff4400", w: 70, h: 52, isNPC: true, role: "civil" },
+    { label: "Buro", desc: "Sistema Fora",      color: "#222222", w: 60, h: 52, isNPC: true, role: "bem-vestido" },
+  ],
+  [ // 19 Crise
+    { label: "🦠", desc: "Pandemia",           color: "#ff0000", w: 50, h: 52, isNPC: true, role: "pathogen", diseaseId: "dengue" },
+    { label: "Ambu", desc: "Ambulância Presa",  color: "#cc3333", w: 65, h: 35 },
+  ],
+  [ // 20 Caos
+    { label: "🦠", desc: "Colapso Sanitário",  color: "#000000", w: 55, h: 52, isNPC: true, role: "pathogen", diseaseId: "variola" },
+    { label: "💉", desc: "Boss Vacina",       color: "#00bcd4", w: 52, h: 52, isNPC: true, role: "boss" },
+    { label: "⚔️", desc: "Boss Lança",        color: "#ff8800", w: 50, h: 52, isNPC: true, role: "boss" },
+    { label: "Fisc", desc: "Fiscal Sanitário", color: "#880088", w: 60, h: 52, isNPC: true, role: "policial" },
+  ],
+];
+
+// Flat list for testing hooks
+const OBSTACLE_TYPES = OBSTACLE_TYPES_BY_PHASE[0];
+
+// Car obstacle used in all phases (spawn chance independent of phase list)
+const CAR_OBSTACLE = { label: "Car", desc: "Trânsito", color: "#555555", w: 80, h: 38 };
+
+const POWERUP_TYPES = [
+  { label: 'FP', desc: 'Farmácia Popular', color: PHARMACY_GREEN, effect: 'doubleJump', duration: POWERUP_FP_DURATION },
+  { label: '$',  desc: 'Desconto',        color: GOLD,           effect: 'speedBoost', duration: POWERUP_DISCOUNT_DURATION },
+  { label: '💊', desc: 'Genérico',        color: BLUE_PILL,      effect: 'invincible', duration: POWERUP_GENERIC_DURATION },
+  { label: '💉', desc: 'Vacina',          color: "#00bcd4",      effect: 'scoreBoost', duration: 10000 },
+  { label: '🧲', desc: 'Magneto',        color: "#e91e63",      effect: 'magnet',     duration: 8000 },
+  { label: '🛡️', desc: 'Máscara',         color: "#ffffff",      effect: 'shield',     duration: 0 },
+  { label: '💨', desc: 'Spray Anti-V',   color: "#1abc9c",      effect: 'spray',      duration: 5000 },
+  { label: '⚛️', desc: 'Pulso Radial',    color: "#f1c40f",      effect: 'pulse',      duration: 0 },
+];
+
+// ============================================================
+// LEADERBOARD API
+// ============================================================
+const API = "http://localhost:8000";
+
+async function fetchLeaderboard() {
+  try {
+    const res = await fetch(`${API}/api/leaderboard?limit=20`);
+    if (!res.ok) throw new Error('Network error');
+    return await res.json();
+  } catch(e) {
+    console.warn('Leaderboard fetch failed:', e);
+    return [];
+  }
+}
+
+async function submitScore(name, score, distance, phase, character) {
+  try {
+    const res = await fetch(`${API}/api/leaderboard`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, score: Math.floor(score), distance: Math.floor(distance / 10), phase, character }),
+    });
+    if (!res.ok) throw new Error('Network error');
+    return await res.json();
+  } catch(e) {
+    console.warn('Score submit failed:', e);
+    return null;
+  }
+}
+
+// ============================================================
+// AUDIO ENGINE (Web Audio API - Procedural)
+// ============================================================
+let audioCtx = null;
+let audioMuted = false;
+let musicGain = null;
+let sfxGain = null;
+let musicNodes = [];
+
+function initAudio() {
+  if (audioCtx) return;
+  try {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    musicGain = audioCtx.createGain();
+    musicGain.gain.value = 0.15;
+    musicGain.connect(audioCtx.destination);
+    sfxGain = audioCtx.createGain();
+    sfxGain.gain.value = 0.25;
+    sfxGain.connect(audioCtx.destination);
+  } catch(e) {}
+}
+
+function playTone(freq, duration, type, gainNode, volume) {
+  if (!audioCtx || audioMuted) return;
+  try {
+    const osc = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    osc.type = type || 'square';
+    osc.frequency.value = freq;
+    g.gain.setValueAtTime(volume || 0.3, audioCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+    osc.connect(g).connect(gainNode || sfxGain);
+    osc.start();
+    osc.stop(audioCtx.currentTime + duration);
+  } catch(e) {}
+}
+
+function sfxJump() {
+  playTone(400, 0.1, 'square', sfxGain, 0.2);
+  setTimeout(() => playTone(600, 0.08, 'square', sfxGain, 0.15), 50);
+}
+
+function sfxCollect() {
+  playTone(523, 0.1, 'sine', sfxGain, 0.25);
+  setTimeout(() => playTone(659, 0.1, 'sine', sfxGain, 0.2), 80);
+  setTimeout(() => playTone(784, 0.15, 'sine', sfxGain, 0.15), 160);
+}
+
+function sfxHit() {
+  playTone(100, 0.3, 'sawtooth', sfxGain, 0.3);
+}
+
+function sfxShoot() {
+  playTone(800, 0.05, 'square', sfxGain, 0.1);
+  setTimeout(() => playTone(600, 0.05, 'square', sfxGain, 0.08), 30);
+}
+
+function sfxHonk() {
+  if (audioMuted || !audioCtx) return;
+  playTone(392, 0.15, 'square', sfxGain, 0.15);
+  setTimeout(() => playTone(392, 0.15, 'square', sfxGain, 0.15), 100);
+}
+
+function sfxGameOver() {
+  playTone(400, 0.2, 'square', sfxGain, 0.25);
+  setTimeout(() => playTone(350, 0.2, 'square', sfxGain, 0.2), 200);
+  setTimeout(() => playTone(280, 0.2, 'square', sfxGain, 0.15), 400);
+  setTimeout(() => playTone(200, 0.4, 'square', sfxGain, 0.1), 600);
+}
+
+function sfxMilestone() {
+  const notes = [523, 659, 784, 1047];
+  notes.forEach((n, i) => {
+    setTimeout(() => playTone(n, 0.15, 'sine', sfxGain, 0.2), i * 100);
+  });
+}
+
+let musicPlaying = false;
+let musicInterval = null;
+const MELODY_NORMAL = [262, 294, 330, 349, 392, 349, 330, 294];
+const MELODY_DARK = [196, 220, 247, 262, 247, 220, 196, 174];
+const MELODY_CHAOS = [174, 196, 185, 165, 147, 165, 147, 131];
+
+function startMusic() {
+  if (musicPlaying || !audioCtx || audioMuted) return;
+  musicPlaying = true;
+
+  const scene = getCurrentScene();
+  let melody = MELODY_NORMAL;
+  if (scene === "noite" || scene === "cti" || scene === "plantao" || scene === "crise") melody = MELODY_DARK;
+  if (scene === "caos") melody = MELODY_CHAOS;
+
+  let idx = 0;
+  function playNote() {
+    if (audioMuted || !musicPlaying) return;
+    playTone(melody[idx % melody.length], 0.18, "triangle", musicGain, scene === "caos" ? 0.18 : 0.15);
+    idx++;
+  }
+
+  playNote();
+  musicInterval = setInterval(playNote, scene === "caos" ? 260 : 320);
+}
+
+function stopMusic() {
+  musicPlaying = false;
+  if (musicInterval) { clearInterval(musicInterval); musicInterval = null; }
+}
+
+function toggleMute() {
+  audioMuted = !audioMuted;
+  if (audioMuted) { stopMusic(); }
+  else if (game.state === 'playing') { startMusic(); }
+}
+
+// ============================================================
+// UTILITY - Hit test
+// ============================================================
+function pointInBox(mx, my, box) {
+  return box && mx >= box.x && mx <= box.x + box.w && my >= box.y && my <= box.y + box.h;
+}
+
+// ============================================================
+// INPUT HANDLING
+// ============================================================
+const Input = {
+  keys: {},
+  justPressed: {},
+  touched: false,
+  justTouched: false,
+  touchX: 0,
+  touchY: 0,
+
+  init() {
+    document.addEventListener('keydown', (e) => {
+      if (!this.keys[e.code]) this.justPressed[e.code] = true;
+      this.keys[e.code] = true;
+      if (e.code === 'Space' || e.code === 'ArrowUp') e.preventDefault();
+    });
+    document.addEventListener('keyup', (e) => { this.keys[e.code] = false; });
+
+    const updateTouch = (touch) => {
+      const rect = canvas.getBoundingClientRect();
+      this.touchX = touch.clientX - rect.left;
+      this.touchY = touch.clientY - rect.top;
+    };
+
+    canvas.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      const touch = e.touches[0];
+      updateTouch(touch);
+
+      // Handle charSelect touches directly
+      if (game.state === 'charSelect') {
+        const mx = this.touchX;
+        const my = this.touchY;
+        if (pointInBox(mx, my, charSelectBoxes.male)) {
+          game.selectedChar = 'male';
+          initAudio(); if (audioCtx) audioCtx.resume();
+          sfxCollect();
+          return;
+        } else if (pointInBox(mx, my, charSelectBoxes.female)) {
+          game.selectedChar = 'female';
+          initAudio(); if (audioCtx) audioCtx.resume();
+          sfxCollect();
+          return;
+        } else if (pointInBox(mx, my, charSelectBoxes.play)) {
+          resetGame();
+          return;
+        }
+      }
+
+      this.touched = true;
+      this.justTouched = true;
+      this.justPressed['Touch'] = true;
+    }, { passive: false });
+
+    canvas.addEventListener('touchmove', (e) => {
+      const touch = e.touches[0];
+      updateTouch(touch);
+    });
+
+    canvas.addEventListener('touchend', () => {
+      this.touched = false;
+      this.touchX = 0;
+      this.touchY = 0;
+    });
+
+    canvas.addEventListener('mousedown', (e) => {
+      this.touched = true;
+      this.justTouched = true;
+      this.justPressed['Mouse'] = true;
+      this.touchX = e.offsetX;
+      this.touchY = e.offsetY;
+    });
+
+    canvas.addEventListener('mouseup', () => {
+      this.touched = false;
+      this.touchX = 0;
+      this.touchY = 0;
+    });
+  },
+
+  wantsJump() {
+    const isShootTap = this.justTouched && isInShootButton(this.touchX, this.touchY);
+    return this.justPressed['Space'] || this.justPressed['ArrowUp'] || this.justPressed['KeyW'] || (this.justTouched && !isShootTap);
+  },
+
+  wantsShoot() {
+    const hasKey = this.justPressed['KeyX'] || this.justPressed['KeyF'];
+    const isTouchShoot = this.justTouched && isInShootButton(this.touchX, this.touchY);
+    return hasKey || isTouchShoot;
+  },
+
+  endFrame() {
+    this.justPressed = {};
+    this.justTouched = false;
+  }
+};
+Input.init();
+
+function isInShootButton(mx, my) {
+  if (!game.isMobile) return false;
+  const r = 40 * scale;
+  const bx = W - 60;
+  const by = H - 80;
+  const dx = mx - bx;
+  const dy = my - by;
+  return dx * dx + dy * dy <= r * r;
+}
+
+// ============================================================
+// PARTICLE SYSTEM (Object Pooled)
+// ============================================================
+class Particle {
+  constructor() { this.active = false; }
+  init(x, y, vx, vy, life, color, size) {
+    this.x = x; this.y = y; this.vx = vx; this.vy = vy;
+    this.life = life; this.maxLife = life;
+    this.color = color; this.size = size;
+    this.active = true;
+  }
+  update(dt) {
+    this.x += this.vx * dt;
+    this.y += this.vy * dt;
+    this.vy += 400 * dt;
+    this.life -= dt;
+    if (this.life <= 0) this.active = false;
+  }
+  draw(ctx) {
+    const alpha = Math.max(0, this.life / this.maxLife);
+    ctx.globalAlpha = alpha;
+    ctx.fillStyle = this.color;
+    const s = this.size * (0.5 + 0.5 * alpha);
+    ctx.fillRect(this.x - s/2, this.y - s/2, s, s);
+    ctx.globalAlpha = 1;
+  }
+}
+
+class ParticlePool {
+  constructor(size) { this.pool = Array.from({ length: size }, () => new Particle()); }
+  emit(x, y, count, cfg) {
+    let emitted = 0;
+    for (const p of this.pool) {
+      if (!p.active && emitted < count) {
+        const angle = Math.random() * Math.PI * 2;
+        const speed = (cfg.speed || 150) * (0.5 + Math.random());
+        p.init(x, y, Math.cos(angle) * speed, Math.sin(angle) * speed - (cfg.upBias || 0),
+          (cfg.life || 0.6) + Math.random() * (cfg.lifeVar || 0.3),
+          cfg.colors ? cfg.colors[Math.floor(Math.random() * cfg.colors.length)] : (cfg.color || '#fff'),
+          cfg.size || 4);
+        emitted++;
+      }
+    }
+  }
+  update(dt) { for (const p of this.pool) if (p.active) p.update(dt); }
+  draw(ctx) { for (const p of this.pool) if (p.active) p.draw(ctx); }
+}
+
+const particles = new ParticlePool(200);
+
+// ============================================================
+// PARALLAX BACKGROUND
+// ============================================================
+class ParallaxLayer {
+  constructor(speed, drawFn) {
+    this.speed = speed;
+    this.offset = 0;
+    this.drawFn = drawFn;
+  }
+  update(dt, gameSpeed) {
+    this.offset -= gameSpeed * this.speed * dt;
+  }
+  draw(ctx) {
+    this.drawFn(ctx, this.offset);
+  }
+}
+
+// Cloud generation
+let clouds = [];
+function generateClouds() {
+  clouds = [];
+  for (let i = 0; i < 12; i++) {
+    clouds.push({
+      x: Math.random() * 2400,
+      y: 20 + Math.random() * (H * 0.25),
+      w: 60 + Math.random() * 100,
+      h: 25 + Math.random() * 30,
+      opacity: 0.4 + Math.random() * 0.4
+    });
+  }
+}
+// Building generation — BIGGER buildings
+let buildings = [];
+function generateBuildings() {
+  buildings = [];
+  let x = 0;
+  while (x < 3000) {
+    const w = 80 + Math.random() * 120;
+    const h = 160 + Math.random() * 240;
+    const isPharmacy = Math.random() < 0.2;
+    buildings.push({
+      x: x,
+      w: w,
+      h: h,
+      color: isPharmacy ? PHARMACY_GREEN_DARK : `hsl(${200 + Math.random() * 40}, ${15 + Math.random() * 20}%, ${30 + Math.random() * 25}%)`,
+      isPharmacy: isPharmacy,
+      windows: Math.floor(Math.random() * 5) + 2,
+      windowRows: Math.floor(h / 35)
+    });
+    x += w + 5 + Math.random() * 15;
+  }
+}
+// Storefront generation — BIGGER storefronts
+let storefronts = [];
+function generateStorefronts(storefronts_arr) {
+  const target_arr = storefronts_arr || storefronts;
+  target_arr.length = 0;
+  let x = 0;
+  const scene = getCurrentScene();
+
+  while (x < 3200) {
+    const w = 100 + Math.random() * 90;
+    let isPharmacy = false;
+    let name = "LOJA";
+    let color = "hsl(" + Math.random() * 360 + ",40%,50%)";
+    let damaged = false;
+
+    if (NEUTRAL_SCENES.includes(scene)) {
+      isPharmacy = Math.random() < (scene === "popular" ? 0.65 : scene === "privada" ? 0.55 : 0.25);
+      if (scene === "popular") {
+        name = isPharmacy ? "FARMÁCIA POPULAR" : (Math.random() < 0.5 ? "PADARIA" : "MERCADO");
+        color = isPharmacy ? PHARMACY_GREEN : "#8e63b5";
+      } else if (scene === "privada") {
+        name = isPharmacy ? "DROGARIA PRIVADA" : "SHOPPING";
+        color = isPharmacy ? "#c9a227" : "#34495e";
+      } else {
+        name = isPharmacy ? "FARMÁCIA" : (Math.random() < 0.5 ? "BANCO" : "MERCADO");
+        color = isPharmacy ? PHARMACY_GREEN : "#7f8fa6";
+      }
+    } else if (CRISE_SCENES.includes(scene)) {
+      isPharmacy = Math.random() < 0.18;
+      if (Math.random() < 0.45) {
+        name = "EM REPARO";
+      } else {
+        name = isPharmacy ? "FARMÁCIA FECHADA" : "PRÉDIO DANIFICADO";
+      }
+      color = Math.random() < 0.25 ? "#a63b3b" : "#3b3b3b";
+      damaged = Math.random() < 0.7;
+    } else if (CAOS_SCENES.includes(scene)) {
+      const names = ["PRÉDIO EM CHAMAS", "FARMÁCIA SAQUEADA", "LOJA QUEBRADA", "POSTO ABANDONADO"];
+      name = names[Math.floor(Math.random() * names.length)];
+      color = ["#2f2f2f", "#522222", "#3b2c2c", "#444"][Math.floor(Math.random() * 4)];
+      damaged = true;
+    }
+
+    target_arr.push({
+      x,
+      w,
+      h: 90 + Math.random() * 40,
+      isPharmacy,
+      color,
+      name,
+      damaged,
+    });
+
+    x += w + 18 + Math.random() * 40;
+  }
+}
+
+function drawSkyLayer(ctx, offset) {
+  const scene = getCurrentScene();
+
+  let topColor = "#1a3a5c";
+  let midColor = "#3a7cb8";
+  let lowColor = SKY_BLUE;
+  let fogAlpha = 0.0;
+
+  if (scene === "noite" || scene === "cti" || scene === "plantao") {
+    topColor = "#02030b";
+    midColor = "#09142a";
+    lowColor = "#13294b";
+    fogAlpha = 0.08;
+  } else if (scene === "hospital" || scene === "upa" || scene === "sus") {
+    topColor = "#12324f";
+    midColor = "#2b6aa3";
+    lowColor = "#9fd0ff";
+  } else if (scene === "privada") {
+    topColor = "#301848";
+    midColor = "#8e44ad";
+    lowColor = "#f1c40f";
+  } else if (scene === "crise") {
+    topColor = "#161616";
+    midColor = "#3a2a2a";
+    lowColor = "#5c4b3b";
+    fogAlpha = 0.12;
+  } else if (scene === "caos") {
+    topColor = "#080808";
+    midColor = "#1e0f0f";
+    lowColor = "#4a1f1f";
+    fogAlpha = 0.22;
+  }
+
+  const grad = ctx.createLinearGradient(0, 0, 0, GROUND_Y);
+  grad.addColorStop(0, topColor);
+  grad.addColorStop(0.45, midColor);
+  grad.addColorStop(0.82, lowColor);
+  grad.addColorStop(1, scene === "caos" ? "#3b2020" : "#b8d8f0");
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, W, GROUND_Y);
+
+  const cloudAlpha =
+    ["noite", "cti", "plantao", "crise", "caos"].includes(scene) ? 0.10 : 0.42;
+
+  ctx.fillStyle = "rgba(255,255,255," + cloudAlpha + ")";
+  for (const c of clouds) {
+    const cx = (c.x + offset * 0.3) % (W + 200) - 100;
+    ctx.beginPath();
+    ctx.ellipse(cx, c.y, c.w / 2, c.h / 2, 0, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  if (scene === "caos") {
+    for (let i = 0; i < 7; i++) {
+      const fx = ((i * 230) + offset * 0.15) % (W + 250) - 125;
+      const fy = GROUND_Y - 180 - (i % 3) * 20;
+      ctx.fillStyle = "rgba(255,120,0,0.22)";
+      ctx.beginPath();
+      ctx.arc(fx, fy, 38, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = "rgba(40,40,40,0.22)";
+      ctx.fillRect(fx - 18, fy - 55, 36, 55);
+    }
+  }
+
+  if (fogAlpha > 0) {
+    ctx.fillStyle = `rgba(70,70,70,${fogAlpha})`;
+    ctx.fillRect(0, GROUND_Y * 0.55, W, GROUND_Y * 0.45);
+  }
+}
+
+function drawBuildingLayer(ctx, offset) {
+  const totalW = buildings.reduce((s, b) => s + b.w + 15, 0);
+  for (const b of buildings) {
+    const bx = ((b.x + offset) % totalW + totalW) % totalW - 200;
+    if (bx > W + 100 || bx + b.w < -100) continue;
+    const by = GROUND_Y - b.h;
+    
+    // Prédio Base
+    ctx.fillStyle = b.color;
+    ctx.fillRect(bx, by, b.w, b.h);
+    
+    // Detalhe arquitetônico lateral (sombra projetada no próprio prédio)
+    ctx.fillStyle = 'rgba(0,0,0,0.15)';
+    ctx.fillRect(bx + b.w - 8, by, 8, b.h);
+
+    // Windows com mais detalhes
+    const wSize = 12;
+    const wGapH = (b.w - 20) / Math.max(b.windows, 1);
+    for (let r = 0; r < b.windowRows; r++) {
+      for (let c = 0; c < b.windows; c++) {
+        const wx = bx + 10 + c * wGapH;
+        const wy = by + 15 + r * 35;
+        
+        // Moldura da janela
+        ctx.fillStyle = 'rgba(0,0,0,0.3)';
+        ctx.fillRect(wx - 1, wy - 1, wSize + 2, wSize + 7);
+        
+        // Vidro iluminado
+        ctx.fillStyle = 'rgba(255,240,150,0.7)';
+        ctx.fillRect(wx, wy, wSize, wSize + 5);
+        
+        // Brilho no vidro
+        ctx.fillStyle = 'rgba(255,255,255,0.4)';
+        ctx.fillRect(wx + 2, wy + 2, 3, 3);
+
+        // Sacada opcional em alguns andares
+        if (c === 0 && r % 2 === 0 && b.w > 120) {
+            ctx.fillStyle = '#444';
+            ctx.fillRect(wx - 5, wy + wSize + 5, b.w - 10, 3);
+            // Grades da sacada
+            for(let g = 0; g < b.w - 15; g += 10) {
+                ctx.fillRect(wx - 5 + g, wy + wSize - 2, 2, 7);
+            }
+        }
+      }
+    }
+
+    if (b.isPharmacy) {
+      // Placa de Farmácia no Prédio
+      ctx.fillStyle = PHARMACY_GREEN;
+      ctx.fillRect(bx + b.w/2 - 25, by + 10, 50, 25);
+      ctx.strokeStyle = WHITE;
+      ctx.lineWidth = 2;
+      ctx.strokeRect(bx + b.w/2 - 25, by + 10, 50, 25);
+      
+      // Cruz Piscante
+      const flash = Math.floor(performance.now() / 500) % 2 === 0;
+      ctx.fillStyle = flash ? PHARMACY_GREEN_LIGHT : WHITE;
+      const crossX = bx + b.w / 2;
+      const crossY = by + 22;
+      ctx.fillRect(crossX - 3, crossY - 8, 6, 16);
+      ctx.fillRect(crossX - 8, crossY - 3, 16, 6);
+    }
+  }
+}
+
+function drawStorefrontLayer(ctx, offset) {
+  const totalW = storefronts.reduce((s, sf) => s + sf.w + 10, 0);
+  for (const sf of storefronts) {
+    const sx = ((sf.x + offset) % totalW + totalW) % totalW - 200;
+    if (sx > W + 100 || sx + sf.w < -100) continue;
+    const sy = GROUND_Y - sf.h;
+
+    // Storefront body
+    ctx.fillStyle = sf.color;
+    ctx.fillRect(sx, sy, sf.w, sf.h);
+
+    if (sf.isPharmacy) {
+        // Fachada de Farmácia mais detalhada
+        ctx.fillStyle = PHARMACY_GREEN_DARK;
+        ctx.fillRect(sx - 5, sy, sf.w + 10, 20); // Testeira/Placa superior
+        
+        ctx.strokeStyle = WHITE;
+        ctx.lineWidth = 1;
+        ctx.strokeRect(sx - 5, sy, sf.w + 10, 20);
+
+        // Texto na placa
+        ctx.fillStyle = WHITE;
+        ctx.font = `bold ${Math.min(11, sf.w / 8)}px 'Plus Jakarta Sans', sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.fillText("FARMÁCIA", sx + sf.w/2, sy + 14);
+
+        // Vitrine com prateleiras (linhas horizontais)
+        ctx.fillStyle = "rgba(255,255,255,0.2)";
+        ctx.fillRect(sx + 5, sy + 25, sf.w - 10, sf.h - 30);
+        
+        ctx.strokeStyle = "rgba(255,255,255,0.3)";
+        for(let py = sy + 35; py < sy + sf.h - 5; py += 12) {
+            ctx.beginPath();
+            ctx.moveTo(sx + 8, py);
+            ctx.lineTo(sx + sf.w - 8, py);
+            ctx.stroke();
+            // Pequenos "frascos" nas prateleiras
+            for(let px = sx + 12; px < sx + sf.w - 12; px += 8) {
+                if (Math.random() > 0.3) {
+                    ctx.fillStyle = `hsl(${Math.random()*360}, 70%, 70%)`;
+                    ctx.fillRect(px, py - 6, 4, 6);
+                }
+            }
+        }
+    } else {
+        // Awning para lojas normais
+        ctx.fillStyle = 'rgba(0,0,0,0.3)';
+        ctx.fillRect(sx - 3, sy, sf.w + 6, 16);
+
+        // Awnings (listras)
+        for (let i = 0; i < sf.w; i += 12) {
+          ctx.fillStyle = i % 24 === 0 ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)';
+          ctx.fillRect(sx + i - 3, sy, 12, 16);
+        }
+
+        // Windows
+        ctx.fillStyle = 'rgba(255,255,255,0.25)';
+        const winW = sf.w * 0.18;
+        const winH = sf.h * 0.25;
+        for (let i = 0; i < 3; i++) {
+          ctx.fillRect(sx + sf.w * 0.15 + i * (winW + 10), sy + sf.h * 0.35, winW, winH);
+        }
+
+        // Sign text
+        ctx.fillStyle = WHITE;
+        ctx.font = `bold ${Math.min(13, sf.w / 7)}px 'Plus Jakarta Sans', sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.fillText(sf.name, sx + sf.w / 2, sy + 35);
+    }
+
+    // Door (sempre presente)
+    ctx.fillStyle = 'rgba(0,0,0,0.5)';
+    ctx.fillRect(sx + sf.w / 2 - 12, sy + sf.h - 40, 24, 40);
+    // Maçaneta
+    ctx.fillStyle = GOLD;
+    ctx.beginPath();
+    ctx.arc(sx + sf.w / 2 + 8, sy + sf.h - 20, 2, 0, Math.PI*2);
+    ctx.fill();
+
+    if (sf.isPharmacy) {
+      // Cruz piscante lateral
+      const flash = Math.floor(performance.now() / 400) % 2 === 0;
+      ctx.fillStyle = flash ? PHARMACY_GREEN_LIGHT : WHITE;
+      const cx = sx + sf.w - 15;
+      const cy = sy + 35;
+      ctx.fillRect(cx - 2, cy - 6, 4, 12);
+      ctx.fillRect(cx - 6, cy - 2, 12, 4);
+    }
+
+    if (sf.damaged) {
+      ctx.fillStyle = "rgba(0,0,0,0.35)";
+      ctx.fillRect(sx + 8, sy + 18, sf.w - 16, 6);
+
+      ctx.strokeStyle = "rgba(20,20,20,0.8)";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(sx + 10, sy + 15);
+      ctx.lineTo(sx + 30, sy + 35);
+      ctx.lineTo(sx + 20, sy + 60);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(sx + sf.w - 15, sy + 20);
+      ctx.lineTo(sx + sf.w - 28, sy + 50);
+      ctx.lineTo(sx + sf.w - 18, sy + 75);
+      ctx.stroke();
+
+      if (getCurrentScene() === "caos") {
+        ctx.fillStyle = "rgba(255,120,0,0.75)";
+        ctx.beginPath();
+        ctx.moveTo(sx + 20, sy + sf.h - 10);
+        ctx.lineTo(sx + 30, sy + sf.h - 28);
+        ctx.lineTo(sx + 40, sy + sf.h - 10);
+        ctx.fill();
+
+        ctx.fillStyle = "rgba(80,80,80,0.4)";
+        ctx.fillRect(sx + 22, sy + sf.h - 42, 10, 18);
+      }
+    }
+  }
+  ctx.textAlign = 'left';
+}
+
+function drawStreetDetailsLayer(ctx, offset) {
+  const spacing = 400;
+  // i represents the screen-aligned grid positions.
+  // We use offset (negative) to shift the entire grid smoothly.
+  for (let i = -spacing; i < W + spacing; i += spacing) {
+    const x = i + (offset % spacing);
+    const y = GROUND_Y;
+    
+    // Seed determines if it's a lamp or tree based on world position
+    const worldX = Math.round(i - offset + (offset % spacing));
+    const seed = Math.floor(worldX / spacing);
+    const isLamp = seed % 2 === 0;
+
+    if (isLamp) {
+      // Poste de Luz
+      ctx.fillStyle = '#333';
+      ctx.fillRect(x, y - 100, 4, 100);
+      ctx.fillStyle = '#555';
+      ctx.fillRect(x - 12, y - 105, 28, 6);
+      
+      // Detalhe da luminária
+      ctx.fillStyle = '#444';
+      ctx.fillRect(x - 2, y - 100, 8, 4);
+
+      // Brilho da lâmpada (amarelado)
+      ctx.fillStyle = 'rgba(255, 255, 150, 0.2)';
+      ctx.beginPath();
+      ctx.arc(x + 2, y - 102, 15, 0, Math.PI * 2);
+      ctx.fill();
+    } else {
+      // Árvore
+      ctx.fillStyle = '#5d4037'; // Tronco
+      ctx.fillRect(x, y - 40, 8, 40);
+      
+      // Folhas com mais camadas
+      ctx.fillStyle = '#1b5e20';
+      ctx.beginPath();
+      ctx.arc(x + 4, y - 55, 24, 0, Math.PI * 2);
+      ctx.fill();
+      
+      ctx.fillStyle = '#2e7d32';
+      ctx.beginPath();
+      ctx.arc(x - 8, y - 48, 18, 0, Math.PI * 2);
+      ctx.arc(x + 16, y - 48, 18, 0, Math.PI * 2);
+      ctx.arc(x + 4, y - 65, 20, 0, Math.PI * 2);
+      ctx.fill();
+      
+      ctx.fillStyle = '#4caf50';
+      ctx.beginPath();
+      ctx.arc(x + 2, y - 58, 12, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+}
+
+const bgLayers = [
+  new ParallaxLayer(0.1, drawSkyLayer),
+  new ParallaxLayer(0.3, drawBuildingLayer),
+  new ParallaxLayer(0.6, drawStorefrontLayer),
+  new ParallaxLayer(0.8, drawStreetDetailsLayer),
+];
+
+// ============================================================
+// CHARACTER DRAWING (shared for player + preview)
+// ============================================================
+function drawCharacter(ctx, x, y, w, grounded, legPhase, invincible, isFemale, drawScale) {
+  const currentSkin = SKINS.find(s => s.id === game.skin) || SKINS[0];
+  const bodyColor = isFemale ? currentSkin.colorFemale : currentSkin.colorMale;
+
+  ctx.save();
+  const s = drawScale || 1.0;
+  const cx = x + w / 2;
+  const baseY = y;
+
+  if (isFemale) {
+    // === FEMALE CHARACTER ===
+    // Body (dress)
+    ctx.fillStyle = bodyColor;
+    ctx.beginPath();
+    ctx.roundRect(cx - 11 * s, baseY + 14 * s, 22 * s, 24 * s, 4 * s);
+    ctx.fill();
+    // Dress flare
+    ctx.beginPath();
+    ctx.moveTo(cx - 13 * s, baseY + 34 * s);
+    ctx.lineTo(cx - 8 * s, baseY + 14 * s);
+    ctx.lineTo(cx + 8 * s, baseY + 14 * s);
+    ctx.lineTo(cx + 13 * s, baseY + 34 * s);
+    ctx.closePath();
+    ctx.fill();
+
+    // Head
+    ctx.fillStyle = '#ffe0bd';
+    ctx.beginPath();
+    ctx.arc(cx, baseY + 10 * s, 10 * s, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Hair (long, flowing)
+    ctx.fillStyle = '#8B4513';
+    ctx.beginPath();
+    ctx.arc(cx, baseY + 7 * s, 11 * s, Math.PI, Math.PI * 2);
+    ctx.fill();
+    // Side hair
+    ctx.fillRect(cx - 11 * s, baseY + 5 * s, 4 * s, 18 * s);
+    ctx.fillRect(cx + 7 * s, baseY + 5 * s, 4 * s, 18 * s);
+    // Hair back
+    ctx.fillStyle = '#6B3410';
+    ctx.fillRect(cx - 9 * s, baseY + 8 * s, 3 * s, 22 * s);
+    ctx.fillRect(cx + 6 * s, baseY + 8 * s, 3 * s, 22 * s);
+
+    // Eyes
+    ctx.fillStyle = '#333';
+    ctx.fillRect(cx - 4 * s, baseY + 8 * s, 2.5 * s, 3 * s);
+    ctx.fillRect(cx + 2 * s, baseY + 8 * s, 2.5 * s, 3 * s);
+    // Eyelashes
+    ctx.strokeStyle = '#333';
+    ctx.lineWidth = 0.8 * s;
+    ctx.beginPath();
+    ctx.moveTo(cx - 5 * s, baseY + 7 * s);
+    ctx.lineTo(cx - 3 * s, baseY + 6 * s);
+    ctx.moveTo(cx + 1.5 * s, baseY + 6 * s);
+    ctx.lineTo(cx + 4 * s, baseY + 7 * s);
+    ctx.stroke();
+
+    // Smile
+    ctx.strokeStyle = '#cc7766';
+    ctx.lineWidth = 1 * s;
+    ctx.beginPath();
+    ctx.arc(cx, baseY + 13 * s, 3 * s, 0.1, Math.PI - 0.1);
+    ctx.stroke();
+
+    // Blush
+    ctx.fillStyle = 'rgba(255,150,150,0.25)';
+    ctx.beginPath();
+    ctx.ellipse(cx - 6 * s, baseY + 12 * s, 2.5 * s, 1.5 * s, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(cx + 6 * s, baseY + 12 * s, 2.5 * s, 1.5 * s, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Arms
+    ctx.fillStyle = '#ffe0bd';
+    const armSwing = grounded ? Math.sin(legPhase) * 6 * s : -4 * s;
+    ctx.fillRect(cx - 14 * s, baseY + 16 * s + armSwing, 4 * s, 13 * s);
+    ctx.fillRect(cx + 10 * s, baseY + 16 * s - armSwing, 4 * s, 13 * s);
+
+    // Legs
+    ctx.fillStyle = '#ffe0bd';
+    if (grounded) {
+      const legSwing = Math.sin(legPhase) * 7 * s;
+      ctx.fillRect(cx - 7 * s, baseY + 37 * s, 5 * s, 15 * s + legSwing * 0.4);
+      ctx.fillRect(cx + 2 * s, baseY + 37 * s, 5 * s, 15 * s - legSwing * 0.4);
+      // Shoes
+      ctx.fillStyle = '#ff6699';
+      ctx.fillRect(cx - 9 * s, baseY + 50 * s + legSwing * 0.4, 7 * s, 4 * s);
+      ctx.fillRect(cx + 1 * s, baseY + 50 * s - legSwing * 0.4, 7 * s, 4 * s);
+    } else {
+      ctx.fillRect(cx - 7 * s, baseY + 36 * s, 5 * s, 12 * s);
+      ctx.fillRect(cx + 2 * s, baseY + 36 * s, 5 * s, 12 * s);
+      ctx.fillStyle = '#ff6699';
+      ctx.fillRect(cx - 9 * s, baseY + 46 * s, 7 * s, 4 * s);
+      ctx.fillRect(cx + 1 * s, baseY + 46 * s, 7 * s, 4 * s);
+    }
+  } else {
+    // === MALE CHARACTER ===
+    // Body
+    ctx.fillStyle = bodyColor;
+    ctx.beginPath();
+    ctx.roundRect(cx - 10 * s, baseY + 14 * s, 20 * s, 22 * s, 4 * s);
+    ctx.fill();
+
+    // Head
+    ctx.fillStyle = '#ffcc99';
+    ctx.beginPath();
+    ctx.arc(cx, baseY + 10 * s, 10 * s, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Hair
+    ctx.fillStyle = '#553322';
+    ctx.beginPath();
+    ctx.arc(cx, baseY + 6 * s, 10 * s, Math.PI, Math.PI * 2);
+    ctx.fill();
+
+    // Eyes
+    ctx.fillStyle = '#333';
+    ctx.fillRect(cx - 4 * s, baseY + 8 * s, 2.5 * s, 3 * s);
+    ctx.fillRect(cx + 2 * s, baseY + 8 * s, 2.5 * s, 3 * s);
+
+    // Smile
+    ctx.strokeStyle = '#996644';
+    ctx.lineWidth = 1 * s;
+    ctx.beginPath();
+    ctx.arc(cx, baseY + 13 * s, 3 * s, 0, Math.PI);
+    ctx.stroke();
+
+    // Arms
+    ctx.fillStyle = '#ffcc99';
+    const armSwingM = grounded ? Math.sin(legPhase) * 6 * s : -4 * s;
+    ctx.fillRect(cx - 14 * s, baseY + 16 * s + armSwingM, 5 * s, 14 * s);
+    ctx.fillRect(cx + 9 * s, baseY + 16 * s - armSwingM, 5 * s, 14 * s);
+
+    // Legs
+    ctx.fillStyle = '#335577';
+    if (grounded) {
+      const legSwing = Math.sin(legPhase) * 7 * s;
+      ctx.fillRect(cx - 8 * s, baseY + 35 * s, 6 * s, (17 + legSwing * 0.5) * s);
+      ctx.fillRect(cx + 2 * s, baseY + 35 * s, 6 * s, (17 - legSwing * 0.5) * s);
+      // Shoes
+      ctx.fillStyle = '#cc4444';
+      ctx.fillRect(cx - 10 * s, baseY + (50 + legSwing * 0.5) * s, 8 * s, 4 * s);
+      ctx.fillRect(cx + 1 * s, baseY + (50 - legSwing * 0.5) * s, 8 * s, 4 * s);
+    } else {
+      ctx.fillRect(cx - 8 * s, baseY + 34 * s, 6 * s, 14 * s);
+      ctx.fillRect(cx + 2 * s, baseY + 34 * s, 6 * s, 14 * s);
+      ctx.fillStyle = '#cc4444';
+      ctx.fillRect(cx - 10 * s, baseY + 46 * s, 8 * s, 4 * s);
+      ctx.fillRect(cx + 1 * s, baseY + 46 * s, 8 * s, 4 * s);
+    }
+  }
+
+  ctx.restore();
+}
+
+function drawNPCLikeCharacter(ctx, x, y, role, isFemale, legPhase, drawScale) {
+  ctx.save();
+  const s = drawScale || 1.0;
+  const cx = x + (isFemale ? 11 : 10) * s; 
+  const baseY = y;
+
+  let bodyColor = "#555";
+  let legColor = "#333";
+  let shoeColor = "#222";
+  let headColor = isFemale ? "#ffe0bd" : "#ffcc99";
+  let hairColor = isFemale ? "#8B4513" : "#553322";
+
+  if (role === "enfermeiro" || role === "medico") {
+    bodyColor = "#ffffff";
+    legColor = role === "medico" ? "#ffffff" : "#f0f0f0";
+    shoeColor = "#eeeeee";
+  } else if (role === "bem-vestido") {
+    bodyColor = isFemale ? "#cc44aa" : "#2c3e50";
+    legColor = isFemale ? "#ffcc99" : "#34495e";
+  } else if (role === "policial") {
+    bodyColor = "#1a237e";
+    legColor = "#0d47a1";
+    shoeColor = "#000000";
+  } else if (role === "pathogen") {
+    bodyColor = "#1b5e20"; // Verde doentio
+    legColor = "#003300";
+    headColor = "#aed581"; // Pele pálida/esverdeada
+    hairColor = "#33691e";
+    // Aura de patógeno
+    const pulse = 0.6 + Math.sin(performance.now() / 200) * 0.4;
+    ctx.shadowColor = "#00ff00";
+    ctx.shadowBlur = 10 * pulse;
+  }
+
+  if (isFemale) {
+    // Body (dress/uniform)
+    ctx.fillStyle = bodyColor;
+    ctx.beginPath();
+    ctx.roundRect(cx - 11 * s, baseY + 14 * s, 22 * s, 24 * s, 4 * s);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.moveTo(cx - 13 * s, baseY + 34 * s);
+    ctx.lineTo(cx - 8 * s, baseY + 14 * s);
+    ctx.lineTo(cx + 8 * s, baseY + 14 * s);
+    ctx.lineTo(cx + 13 * s, baseY + 34 * s);
+    ctx.closePath();
+    ctx.fill();
+    // Nurse/Doctor detail
+    if (role === "enfermeiro" || role === "medico") {
+        ctx.fillStyle = role === "enfermeiro" ? "#e74c3c" : "#3498db";
+        ctx.fillRect(cx - 4*s, baseY + 20*s, 8*s, 2*s);
+        ctx.fillRect(cx - 1*s, baseY + 17*s, 2*s, 8*s);
+    }
+    // Police detail
+    if (role === "policial") {
+        ctx.fillStyle = GOLD;
+        ctx.beginPath();
+        ctx.arc(cx - 5*s, baseY + 18*s, 2*s, 0, Math.PI*2);
+        ctx.fill();
+    }
+    // Head & Hair
+    ctx.fillStyle = headColor;
+    ctx.beginPath(); ctx.arc(cx, baseY + 10 * s, 10 * s, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = hairColor;
+    ctx.beginPath(); ctx.arc(cx, baseY + 7 * s, 11 * s, Math.PI, Math.PI * 2); ctx.fill();
+    ctx.fillRect(cx - 11 * s, baseY + 5 * s, 4 * s, 18 * s);
+    ctx.fillRect(cx + 7 * s, baseY + 5 * s, 4 * s, 18 * s);
+    // Smile
+    ctx.strokeStyle = '#cc7766'; ctx.lineWidth = 1 * s;
+    ctx.beginPath(); ctx.arc(cx, baseY + 13 * s, 3 * s, 0.1, Math.PI - 0.1); ctx.stroke();
+    // Arms
+    ctx.fillStyle = headColor;
+    const armSwing = Math.sin(legPhase) * 6 * s;
+    ctx.fillRect(cx - 14 * s, baseY + 16 * s + armSwing, 4 * s, 13 * s);
+    ctx.fillRect(cx + 10 * s, baseY + 16 * s - armSwing, 4 * s, 13 * s);
+    // Legs
+    ctx.fillStyle = legColor;
+    const legSwing = Math.sin(legPhase) * 7 * s;
+    ctx.fillRect(cx - 7 * s, baseY + 37 * s, 5 * s, 15 * s + legSwing * 0.4);
+    ctx.fillRect(cx + 2 * s, baseY + 37 * s, 5 * s, 15 * s - legSwing * 0.4);
+    ctx.fillStyle = shoeColor;
+    ctx.fillRect(cx - 9 * s, baseY + 50 * s + legSwing * 0.4, 7 * s, 4 * s);
+    ctx.fillRect(cx + 1 * s, baseY + 50 * s - legSwing * 0.4, 7 * s, 4 * s);
+  } else {
+    // Body
+    ctx.fillStyle = bodyColor;
+    ctx.beginPath();
+    ctx.roundRect(cx - 10 * s, baseY + 14 * s, 20 * s, 22 * s, 4 * s);
+    ctx.fill();
+    // Nurse/Doctor detail
+    if (role === "enfermeiro" || role === "medico") {
+        ctx.fillStyle = role === "enfermeiro" ? "#e74c3c" : "#3498db";
+        ctx.fillRect(cx - 4*s, baseY + 20*s, 8*s, 2*s);
+        ctx.fillRect(cx - 1*s, baseY + 17*s, 2*s, 8*s);
+    }
+    // Police detail
+    if (role === "policial") {
+        ctx.fillStyle = GOLD;
+        ctx.beginPath();
+        ctx.arc(cx - 5*s, baseY + 18*s, 2*s, 0, Math.PI*2);
+        ctx.fill();
+        // Hat
+        ctx.fillStyle = "#1a237e";
+        ctx.fillRect(cx - 12*s, baseY - 2*s, 24*s, 5*s);
+        ctx.fillRect(cx - 8*s, baseY - 6*s, 16*s, 5*s);
+    }
+    // Head & Hair
+    ctx.fillStyle = headColor;
+    ctx.beginPath(); ctx.arc(cx, baseY + 10 * s, 10 * s, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = hairColor;
+    ctx.beginPath(); ctx.arc(cx, baseY + 6 * s, 10 * s, Math.PI, Math.PI * 2); ctx.fill();
+    // Smile
+    ctx.strokeStyle = '#996644'; ctx.lineWidth = 1 * s;
+    ctx.beginPath(); ctx.arc(cx, baseY + 13 * s, 3 * s, 0, Math.PI); ctx.stroke();
+    // Arms
+    ctx.fillStyle = headColor;
+    const armSwingM = Math.sin(legPhase) * 6 * s;
+    ctx.fillRect(cx - 14 * s, baseY + 16 * s + armSwingM, 5 * s, 14 * s);
+    ctx.fillRect(cx + 9 * s, baseY + 16 * s - armSwingM, 5 * s, 14 * s);
+    // Legs
+    ctx.fillStyle = legColor;
+    const legSwingNPC = Math.sin(legPhase) * 7 * s;
+    ctx.fillRect(cx - 8 * s, baseY + 35 * s, 6 * s, (17 + legSwingNPC * 0.5) * s);
+    ctx.fillRect(cx + 2 * s, baseY + 35 * s, 6 * s, (17 - legSwingNPC * 0.5) * s);
+    ctx.fillStyle = shoeColor;
+    ctx.fillRect(cx - 10 * s, baseY + (50 + legSwingNPC * 0.5) * s, 8 * s, 4 * s);
+    ctx.fillRect(cx + 1 * s, baseY + (50 - legSwingNPC * 0.5) * s, 8 * s, 4 * s);
+  }
+  ctx.restore();
+}
+
+function drawVehicle(ctx, x, y, w, h, model, color, direction = -1, variant = 0) {
+  ctx.save();
+  if (direction === 1) {
+    ctx.translate(x + w, 0);
+    ctx.scale(-1, 1);
+    x = 0;
+  }
+
+  // Base colors and styling
+  const baseColor = color;
+  const shadowColor = adjustColor(baseColor, -25);
+  const detailColor = adjustColor(baseColor, 25);
+  const glassColor = 'rgba(255,255,255,0.65)';
+  const wheelColor = '#222';
+  const rimColor = '#555';
+
+  // Variant affects roof profile and accent details
+  const v = variant % 3;
+  const roofInset = 0.16 + v * 0.02;
+  const roofHeight = 0.28 + v * 0.03;
+  const bodyRound = h * (0.22 + v * 0.03);
+  const bumperHeight = h * 0.16;
+
+  // Adjust for different model silhouettes
+  let bodyHeight = h * 0.55;
+  let bodyYOffset = y + h * 0.2;
+  if (model === 'suv') {
+    bodyHeight = h * 0.6;
+    bodyYOffset = y + h * 0.18;
+  } else if (model === 'truck') {
+    bodyHeight = h * 0.52;
+    bodyYOffset = y + h * 0.22;
+  } else if (model === 'sport') {
+    bodyHeight = h * 0.5;
+    bodyYOffset = y + h * 0.24;
+  }
+
+  // Main body
+  ctx.fillStyle = baseColor;
+  ctx.beginPath();
+  ctx.roundRect(x, bodyYOffset, w, bodyHeight, bodyRound);
+  ctx.fill();
+
+  // Truck bed / sport splitter details
+  if (model === 'truck') {
+    ctx.fillStyle = adjustColor(baseColor, -10);
+    const bedX = x + w * 0.42;
+    const bedW = w * 0.5;
+    const bedY = bodyYOffset + bodyHeight * 0.28;
+    const bedH = bodyHeight * 0.45;
+    ctx.beginPath();
+    ctx.roundRect(bedX, bedY, bedW, bedH, bodyRound * 0.6);
+    ctx.fill();
+  } else if (model === 'sport') {
+    ctx.fillStyle = adjustColor(baseColor, -25);
+    ctx.fillRect(x + w * 0.05, bodyYOffset + bodyHeight * 0.88, w * 0.9, h * 0.06);
+  }
+
+  // Shadow along the bottom edge
+  ctx.fillStyle = shadowColor;
+  ctx.beginPath();
+  ctx.roundRect(x, bodyYOffset + bodyHeight - bumperHeight * 0.6, w, bumperHeight * 0.6, bodyRound * 0.6);
+  ctx.fill();
+
+  // Roof/hood shape
+  const roofY = bodyYOffset + (model === 'truck' ? bodyHeight * 0.08 : bodyHeight * 0.12);
+  ctx.fillStyle = detailColor;
+  ctx.beginPath();
+  ctx.moveTo(x + w * roofInset, roofY);
+  ctx.lineTo(x + w * (1 - roofInset), roofY);
+  ctx.lineTo(x + w * 0.82, roofY + bodyHeight * roofHeight);
+  ctx.lineTo(x + w * 0.18, roofY + bodyHeight * roofHeight);
+  ctx.closePath();
+  ctx.fill();
+
+  // Windows
+  ctx.fillStyle = glassColor;
+  const winY = roofY + bodyHeight * roofHeight * 0.08;
+  const winH = bodyHeight * 0.22;
+  if (model === 'truck') {
+    ctx.fillRect(x + w * 0.12, winY, w * 0.32, winH);
+    ctx.fillRect(x + w * 0.56, winY, w * 0.24, winH);
+  } else {
+    ctx.fillRect(x + w * 0.14, winY, w * 0.26, winH);
+    ctx.fillRect(x + w * 0.5, winY, w * 0.26, winH);
+    if (model === 'minivan' || model === 'suv') {
+      ctx.fillRect(x + w * 0.79, winY, w * 0.14, winH);
+    }
+  }
+
+  // Door line + optional stripe
+  ctx.strokeStyle = 'rgba(0,0,0,0.18)';
+  ctx.lineWidth = Math.max(1, h * 0.025);
+  ctx.beginPath();
+  ctx.moveTo(x + w * 0.5, bodyYOffset + bodyHeight * 0.25);
+  ctx.lineTo(x + w * 0.5, bodyYOffset + bodyHeight * 0.62);
+  ctx.stroke();
+
+  if (v === 1) {
+    ctx.strokeStyle = adjustColor(baseColor, 40);
+    ctx.lineWidth = Math.max(1, h * 0.018);
+    ctx.beginPath();
+    ctx.moveTo(x + w * 0.1, bodyYOffset + bodyHeight * 0.55);
+    ctx.lineTo(x + w * 0.9, bodyYOffset + bodyHeight * 0.55);
+    ctx.stroke();
+  }
+
+  // Headlights/taillights
+  ctx.fillStyle = 'rgba(255,255,255,0.9)';
+  ctx.fillRect(x + w * 0.06, bodyYOffset + bodyHeight * 0.62, w * 0.11, h * 0.08);
+  ctx.fillRect(x + w * 0.83, bodyYOffset + bodyHeight * 0.62, w * 0.11, h * 0.08);
+
+  // Side stripe / two-tone accents
+  if (v === 0) {
+    ctx.fillStyle = adjustColor(baseColor, -30);
+    ctx.fillRect(x + w * 0.12, bodyYOffset + bodyHeight * 0.42, w * 0.76, h * 0.06);
+  } else if (v === 1) {
+    ctx.fillStyle = adjustColor(baseColor, -20);
+    ctx.fillRect(x + w * 0.48, bodyYOffset + bodyHeight * 0.18, w * 0.04, bodyHeight * 0.64);
+  } else if (v === 2) {
+    // Two-tone roof
+    ctx.fillStyle = adjustColor(baseColor, -35);
+    ctx.fillRect(x + w * 0.12, roofY - h * 0.04, w * 0.76, h * 0.08);
+  }
+
+  // Wheels
+  const wheelR = Math.max(4, h * (model === 'truck' ? 0.22 : 0.18));
+  ctx.fillStyle = wheelColor;
+  ctx.beginPath();
+  ctx.arc(x + w * 0.22, y + h, wheelR, 0, Math.PI * 2);
+  ctx.arc(x + w * 0.78, y + h, wheelR, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = rimColor;
+  ctx.beginPath();
+  ctx.arc(x + w * 0.22, y + h, wheelR * 0.55, 0, Math.PI * 2);
+  ctx.arc(x + w * 0.78, y + h, wheelR * 0.55, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Rim spokes (simple detail)
+  ctx.strokeStyle = adjustColor(rimColor, 40);
+  ctx.lineWidth = Math.max(1, h * 0.01);
+  for (const cx of [x + w * 0.22, x + w * 0.78]) {
+    ctx.beginPath();
+    ctx.moveTo(cx, y + h - wheelR * 0.25);
+    ctx.lineTo(cx - wheelR * 0.17, y + h + wheelR * 0.05);
+    ctx.moveTo(cx, y + h - wheelR * 0.25);
+    ctx.lineTo(cx + wheelR * 0.17, y + h + wheelR * 0.05);
+    ctx.stroke();
+  }
+
+  // Spoiler / roof rack details for some variants
+  if (v === 2) {
+    ctx.fillStyle = adjustColor(baseColor, -40);
+    ctx.fillRect(x + w * 0.68, bodyYOffset + bodyHeight * 0.08, w * 0.22, h * 0.04);
+    ctx.fillRect(x + w * 0.15, bodyYOffset + bodyHeight * 0.08, w * 0.18, h * 0.04);
+  }
+
+  ctx.restore();
+}
+
+// ============================================================
+// PLAYER CHARACTER
+// ============================================================
+class Player {
+  constructor() {
+    this.reset();
+  }
+  reset() {
+    this.x = 80;
+    this.y = 0;
+    this.w = PLAYER_W;
+    this.h = PLAYER_H;
+    this.vy = 0;
+    this.grounded = true;
+    this.canDoubleJump = true; // Always allow double jump
+    this.hasDoubleJumped = false;
+    this.legPhase = 0;
+    this.invincible = false;
+    this.invincibleTimer = 0;
+    this.hitFlash = 0;
+    this.y = GROUND_Y - this.h;
+  }
+
+  jump() {
+    if (this.grounded) {
+      this.vy = JUMP_VELOCITY;
+      this.grounded = false;
+      this.hasDoubleJumped = false;
+      sfxJump();
+      return true;
+    } else if (this.canDoubleJump && !this.hasDoubleJumped) {
+      this.vy = DOUBLE_JUMP_VELOCITY;
+      this.hasDoubleJumped = true;
+      sfxJump();
+      particles.emit(this.x + this.w / 2, this.y + this.h, 8, {
+        speed: 80, life: 0.3, colors: [PHARMACY_GREEN_LIGHT, '#88ff88'], size: 3, upBias: 0
+      });
+      return true;
+    }
+    return false;
+  }
+
+  update(dt) {
+    // Gravity
+    this.vy += GRAVITY * dt;
+    this.y += this.vy * dt;
+
+    // Ground clamp
+    if (this.y >= GROUND_Y - this.h) {
+      this.y = GROUND_Y - this.h;
+      this.vy = 0;
+      this.grounded = true;
+    }
+
+    // Leg animation
+    if (this.grounded) {
+      this.legPhase += dt * 12;
+    }
+
+    // Invincibility flash
+    if (this.hitFlash > 0) this.hitFlash -= dt;
+
+    // Invincibility timer (grace period after hit or power-up)
+    if (this.invincibleTimer > 0) {
+      this.invincibleTimer -= dt;
+      if (this.invincibleTimer <= 0) {
+        this.invincible = false;
+      }
+    }
+  }
+
+  draw(ctx) {
+    ctx.save();
+
+    // Flash effect
+    if (this.hitFlash > 0 && Math.floor(this.hitFlash * 10) % 2 === 0) {
+      ctx.globalAlpha = 0.4;
+    }
+
+    // Invincibility glow
+    if (this.invincible && this.invincibleTimer > 0) {
+      ctx.shadowColor = BLUE_PILL;
+      ctx.shadowBlur = 15;
+    }
+
+    const isFemale = game.selectedChar === 'female';
+    drawCharacter(ctx, this.x, this.y, this.w, this.grounded, this.legPhase, this.invincible, isFemale, 1.0);
+
+    // Shield effect
+    if (game.shieldHits > 0) {
+      ctx.strokeStyle = '#3498db';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.arc(this.x + this.w / 2, this.y + this.h / 2, this.w * 0.8, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.fillStyle = 'rgba(52, 152, 219, 0.2)';
+      ctx.fill();
+    }
+
+    ctx.restore();
+  }
+}
+
+// ============================================================
+// OBSTACLES
+// ============================================================
+class Obstacle {
+  constructor() { this.active = false; }
+  init(x, type, direction = -1) {
+    this.active = true;
+    this.type = type;
+    this.direction = direction;
+    this.x = x;
+    this.w = type.w;
+    this.h = type.h;
+    // Por padrão, obstáculos ficam na calçada.
+    // Carros (label "Car" ou desc "Trânsito") ficam na pista.
+    this.y = GROUND_Y - this.h;
+    if (type.label === "Car" || type.desc === "Trânsito") {
+      const roadHeight = GROUND_OFFSET - 8;
+      const roadY = GROUND_Y + 8;
+      this.y = roadY + (roadHeight - this.h) / 2;
+
+      // Vehicle model / shape variety
+      const carModels = ['sedan', 'hatch', 'minivan', 'suv', 'truck', 'sport'];
+      this.vehicleModel = carModels[Math.floor(Math.random() * carModels.length)];
+      this.vehicleVariant = Math.floor(Math.random() * 3);
+    }
+    this.passed = false;
+    this.legPhase = 0;
+    this.honked = false;
+  }
+  update(dt, speed) {
+    this.x += this.direction * speed * dt;
+
+    // Buzina um pouco antes do carro entrar na tela
+    if (!this.honked && (this.type.label === "Car" || this.type.desc === "Trânsito")) {
+      // Detecta aproximação do lado que vai entrar
+      const appearX = this.direction === -1
+        ? camera.x + W / camera.zoom - 30
+        : camera.x - W / camera.zoom + 30;
+      if ((this.direction === -1 && this.x < appearX) || (this.direction === 1 && this.x > appearX)) {
+        sfxHonk();
+        this.honked = true;
+      }
+    }
+
+    if (this.type.isNPC) {
+      this.legPhase += dt * 10;
+    }
+
+    // Desativa quando sai da tela em qualquer direção
+    const leftLimit = camera.x - W / camera.zoom - 50;
+    const rightLimit = camera.x + W / camera.zoom + 50;
+    if (this.x + this.w < leftLimit || this.x > rightLimit) this.active = false;
+  }
+  draw(ctx) {
+    // Shadow para obstáculos e vírus
+    ctx.fillStyle = 'rgba(0,0,0,0.15)';
+    ctx.fillRect(this.x + 3, this.y + 3, this.w, this.h);
+
+      // If the obstacle is a car, draw a more detailed vehicle model
+    if (this.type.label === "Car" || this.type.desc === "Trânsito") {
+      drawVehicle(ctx, this.x, this.y, this.w, this.h, this.vehicleModel, this.type.color, this.direction, this.vehicleVariant);
+      return; // Skip drawing label/indicator for cars
+    }
+
+    // Body
+    ctx.fillStyle = this.type.color;
+    ctx.beginPath();
+    ctx.roundRect(this.x, this.y, this.w, this.h, 6);
+    ctx.fill();
+
+    // Border
+    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.roundRect(this.x, this.y, this.w, this.h, 6);
+    ctx.stroke();
+
+    // Difficulty indicator (colored stripe at top for harder obstacles)
+    if (this.h > 48) {
+      ctx.fillStyle = 'rgba(255,255,255,0.15)';
+      ctx.fillRect(this.x, this.y, this.w, 4);
+    }
+    if (this.h > 58) {
+      ctx.fillStyle = 'rgba(255,0,0,0.2)';
+      ctx.fillRect(this.x, this.y, this.w, 4);
+    }
+
+    // Label
+    ctx.fillStyle = WHITE;
+    ctx.font = `bold ${this.type.label.includes('\n') ? 9 : 12}px 'Plus Jakarta Sans', sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    const lines = this.type.label.split('\n');
+    lines.forEach((line, i) => {
+      ctx.fillText(line, this.x + this.w / 2, this.y + this.h / 2 + (i - (lines.length - 1) / 2) * 11);
+    });
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'alphabetic';
+  }
+}
+
+// ============================================================
+// POWER-UPS
+// ============================================================
+class PowerUp {
+  constructor() { this.active = false; }
+  init(x, type) {
+    this.active = true;
+    this.type = type;
+    this.x = x;
+    this.w = 30;
+    this.h = 30;
+    this.y = GROUND_Y - 80 - Math.random() * 40;
+    this.bobPhase = Math.random() * Math.PI * 2;
+    this.collected = false;
+  }
+  update(dt, speed) {
+    this.x -= speed * dt;
+    this.bobPhase += dt * 3;
+    if (this.x + this.w < -50) this.active = false;
+  }
+  draw(ctx) {
+    const bobY = this.y + Math.sin(this.bobPhase) * 6;
+
+    // Glow
+    ctx.shadowColor = this.type.color;
+    ctx.shadowBlur = 12;
+
+    // Circle
+    ctx.fillStyle = this.type.color;
+    ctx.beginPath();
+    ctx.arc(this.x + this.w / 2, bobY + this.h / 2, this.w / 2, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.shadowBlur = 0;
+
+    // Inner circle
+    ctx.fillStyle = 'rgba(255,255,255,0.3)';
+    ctx.beginPath();
+    ctx.arc(this.x + this.w / 2, bobY + this.h / 2, this.w / 2 - 4, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Label
+    ctx.fillStyle = WHITE;
+    ctx.font = `bold 13px 'Plus Jakarta Sans', sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(this.type.label, this.x + this.w / 2, bobY + this.h / 2);
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'alphabetic';
+  }
+  getHitbox() {
+    const bobY = this.y + Math.sin(this.bobPhase) * 6;
+    return { x: this.x, y: bobY, w: this.w, h: this.h };
+  }
+}
+
+// ============================================================
+// CAMERA SYSTEM
+// ============================================================
+const camera = {
+  x: 0,
+  y: 0,
+  zoom: CAMERA_ZOOM,
+  targetX: 0,
+  targetY: 0,
+  smoothing: 4, // higher = slower follow
+};
+
+function updateCamera(dt) {
+  // Camera follows player with look-ahead (adaptive for narrow / mobile screens)
+  const viewWidth = W / camera.zoom;
+  const lookAhead = Math.min(CAMERA_LOOK_AHEAD, viewWidth * 0.35);
+  camera.targetX = player.x + lookAhead;
+  
+  // Fix camera Y to keep the ground consistently at the bottom (H - GROUND_OFFSET in screen space)
+  const z = camera.zoom;
+  const viewCenterY = H / (2 * z);
+  camera.targetY = GROUND_Y - (viewCenterY - GROUND_OFFSET / z);
+
+  // Smooth follow
+  camera.x += (camera.targetX - camera.x) * Math.min(1, camera.smoothing * dt);
+  camera.y += (camera.targetY - camera.y) * Math.min(1, camera.smoothing * dt);
+}
+
+function applyCameraTransform(ctx) {
+  const z = camera.zoom;
+  // Center the viewport on the camera position
+  const viewCenterX = W / (2 * z);
+  const viewCenterY = H / (2 * z);
+
+  ctx.save();
+  ctx.scale(z, z);
+  ctx.translate(-camera.x + viewCenterX, -camera.y + viewCenterY);
+}
+
+function applyBackgroundTransform(ctx) {
+  const z = camera.zoom;
+  const viewCenterX = W / (2 * z);
+  const viewCenterY = H / (2 * z);
+
+  ctx.save();
+  ctx.scale(z, z);
+  // NPCs de fundo movem-se mais devagar (paralaxe) para dar sensação de distância
+  const parallaxX = camera.x * 0.9; 
+  ctx.translate(-parallaxX + viewCenterX, -camera.y + viewCenterY);
+}
+
+function unapplyCameraTransform(ctx) {
+  ctx.restore();
+}
+
+// ============================================================
+// Object pools
+const obstaclePool = Array.from({ length: 20 }, () => new Obstacle());
+const powerUpPool = Array.from({ length: 10 }, () => new PowerUp());
+const weaponPool = Array.from({ length: 5 }, () => new PowerUp());
+
+class Bullet {
+  constructor() { this.active = false; }
+  init(x, y, angle = 0) {
+    this.active = true;
+    this.x = x;
+    this.y = y;
+    this.w = 12;
+    this.h = 6;
+    this.speed = 600;
+    this.angle = angle;
+  }
+  update(dt) {
+    this.x += Math.cos(this.angle) * this.speed * dt;
+    this.y += Math.sin(this.angle) * this.speed * dt;
+    if (this.x > camera.x + W / camera.zoom + 200 || this.y < -100 || this.y > H + 100) this.active = false;
+  }
+  draw(ctx) {
+    ctx.save();
+    ctx.translate(this.x, this.y);
+    ctx.rotate(this.angle);
+
+    // Pill-style projectile (visível mesmo em mobile)
+    const primary = '#1abc9c';
+    const outline = 'rgba(0,0,0,0.25)';
+    const pillRadius = Math.max(6, this.h / 2);
+    const pillWidth = Math.max(18, this.w);
+
+    ctx.shadowColor = primary;
+    ctx.shadowBlur = 10;
+
+    // Body
+    ctx.fillStyle = primary;
+    ctx.beginPath();
+    ctx.moveTo(-pillWidth / 2 + pillRadius, 0);
+    ctx.lineTo(pillWidth / 2 - pillRadius, 0);
+    ctx.arc(pillWidth / 2 - pillRadius, 0, pillRadius, -Math.PI/2, Math.PI/2);
+    ctx.lineTo(-pillWidth / 2 + pillRadius, pillRadius);
+    ctx.arc(-pillWidth / 2 + pillRadius, 0, pillRadius, Math.PI/2, -Math.PI/2);
+    ctx.closePath();
+    ctx.fill();
+
+    // Divider
+    ctx.strokeStyle = 'rgba(255,255,255,0.85)';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(0, -pillRadius);
+    ctx.lineTo(0, pillRadius);
+    ctx.stroke();
+
+    // Shine
+    ctx.fillStyle = 'rgba(255,255,255,0.4)';
+    ctx.beginPath();
+    ctx.ellipse(-pillWidth * 0.15, -pillRadius * 0.4, pillRadius * 0.5, pillRadius * 0.2, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Outline
+    ctx.strokeStyle = outline;
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    ctx.restore();
+  }
+}
+const bulletPool = Array.from({ length: 30 }, () => new Bullet());
+
+function spawnBullet(x, y, angle = 0) {
+  for (const b of bulletPool) {
+    if (!b.active) {
+      b.init(x, y, angle);
+      return;
+    }
+  }
+}
+
+function spawnWeaponDrop(forcedX) {
+  for (const w of weaponPool) {
+    if (!w.active) {
+      const type = WEAPON_TYPES[Math.floor(Math.random() * WEAPON_TYPES.length)];
+      // Spawn ahead of camera or at forced position
+      const spawnX = forcedX || (camera.x + W / camera.zoom + 100);
+      w.init(spawnX, type);
+      return;
+    }
+  }
+}
+
+class BackgroundNPC {
+  constructor() { this.active = false; }
+
+  init(x, y, speedMult, role, isFemale, direction = -1) {
+    this.active = true;
+    this.x = x;
+    this.y = y;
+    this.speedMult = speedMult;
+    this.role = role; 
+    this.isFemale = isFemale;
+    this.direction = direction;
+    this.legPhase = Math.random() * Math.PI * 2;
+    this.w = (role === "car" || role === "emergencia") ? 55 : 22;
+    this.h = (role === "car" || role === "emergencia") ? 28 : 52; // Altura humana ajustada para drawCharacter (aprox 52px total)
+    this.hitByVirus = false;
+    this.hitTimer = 0;
+    this.honked = false; // Para reproduzir o som de buzina apenas uma vez
+
+    if (role === "car") {
+      const choices = ["sedan", "hatch", "minivan", "suv", "truck", "sport"];
+      this.vehicleModel = choices[Math.floor(Math.random() * choices.length)];
+      this.vehicleVariant = Math.floor(Math.random() * 3);
+      this.vehicleColor = getRandomCarColor();
+    }
+    if (role === "emergencia") {
+      this.vehicleModel = Math.random() < 0.5 ? "ambulance" : "police";
+      this.vehicleVariant = Math.floor(Math.random() * 3);
+      this.vehicleColor = "#ffffff";
+    }
+  }
+
+  update(dt, baseSpeed) {
+    if (!this.active) return;
+    this.x += this.direction * baseSpeed * this.speedMult * dt;
+
+    // Toca buzina um pouco antes de o carro entrar na tela
+    if ((this.role === "car" || this.role === "emergencia") && !this.honked) {
+      const appearX = this.direction === -1
+        ? camera.x * 0.9 + W / camera.zoom - 30
+        : camera.x * 0.9 - W / camera.zoom + 30;
+      if ((this.direction === -1 && this.x < appearX) || (this.direction === 1 && this.x > appearX)) {
+        sfxHonk();
+        this.honked = true;
+      }
+    }
+
+    if (!(this.role === "car" || this.role === "emergencia")) {
+        this.legPhase += dt * 10 * this.speedMult;
+    }
+
+    // Remove quando sai da tela
+    const leftLimit = camera.x * 0.9 - 200;
+    const rightLimit = camera.x * 0.9 + W / camera.zoom + 200;
+    if ((this.direction === -1 && this.x + this.w < leftLimit) || (this.direction === 1 && this.x > rightLimit)) {
+      this.active = false;
+    }
+
+    if (this.hitByVirus && !["car", "emergencia"].includes(this.role)) {
+      this.hitTimer -= dt;
+      if (this.hitTimer <= 0) this.active = false;
+    }
+
+    if (this.x + this.w < (camera.x * 0.9) - 200) this.active = false;
+  }
+
+  draw(ctx) {
+    if (!this.active) return;
+    ctx.save();
+    // Veículos devem ser totalmente visíveis. Pessoas podem ser um pouco transparentes para dar profundidade.
+    ctx.globalAlpha = (this.role === "car" || this.role === "emergencia") ? 1.0 : 0.45;
+
+    // Sombra
+    ctx.fillStyle = "rgba(0,0,0,0.15)";
+    ctx.fillRect(this.x, this.y + this.h - 2, this.w, 4);
+
+    if (this.role === "car" || this.role === "emergencia") {
+      const model = this.vehicleModel || (this.role === "emergencia" ? (Math.random() < 0.5 ? 'ambulance' : 'police') : 'sedan');
+      const baseColor = this.vehicleColor || (this.role === "emergencia" ? "#ffffff" : "#34495e");
+      const vehicleColor = this.hitByVirus ? "#555" : baseColor;
+      const variant = this.vehicleVariant || 0;
+      drawVehicle(ctx, this.x, this.y, this.w, this.h, model, vehicleColor, this.direction, variant);
+    } else {
+      // NPC Humano parecido com Player
+      drawNPCLikeCharacter(ctx, this.x, this.y, this.role, this.isFemale, this.legPhase, 1.0);
+      
+      if (this.hitByVirus) {
+        ctx.fillStyle = "rgba(0,255,0,0.3)";
+        ctx.beginPath();
+        ctx.arc(this.x + this.w / 2, this.y + 10, 10, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+    ctx.restore();
+  }
+}
+
+const bgNpcPool = Array.from({ length: 15 }, () => new BackgroundNPC());
+
+function spawnBackgroundNPC() {
+  const scene = getCurrentScene();
+  const spawnChance = game.currentPhase < 3 ? 0.008 : 0.015;
+  if (Math.random() > spawnChance) return;
+
+  for (const n of bgNpcPool) {
+    if (!n.active) {
+      let role = "civil";
+      const rnd = Math.random();
+
+      // Lógica temática por cena (PHASE_SCENES)
+      if (scene === "popular") {
+        role = rnd < 0.1 ? "car" : "civil";
+      } else if (scene === "privada") {
+        role = rnd < 0.6 ? "bem-vestido" : (rnd < 0.75 ? "car" : "civil");
+      } else if (["hospital","upa","cti","plantao","sus"].includes(scene)) {
+        if (rnd < 0.3) role = "enfermeiro";
+        else if (rnd < 0.6) role = "medico";
+        else if (rnd < 0.85) role = "emergencia"; // Ambulâncias frequentes
+        else role = "civil";
+      } else if (["rua","noite"].includes(scene)) {
+        if (rnd < 0.4) role = "car";
+        else if (rnd < 0.5) role = "policial";
+        else role = "civil";
+      } else if (["crise","caos"].includes(scene)) {
+        if (rnd < 0.3) role = "policial";
+        else if (rnd < 0.7) role = "emergencia"; // Ambulâncias em abundância
+        else if (rnd < 0.9) role = "car";
+        else role = "civil";
+      }
+
+      const isVehicle = (role === "car" || role === "emergencia");
+      const isFemale = Math.random() > 0.5;
+      
+      const npcHeight = isVehicle ? 28 : 52;
+      // Veículos ficam centralizados na largura da pista (abaixo da calçada); pedestres na calçada
+      const roadHeight = GROUND_OFFSET - 8;
+      const roadY = GROUND_Y + 8;
+      const vehicleY = roadY + (roadHeight - npcHeight) / 2;
+      const finalY = isVehicle ? vehicleY : (GROUND_Y - npcHeight);
+      
+      const speedMult = isVehicle ? (0.7 + Math.random() * 0.3) : (0.3 + Math.random() * 0.2);
+      // Spawn à esquerda ou à direita para simular tráfego bidirecional
+      const direction = isVehicle ? (Math.random() < 0.5 ? -1 : 1) : -1;
+      const spawnX = direction === -1
+        ? (camera.x * 0.9) + W / camera.zoom + 100
+        : (camera.x * 0.9) - W / camera.zoom - 100;
+      
+      n.init(spawnX, finalY, speedMult, role, isFemale, direction);
+      return;
+    }
+  }
+}
+
+const player = new Player();
+
+function getPhase() {
+  for (let i = PHASES.length - 1; i >= 0; i--) {
+    if (game.score >= PHASES[i].minScore) return i;
+  }
+  return 0;
+}
+
+function getSpeed() {
+  const phase = PHASES[game.currentPhase] || PHASES[0];
+  const distFactor = 1 + Math.log(1 + game.distance / 6000) * 0.7;
+  const base = BASE_SPEED * phase.speedMult * distFactor;
+  const speedBoost = game.activePowerUp === "speedBoost" ? 1.4 : 1.0;
+  return Math.min(base * speedBoost, MAX_SPEED);
+}
+
+function spawnObstacle() {
+  const distMeters = game.distance / 10;
+
+  for (const o of obstaclePool) {
+    if (!o.active) {
+      // Pick obstacle type based on current phase (but allow cars always)
+      const phaseTypes = OBSTACLE_TYPES_BY_PHASE[game.currentPhase] || OBSTACLE_TYPES_BY_PHASE[0];
+      let type = phaseTypes[Math.floor(Math.random() * phaseTypes.length)];
+      if (Math.random() < 0.35) {
+        // Create a new car instance with varied color and slight size variance
+        type = {
+          ...CAR_OBSTACLE,
+          color: getRandomCarColor(),
+          w: CAR_OBSTACLE.w + (Math.random() * 20 - 10),
+          h: CAR_OBSTACLE.h + (Math.random() * 8 - 4),
+        };
+      }
+
+      // Determine spawn direction for cars (both ways on the road)
+      let direction = -1;
+      let spawnX = camera.x + W / camera.zoom + 50;
+      if (type === CAR_OBSTACLE && Math.random() < 0.5) {
+        direction = 1;
+        spawnX = camera.x - W / camera.zoom - 50;
+      }
+
+      // Do not spawn if another obstacle is too close to this spawn point
+      const minGapPx = 140; // keep at least ~5m between obstacles (in world units)
+      const isTooClose = obstaclePool.some(o => o.active && Math.abs(o.x - spawnX) < minGapPx);
+      if (isTooClose) {
+        // Avoid getting stuck trying to spawn on every frame: delay next spawn attempt a little.
+        game.nextObstacleDistanceMeters = distMeters + 3 + Math.random() * 3;
+        return; // skip spawn to avoid clusters
+      }
+
+      o.init(spawnX, type, direction);
+
+      // ESTRATÉGICO: Se for um Inimigo (patógeno), tem chance alta de spawnar uma arma ou power-up logo antes
+      if (type.role === "pathogen" && Math.random() < 0.85) {
+        const helperX = spawnX - 160; // Um pouco antes do inimigo para dar tempo de reação
+        if (Math.random() > 0.4) {
+            spawnWeaponDrop(helperX);
+        } else {
+            const pType = POWERUP_TYPES[Math.floor(Math.random() * POWERUP_TYPES.length)];
+            spawnPowerUp(helperX, pType);
+        }
+      }
+      return;
+    }
+  }
+
+  // If we couldn't find an available obstacle slot (pool full), delay the next spawn attempt
+  game.nextObstacleDistanceMeters = distMeters + 3 + Math.random() * 3;
+}
+
+function spawnPowerUp(forcedX, forcedType) {
+  for (const p of powerUpPool) {
+    if (!p.active) {
+      const type = forcedType || POWERUP_TYPES[Math.floor(Math.random() * POWERUP_TYPES.length)];
+      const spawnX = forcedX || (camera.x + W / camera.zoom + 50);
+      p.init(spawnX, type);
+      return;
+    }
+  }
+}
+
+function aabbCollision(a, b) {
+  return a.x < b.x + b.w && a.x + a.w > b.x &&
+         a.y < b.y + b.h && a.y + a.h > b.y;
+}
+
+function activatePowerUp(type) {
+  game.activePowerUp = type.effect;
+  game.powerUpTimer = type.duration / 1000;
+  if (type.effect === 'doubleJump') {
+    player.canDoubleJump = true;
+  } else if (type.effect === 'invincible') {
+    player.invincible = true;
+    player.invincibleTimer = type.duration / 1000;
+  } else if (type.effect === 'shield') {
+    game.shieldHits = (game.shieldHits || 0) + 1;
+    game.activePowerUp = null; // Instant effect, no timer
+  } else if (type.effect === 'bullet') {
+    // Faster fire rate while active
+    game.fireCooldown = 0.12;
+  } else if (type.effect === 'spray') {
+    // Spray mode: wider spread and faster fire rate
+    game.fireCooldown = 0.18;
+  } else if (type.effect === 'pulse') {
+    // Pulse limpa tudo na tela imediatamente
+    for (const o of obstaclePool) {
+      if (o.active && (o.type.diseaseId || o.type.label.includes("$$$"))) {
+        o.active = false;
+        game.score += 150;
+        particles.emit(o.x + o.w / 2, o.y + o.h / 2, 20, {
+          speed: 150, life: 0.6, colors: [GOLD, WHITE], size: 5
+        });
+      }
+    }
+    sfxShoot(); // Som de pulso
+    game.activePowerUp = null;
+  } else if (type.effect === 'scoreBoost') {
+    game.score += 1000; // Bônus imediato da vacina
+    particles.emit(player.x + player.w/2, player.y, 25, {
+        speed: 180, life: 0.8, colors: ["#00bcd4", WHITE], size: 4
+    });
+  } else if (type.effect === 'magnet') {
+    // Efeito visual inicial
+    particles.emit(player.x + player.w/2, player.y + player.h/2, 15, {
+        speed: 100, life: 0.5, colors: ["#e91e63", WHITE], size: 3
+    });
+  }
+}
+
+function hitObstacle(o) {
+  if (player.invincible) {
+    player.hitFlash = 0;
+    return;
+  }
+
+  if (game.shieldHits && game.shieldHits > 0) {
+    game.shieldHits--;
+    player.hitFlash = 0.5;
+    sfxHit();
+    return;
+  }
+
+  if (o && o.diseaseId && DISEASES[o.diseaseId]) {
+    game.lastDisease = DISEASES[o.diseaseId];
+  } else {
+    game.lastDisease = null;
+  }
+
+  game.lives--;
+  player.hitFlash = 1.5;
+  player.invincible = true;
+  player.invincibleTimer = 0.8; // small grace period after hit
+  sfxHit();
+  particles.emit(player.x + player.w / 2, player.y + player.h / 2, 15, {
+    speed: 200,
+    life: 0.5,
+    colors: [RED, "#ff8888", "#ffaaaa"],
+    size: 5,
+    upBias: 100,
+  });
+
+  if (game.lives <= 0) {
+    gameOver();
+  }
+}
+
+function gameOver() {
+  game.state = 'gameover';
+  game.gameOverAlpha = 0;
+  stopMusic();
+  sfxGameOver();
+
+  game.highScore = Math.max(game.highScore || 0, game.score || 0);
+  game.bestScore = Math.max(game.bestScore || 0, Math.floor(game.score || 0));
+  game.bestDistance = Math.max(game.bestDistance || 0, Math.floor(game.distance || 0));
+  game.furthestPhase = Math.max(game.furthestPhase || 0, game.currentPhase || 0);
+
+  saveProgress();
+  game.pendingLeaderboard = true;
+}
+
+function victory() {
+  game.state = 'victory';
+  game.victoryAlpha = 0;
+  stopMusic();
+  sfxMilestone();
+
+  game.highScore = Math.max(game.highScore || 0, game.score || 0);
+  game.bestScore = Math.max(game.bestScore || 0, Math.floor(game.score || 0));
+  game.bestDistance = Math.max(game.bestDistance || 0, Math.floor(game.distance || 0));
+  game.furthestPhase = Math.max(game.furthestPhase || 0, game.currentPhase || 0);
+
+  saveProgress();
+  game.pendingLeaderboard = true;
+}
+
+function resetGame() {
+  game.state = 'playing';
+  game.score = 0;
+  game.distance = 0;
+  game.lives = 3;
+  game.speed = BASE_SPEED;
+  game.currentPhase = 0;
+  game.lastMilestone = 0;
+  game.activePowerUp = null;
+  game.powerUpTimer = 0;
+  game.obstacleSpawnCooldown = 1.2;
+  game.nextObstacleDistanceMeters = 0;
+  game.powerUpSpawnCooldown = 3;
+  game.weaponSpawnCooldown = 5;
+  game.phaseBannerTimer = 2.5;
+  game.pendingLeaderboard = false;
+  game.coins = 0;
+  game.shieldHits = 0;
+  game.bulletTimer = 0;
+  game.fireCooldown = 0.25;
+
+  player.reset();
+  player.canDoubleJump = true; // Double jump is always available
+  player.invincible = false;
+
+  for (const o of obstaclePool) o.active = false;
+  for (const p of powerUpPool) p.active = false;
+  if (typeof bgNpcPool !== "undefined") {
+    for (const n of bgNpcPool) n.active = false;
+  }
+
+  camera.x = player.x + CAMERA_LOOK_AHEAD;
+  camera.y = player.y + player.h / 2;
+
+  initAudio();
+  if (audioCtx) audioCtx.resume();
+  startMusic();
+  saveProgress();
+}
+
+// ============================================================
+// LEADERBOARD UI
+// ============================================================
+const lbOverlay = document.getElementById('leaderboard-overlay');
+const lbBody = document.getElementById('lb-body');
+const lbEmpty = document.getElementById('lb-empty');
+const lbSubmitForm = document.getElementById('lb-submit-form');
+const lbYourScore = document.getElementById('lb-your-score');
+const lbNameInput = document.getElementById('lb-name-input');
+const lbBtnSubmit = document.getElementById('lb-btn-submit');
+const lbBtnSkip = document.getElementById('lb-btn-skip');
+const lbClose = document.getElementById('lb-close');
+const lbSuccess = document.getElementById('lb-success');
+
+let leaderboardShowing = false;
+let leaderboardScoreToSubmit = 0;
+let leaderboardDistToSubmit = 0;
+
+async function showLeaderboard(scoreToSubmit, distToSubmit) {
+  leaderboardShowing = true;
+  leaderboardScoreToSubmit = scoreToSubmit || 0;
+  leaderboardDistToSubmit = distToSubmit || 0;
+
+  lbOverlay.classList.add('visible');
+  lbSuccess.classList.remove('visible');
+
+  // Load existing scores
+  const scores = await fetchLeaderboard();
+  lbBody.innerHTML = '';
+
+  if (scores.length === 0) {
+    lbEmpty.style.display = 'block';
+  } else {
+    lbEmpty.style.display = 'none';
+    scores.forEach((s, i) => {
+      const tr = document.createElement('tr');
+      const rankClass = i < 3 ? ` lb-rank-${i + 1}` : '';
+      const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i + 1);
+      tr.innerHTML = `
+        <td class="lb-rank${rankClass}">${medal}</td>
+        <td class="lb-name">${escapeHtml(s.name)} ${s.character === 'female' ? '👩' : '👨'}</td>
+        <td class="lb-score">${Math.floor(s.score).toLocaleString('pt-BR')}</td>
+      `;
+      lbBody.appendChild(tr);
+    });
+  }
+
+  // Show submit form if there's a score
+  if (scoreToSubmit > 0) {
+    lbSubmitForm.classList.add('visible');
+    lbYourScore.textContent = Math.floor(scoreToSubmit).toLocaleString('pt-BR') + ' pontos';
+    lbNameInput.value = '';
+    lbNameInput.focus();
+  } else {
+    lbSubmitForm.classList.remove('visible');
+  }
+}
+
+function hideLeaderboard() {
+  lbOverlay.classList.remove('visible');
+  leaderboardShowing = false;
+}
+
+function escapeHtml(str) {
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+lbClose.addEventListener('click', hideLeaderboard);
+lbBtnSkip.addEventListener('click', hideLeaderboard);
+
+lbBtnSubmit.addEventListener('click', async () => {
+  const name = lbNameInput.value.trim();
+  if (!name) { lbNameInput.focus(); return; }
+
+  lbBtnSubmit.textContent = 'Salvando...';
+  lbBtnSubmit.disabled = true;
+
+  const result = await submitScore(
+    name,
+    leaderboardScoreToSubmit,
+    leaderboardDistToSubmit,
+    PHASES[game.currentPhase]?.name || '',
+    game.selectedChar
+  );
+
+  lbBtnSubmit.textContent = 'Salvar';
+  lbBtnSubmit.disabled = false;
+  lbSubmitForm.classList.remove('visible');
+
+  if (result) {
+    lbSuccess.textContent = `Salvo! Você está em ${result.rank}º lugar!`;
+    lbSuccess.classList.add('visible');
+    // Refresh leaderboard
+    const scores = await fetchLeaderboard();
+    lbBody.innerHTML = '';
+    scores.forEach((s, i) => {
+      const tr = document.createElement('tr');
+      const rankClass = i < 3 ? ` lb-rank-${i + 1}` : '';
+      const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i + 1);
+      tr.innerHTML = `
+        <td class="lb-rank${rankClass}">${medal}</td>
+        <td class="lb-name">${escapeHtml(s.name)} ${s.character === 'female' ? '👩' : '👨'}</td>
+        <td class="lb-score">${Math.floor(s.score).toLocaleString('pt-BR')}</td>
+      `;
+      lbBody.appendChild(tr);
+    });
+    if (scores.length > 0) lbEmpty.style.display = 'none';
+  } else {
+    lbSuccess.textContent = 'Erro ao salvar. Tente novamente.';
+    lbSuccess.classList.add('visible');
+  }
+});
+
+lbNameInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') lbBtnSubmit.click();
+  e.stopPropagation(); // prevent game input
+});
+
+// ============================================================
+// DEBUG OVERLAY
+// ============================================================
+let debugVisible = false;
+let _fpsFrames = 0, _fpsLast = performance.now(), _fps = 0, _frametime = 0, _prevFrame = 0;
+
+document.addEventListener('keydown', (e) => {
+  if (e.code === 'KeyD') debugVisible = !debugVisible;
+  if (e.code === 'KeyP' || e.code === 'Escape') {
+    if (game.state === 'playing') pauseGame();
+    else if (game.state === 'paused') resumeGame();
+  }
+});
+
+function updateDebug() {
+  _fpsFrames++;
+  const now = performance.now();
+  _frametime = now - (_prevFrame || now);
+  _prevFrame = now;
+  if (now - _fpsLast >= 1000) {
+    _fps = (_fpsFrames * 1000) / (now - _fpsLast);
+    _fpsFrames = 0;
+    _fpsLast = now;
+  }
+}
+
+function drawDebug(ctx) {
+  if (!debugVisible) return;
+  ctx.save();
+  ctx.fillStyle = 'rgba(0,0,0,0.75)';
+  ctx.fillRect(0, 0, 260, 58);
+  ctx.font = '11px monospace';
+  ctx.fillStyle = _fps < 30 ? '#f44' : '#0f0';
+  ctx.fillText(`FPS:${_fps.toFixed(0)} Frame:${_frametime.toFixed(1)}ms Zoom:${camera.zoom.toFixed(1)}x`, 6, 14);
+  ctx.fillText(`Cam:(${Math.round(camera.x)},${Math.round(camera.y)}) Phase:${game.currentPhase}`, 6, 28);
+  ctx.fillText(`Objs:${obstaclePool.filter(o=>o.active).length} PU:${powerUpPool.filter(p=>p.active).length} Ptcl:${particles.pool.filter(p=>p.active).length}`, 6, 42);
+  ctx.restore();
+}
+
+// ============================================================
+// UPDATE
+// ============================================================
+function update(dt) {
+  if (game.state === 'title') {
+    game.titlePhase += dt;
+    game.titleAlpha = Math.min(1, game.titleAlpha + dt * 2);
+    bgLayers.forEach(l => l.update(dt, 80));
+    particles.update(dt);
+
+    if (Input.wantsJump() || Input.justPressed['Enter']) {
+      game.state = 'charSelect';
+      game.charSelectAlpha = 0;
+      initAudio();
+      if (audioCtx) audioCtx.resume();
+    }
+    Input.endFrame();
+    return;
+  }
+
+  if (game.state === 'charSelect') {
+    game.charSelectAlpha = Math.min(1, game.charSelectAlpha + dt * 3);
+    game.titlePhase += dt;
+    bgLayers.forEach(l => l.update(dt, 80));
+    particles.update(dt);
+    Input.endFrame();
+    return;
+  }
+
+  if (game.state === 'gameover') {
+    game.gameOverAlpha = Math.min(1, game.gameOverAlpha + dt * 3);
+    particles.update(dt);
+
+    // Show leaderboard after overlay fades in
+    if (game.pendingLeaderboard && game.gameOverAlpha > 0.8 && !leaderboardShowing) {
+      game.pendingLeaderboard = false;
+      showLeaderboard(game.score, game.distance);
+    }
+
+    if (!leaderboardShowing && (Input.wantsJump() || Input.justPressed['Enter']) && game.gameOverAlpha > 0.5) {
+      resetGame();
+    }
+    Input.endFrame();
+    return;
+  }
+
+  if (game.state === 'victory') {
+    game.victoryAlpha = Math.min(1, game.victoryAlpha + dt * 2);
+    particles.update(dt);
+
+    // Show leaderboard after overlay fades in
+    if (game.pendingLeaderboard && game.victoryAlpha > 0.8 && !leaderboardShowing) {
+      game.pendingLeaderboard = false;
+      showLeaderboard(game.score, game.distance);
+    }
+
+    if (!leaderboardShowing && (Input.wantsJump() || Input.justPressed['Enter']) && game.victoryAlpha > 0.5) {
+      resetGame();
+    }
+    Input.endFrame();
+    return;
+  }
+
+  if (game.state === 'paused') {
+    // Resume with P/Escape or touch/click
+    if (Input.wantsJump() || Input.justPressed['KeyP'] || Input.justPressed['Escape']) {
+      resumeGame();
+    }
+    Input.endFrame();
+    return;
+  }
+
+  // ---- PLAYING ----
+  game.speed = getSpeed();
+  const spd = game.speed;
+
+  // distância controla fase (metros virtuais)
+  const oldScore = game.score;
+  game.distance += spd * dt;
+  const scoreMult = game.activePowerUp === 'scoreBoost' ? 0.04 : 0.02;
+  game.score += spd * dt * scoreMult;
+
+  // 1 moeda a cada 500 pontos
+  const oldStep = Math.floor(oldScore / 500);
+  const newStep = Math.floor(game.score / 500);
+  if (newStep > oldStep) {
+    awardCoins(newStep - oldStep);
+  }
+
+  // troca de fase linear por distância
+  for (let i = 0; i < PHASES.length; i++) {
+    if (game.distance >= PHASES[i].minDist && game.distance < PHASES[i].maxDist) {
+      if (game.currentPhase !== i) {
+        game.currentPhase = i;
+        game.phaseBannerTimer = 2.5;
+        game.hintTimer = 3;
+        game.furthestPhase = Math.max(game.furthestPhase || 0, i);
+        sfxMilestone();
+        generateStorefronts(); // Regenerate storefronts for new scene
+        saveProgress();
+      }
+      break;
+    }
+  }
+
+  const phase = PHASES[game.currentPhase] || PHASES[0];
+
+  // Power-up timer
+  if (game.activePowerUp) {
+    game.powerUpTimer -= dt;
+    if (game.powerUpTimer <= 0) {
+      // Double jump is always enabled now; power-up just grants a temporary visual / effect.
+      if (game.activePowerUp === 'invincible') { player.invincible = false; player.invincibleTimer = 0; }
+      if (game.activePowerUp === 'bullet' || game.activePowerUp === 'spray') {
+        game.fireCooldown = 0.25; // reset to default fire rate
+      }
+      game.activePowerUp = null;
+    }
+  }
+
+  // Hint timer
+  if (game.hintTimer > 0) game.hintTimer -= dt;
+
+  // Jump input
+  if (Input.wantsJump()) {
+    player.jump();
+  }
+
+  // Shooting input (basic function)
+  game.bulletTimer = (game.bulletTimer || 0) - dt;
+  if (Input.wantsShoot() && game.bulletTimer <= 0) {
+    spawnBullet(player.x + player.w, player.y + player.h / 2, 0);
+    sfxShoot();
+    game.bulletTimer = game.fireCooldown || 0.25; // rate of fire
+  }
+
+  // Player update
+  player.update(dt);
+
+  // Camera update
+  updateCamera(dt);
+
+  // Background
+  bgLayers.forEach(l => l.update(dt, spd));
+
+  const scene = getCurrentScene();
+
+  // spawn de obstáculos com espaçamento em metros (2-10m entre cada)
+  const distMeters = game.distance / 10;
+  if (game.nextObstacleDistanceMeters <= 0) {
+    game.nextObstacleDistanceMeters = distMeters + 2 + Math.random() * 8;
+  }
+  if (distMeters >= game.nextObstacleDistanceMeters) {
+    spawnObstacle();
+    game.nextObstacleDistanceMeters = distMeters + 5 + Math.random() * 5;
+  }
+
+  // Spawn power-ups
+  game.powerUpSpawnCooldown -= dt;
+  if (game.powerUpSpawnCooldown <= 0 && Math.random() < phase.powerUpRate * 2) {
+    spawnPowerUp();
+    const minCooldown = Math.max(3, 8 - game.currentPhase * 1.5);
+    const maxCooldown = Math.max(5, 14 - game.currentPhase * 2);
+    game.powerUpSpawnCooldown = minCooldown + Math.random() * (maxCooldown - minCooldown);
+  }
+
+  // Spawn weapons
+  game.weaponSpawnCooldown -= dt;
+  if (game.weaponSpawnCooldown <= 0) {
+    if (typeof spawnWeaponDrop === 'function') spawnWeaponDrop();
+    const scene = getCurrentScene();
+    const baseCd = (scene === "crise" || scene === "caos") ? 12 : 18;
+    game.weaponSpawnCooldown = baseCd + Math.random() * 6;
+  }
+
+  // Background NPCs
+  spawnBackgroundNPC();
+  for (const n of bgNpcPool) n.update(dt, spd);
+
+  // Update obstacles - deactivate if far behind camera
+  const viewLeft = camera.x - W / camera.zoom;
+  for (const o of obstaclePool) {
+    if (!o.active) continue;
+    o.update(dt, spd);
+
+    // Check collision
+    const playerBox = { x: player.x + 4, y: player.y + 4, w: player.w - 8, h: player.h - 8 };
+    if (aabbCollision(playerBox, o)) {
+      hitObstacle(o);
+    }
+
+    // vírus acertando NPCs
+    if (o.diseaseId) {
+      for (const n of bgNpcPool) {
+        if (!n.active || n.hitByVirus || n.role === "car") continue;
+        const overlap =
+          n.x < o.x + o.w &&
+          n.x + n.w > o.x &&
+          n.y < o.y + o.h &&
+          n.y + n.h > o.y + o.h * 0.3;
+        if (overlap) {
+          n.hitByVirus = true;
+          n.hitTimer = 1.0;
+        }
+      }
+    }
+
+    // Score for passing
+    if (!o.passed && o.x + o.w < player.x) {
+      o.passed = true;
+      game.score += 1;
+    }
+
+    // Deactivate if far behind camera view
+    if (o.x + o.w < viewLeft - 100) o.active = false;
+  }
+
+  // Update power-ups
+  for (const p of powerUpPool) {
+    if (!p.active) continue;
+    p.update(dt, spd);
+
+    // Efeito Magneto
+    if (game.activePowerUp === 'magnet') {
+      const dx = player.x - p.x;
+      const dy = (player.y + player.h/2) - (p.y + p.h/2);
+      const dist = Math.sqrt(dx*dx + dy*dy);
+      if (dist < 300) {
+        p.x += (dx / dist) * 400 * dt;
+        p.y += (dy / dist) * 400 * dt;
+      }
+    }
+
+    const playerBox = { x: player.x + 2, y: player.y + 2, w: player.w - 4, h: player.h - 4 };
+    const puBox = p.getHitbox();
+    if (aabbCollision(playerBox, puBox)) {
+      p.active = false;
+      game.score += 50;
+      activatePowerUp(p.type);
+      sfxCollect();
+      particles.emit(puBox.x + puBox.w / 2, puBox.y + puBox.h / 2, 20, {
+        speed: 150, life: 0.6, colors: [p.type.color, WHITE, GOLD], size: 4, upBias: 80
+      });
+    }
+
+    if (p.x + p.w < viewLeft - 100) p.active = false;
+  }
+
+  // Update weapons
+  for (const w of weaponPool) {
+    if (!w.active) continue;
+    w.update(dt, spd);
+
+    // Efeito Magneto para armas
+    if (game.activePowerUp === 'magnet') {
+      const dx = player.x - w.x;
+      const dy = (player.y + player.h/2) - (w.y + w.h/2);
+      const dist = Math.sqrt(dx*dx + dy*dy);
+      if (dist < 300) {
+        w.x += (dx / dist) * 400 * dt;
+        w.y += (dy / dist) * 400 * dt;
+      }
+    }
+
+    const playerBox = { x: player.x + 2, y: player.y + 2, w: player.w - 4, h: player.h - 4 };
+    const wBox = w.getHitbox();
+    if (aabbCollision(playerBox, wBox)) {
+      w.active = false;
+      game.score += 50;
+      activatePowerUp(w.type);
+      sfxCollect();
+      particles.emit(wBox.x + wBox.w / 2, wBox.y + wBox.h / 2, 20, {
+        speed: 150, life: 0.6, colors: [w.type.color, WHITE, GOLD], size: 4, upBias: 80
+      });
+    }
+    if (w.x + w.w < viewLeft - 100) w.active = false;
+  }
+
+  // Update bullets
+  for (const b of bulletPool) {
+    if (!b.active) continue;
+    b.update(dt);
+    
+    // Check bullet vs obstacle collision
+    for (const o of obstaclePool) {
+      if (o.active && aabbCollision(b, o)) {
+        b.active = false; // Bullet always disappears on hit
+
+        // Destroy any obstacle hit by the bullet
+        o.active = false;
+        game.score += 100;
+        sfxHit();
+        particles.emit(o.x + o.w / 2, o.y + o.h / 2, 10, {
+          speed: 100, life: 0.4, colors: [o.type.color, WHITE], size: 3
+        });
+        break;
+      }
+    }
+  }
+
+  // Particles
+  particles.update(dt);
+
+  // Milestones
+  const curMilestone = Math.floor(game.score / 10000);
+  if (curMilestone > game.lastMilestone) {
+    game.lastMilestone = curMilestone;
+    sfxMilestone();
+    particles.emit(player.x + player.w / 2, player.y - 30, 30, {
+      speed: 250, life: 1.0, colors: [PHARMACY_GREEN, GOLD, WHITE], size: 5, upBias: 120
+    });
+  }
+
+  // Victory check
+  if (game.score >= 100000) {
+    victory();
+  }
+
+  Input.endFrame();
+}
+
+// ============================================================
+// RENDER
+// ============================================================
+function drawGround(ctx) {
+  // Sidewalk
+  ctx.fillStyle = SIDEWALK_COLOR;
+  ctx.fillRect(-W, GROUND_Y, W * 5, 8);
+
+  // Sidewalk Cracks and Detail
+  ctx.strokeStyle = "rgba(0,0,0,0.1)";
+  ctx.lineWidth = 1;
+  for (let i = -W; i < W * 4; i += 120) {
+    const x = i - (game.distance % 120);
+    ctx.beginPath();
+    ctx.moveTo(x, GROUND_Y);
+    ctx.lineTo(x, GROUND_Y + 8);
+    ctx.stroke();
+  }
+
+  // Road
+  ctx.fillStyle = GROUND_COLOR;
+  ctx.fillRect(-W, GROUND_Y + 8, W * 5, GROUND_OFFSET - 8);
+
+  // Grass patches near sidewalk
+  ctx.fillStyle = "#2d5a27";
+  for (let i = -W; i < W * 4; i += 200) {
+    const x = i - (game.distance % 200);
+    ctx.fillRect(x + 20, GROUND_Y + 8, 15, 3);
+    ctx.fillRect(x + 110, GROUND_Y + 8, 10, 2);
+  }
+
+  // Road lines
+  ctx.setLineDash([20, 15]);
+  ctx.strokeStyle = '#888';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  const lineOffset = (game.distance * 0.5) % 35;
+  ctx.moveTo(-lineOffset - W, GROUND_Y + GROUND_OFFSET / 2 + 4);
+  ctx.lineTo(W * 4, GROUND_Y + GROUND_OFFSET / 2 + 4);
+  ctx.stroke();
+  ctx.setLineDash([]);
+}
+
+function formatNumber(n) {
+  return Math.floor(n).toLocaleString('pt-BR');
+}
+
+function drawHUD(ctx) {
+  // HUD is drawn in screen space (not camera space)
+  const fontSize = Math.max(14, 16 * scale);
+  ctx.font = `700 ${fontSize}px 'Plus Jakarta Sans', sans-serif`;
+
+  // Score (top-left)
+  const boxH = game.highScore > 0 ? 110 : 90;
+  ctx.fillStyle = 'rgba(0,0,0,0.4)';
+  ctx.beginPath();
+  ctx.roundRect(8, 8, 220, boxH, 8);
+  ctx.fill();
+  ctx.fillStyle = WHITE;
+  ctx.fillText(`Pontos: ${formatNumber(game.score)}`, 16, 28);
+  ctx.font = `600 ${fontSize * 0.85}px 'Plus Jakarta Sans', sans-serif`;
+  ctx.fillText(`Distância: ${formatNumber(game.distance / 10)}m`, 16, 48);
+
+  // High score
+  if (game.highScore > 0) {
+    ctx.font = `600 ${fontSize * 0.7}px 'Plus Jakarta Sans', sans-serif`;
+    ctx.fillStyle = GOLD;
+    ctx.fillText(`Recorde: ${formatNumber(game.highScore)}`, 16, 65);
+  }
+
+  // Moedas + Lojinha
+  ctx.fillStyle = GOLD;
+  ctx.font = `700 ${fontSize * 0.8}px Plus Jakarta Sans, sans-serif`;
+  ctx.fillText(`Moedas: ${formatNumber(game.coins)}`, 16, 85);
+
+  ctx.fillStyle = "rgba(0,0,0,0.45)";
+  ctx.beginPath();
+  ctx.roundRect(8, 112, 260, 44, 8);
+  ctx.fill();
+
+  ctx.fillStyle = GOLD;
+  ctx.font = `700 ${fontSize * 0.72}px Plus Jakarta Sans, sans-serif`;
+  ctx.fillText(`Total guardado: ${formatNumber(game.totalCoins || 0)}`, 16, 130);
+
+  ctx.fillStyle = "rgba(255,255,255,0.92)";
+  ctx.font = `600 ${fontSize * 0.68}px Plus Jakarta Sans, sans-serif`;
+  ctx.fillText(`Maior fase: ${Math.max(1, (game.furthestPhase || 0) + 1)}  Melhor score: ${formatNumber(game.bestScore || 0)}`, 16, 148);
+
+  ctx.font = `600 ${fontSize * 0.7}px Plus Jakarta Sans, sans-serif`;
+  ctx.fillStyle = "rgba(255,255,255,0.9)";
+  ctx.fillText("1=Jaleco  2=Verde  3=Roxo", 16, 102);
+
+  // Phase (top-center)
+  const phaseName = PHASES[game.currentPhase].name;
+  ctx.font = `700 ${fontSize * 0.9}px 'Plus Jakarta Sans', sans-serif`;
+  const phaseWidth = ctx.measureText(phaseName).width;
+  ctx.fillStyle = 'rgba(0,0,0,0.4)';
+  ctx.fillRect(W / 2 - phaseWidth / 2 - 12, 8, phaseWidth + 24, 28);
+  ctx.fillStyle = PHARMACY_GREEN_LIGHT;
+  ctx.textAlign = 'center';
+  ctx.fillText(phaseName, W / 2, 28);
+  ctx.textAlign = 'left';
+
+  // Difficulty indicator
+  const diffLabels = ['Fácil', 'Médio', 'Difícil', 'Extremo'];
+  const diffColors = ['#2ecc40', '#FFD700', '#FF8844', '#FF4444'];
+  ctx.font = `600 ${fontSize * 0.65}px 'Plus Jakarta Sans', sans-serif`;
+  ctx.fillStyle = diffColors[game.currentPhase];
+  ctx.textAlign = 'center';
+  ctx.fillText(`● ${diffLabels[game.currentPhase]}`, W / 2, 48);
+  ctx.textAlign = 'left';
+
+  // Lives (top-right)
+  const heartSize = 20 * scale;
+  for (let i = 0; i < 3; i++) {
+    const hx = W - 40 - i * (heartSize + 6);
+    const hy = 14;
+    ctx.fillStyle = i < game.lives ? RED : 'rgba(255,255,255,0.2)';
+    drawHeart(ctx, hx, hy, heartSize);
+  }
+  // Clear life count label
+  ctx.font = `600 ${fontSize * 0.6}px 'Plus Jakarta Sans', sans-serif`;
+  ctx.fillStyle = 'rgba(255,255,255,0.85)';
+  ctx.textAlign = 'right';
+  ctx.fillText(`Vidas: ${game.lives}`, W - 12, 14 + heartSize + 8);
+  ctx.textAlign = 'left';
+
+  // Pause button (top-left)
+  const pauseX = 44;
+  const pauseY = 42;
+  ctx.fillStyle = 'rgba(0,0,0,0.4)';
+  ctx.beginPath();
+  ctx.arc(pauseX, pauseY, 14, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = WHITE;
+  ctx.fillRect(pauseX - 6, pauseY - 8, 4, 16);
+  ctx.fillRect(pauseX + 2, pauseY - 8, 4, 16);
+
+  // Mute button (top-right)
+  const muteX = W - 44;
+  const muteY = 42;
+  ctx.fillStyle = 'rgba(0,0,0,0.4)';
+  ctx.beginPath();
+  ctx.arc(muteX, muteY, 14, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = WHITE;
+  ctx.font = '14px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(audioMuted ? '🔇' : '🔊', muteX, muteY);
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'alphabetic';
+
+  // Leaderboard button (below mute)
+  const lbBtnX = W - 44;
+  const lbBtnY = 72;
+  ctx.fillStyle = 'rgba(0,0,0,0.4)';
+  ctx.beginPath();
+  ctx.arc(lbBtnX, lbBtnY, 14, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = GOLD;
+  ctx.font = '14px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('🏆', lbBtnX, lbBtnY);
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'alphabetic';
+
+  // Active power-up indicator
+  if (game.activePowerUp) {
+    const puNames = { doubleJump: 'Pulo Duplo', speedBoost: 'Velocidade', invincible: 'Invencível', bullet: 'Tiro Ativo' };
+    const puColors = { doubleJump: PHARMACY_GREEN, speedBoost: GOLD, invincible: BLUE_PILL, bullet: GOLD };
+    const barW = 140;
+    const barH = 8;
+    const barX = W / 2 - barW / 2;
+    const barY = 58;
+    
+    // Determine maxTime for this powerup
+    let maxTime = 3; // Default
+    if (game.activePowerUp === 'doubleJump') maxTime = 5;
+    else if (game.activePowerUp === 'invincible') maxTime = 4;
+    else if (game.activePowerUp === 'bullet') maxTime = 6;
+    else if (game.activePowerUp === 'speedBoost') maxTime = 3;
+
+    const pct = Math.min(1, game.powerUpTimer / maxTime);
+
+    ctx.fillStyle = 'rgba(0,0,0,0.4)';
+    ctx.fillRect(barX - 4, barY - 16, barW + 8, 30);
+
+    ctx.font = `600 ${fontSize * 0.7}px 'Plus Jakarta Sans', sans-serif`;
+    ctx.fillStyle = puColors[game.activePowerUp] || WHITE;
+    ctx.textAlign = 'center';
+    ctx.fillText(puNames[game.activePowerUp] || 'Ativo', W / 2, barY - 2);
+
+    ctx.fillStyle = 'rgba(255,255,255,0.2)';
+    ctx.fillRect(barX, barY + 2, barW, barH);
+    ctx.fillStyle = puColors[game.activePowerUp] || WHITE;
+    ctx.fillRect(barX, barY + 2, barW * pct, barH);
+    ctx.textAlign = 'left';
+  }
+
+  // Shield Indicator
+  if (game.shieldHits > 0) {
+    ctx.font = `700 ${fontSize * 0.7}px 'Plus Jakarta Sans', sans-serif`;
+    ctx.fillStyle = '#3498db';
+    ctx.textAlign = 'right';
+    ctx.fillText(`ESCUDO: ${game.shieldHits}`, W - 10, 80);
+    ctx.textAlign = 'left';
+  }
+
+  // Tutorial hint
+  if (PHASES[game.currentPhase].hint && game.hintTimer > 0) {
+    ctx.font = `600 ${fontSize * 0.8}px 'Plus Jakarta Sans', sans-serif`;
+    ctx.fillStyle = `rgba(255,255,255,${Math.min(1, game.hintTimer)})`;
+    ctx.textAlign = 'center';
+    const hintText = game.isMobile ? 'Toque para pular!' : 'ESPAÇO ou ↑ para pular!';
+    ctx.fillText(hintText, W / 2, H * 0.4);
+    ctx.textAlign = 'left';
+  }
+
+  // Mobile jump zone indicator
+  if (game.isMobile) {
+    ctx.fillStyle = 'rgba(255,255,255,0.06)';
+    ctx.beginPath();
+    ctx.roundRect(W * 0.05, H * 0.55, W * 0.9, H * 0.38, 16);
+    ctx.fill();
+    ctx.font = `600 ${Math.max(12, 14 * scale)}px 'Plus Jakarta Sans', sans-serif`;
+    ctx.fillStyle = 'rgba(255,255,255,0.15)';
+    ctx.textAlign = 'center';
+    ctx.fillText('TOQUE PARA PULAR', W / 2, H * 0.95);
+    ctx.textAlign = 'left';
+
+    // Shoot button
+    const btnR = 40 * scale;
+    const btnX = W - 60;
+    const btnY = H - 80;
+    ctx.fillStyle = 'rgba(0,0,0,0.4)';
+    ctx.beginPath();
+    ctx.arc(btnX, btnY, btnR, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,0.85)';
+    ctx.font = `700 ${Math.max(14, 16 * scale)}px 'Plus Jakarta Sans', sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('💊', btnX, btnY);
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'alphabetic';
+  }
+}
+
+function drawHeart(ctx, x, y, size) {
+  ctx.save();
+  ctx.translate(x, y);
+  const s = size / 20;
+  ctx.beginPath();
+  ctx.moveTo(0, 3 * s);
+  ctx.bezierCurveTo(-5 * s, -5 * s, -13 * s, 0, 0, 12 * s);
+  ctx.bezierCurveTo(13 * s, 0, 5 * s, -5 * s, 0, 3 * s);
+  ctx.fill();
+  ctx.restore();
+}
+
+function drawTitleScreen(ctx) {
+  bgLayers.forEach(l => l.draw(ctx));
+  drawGround(ctx);
+
+  const alpha = game.titleAlpha;
+  ctx.save();
+  ctx.globalAlpha = alpha;
+
+  // Overlay - stronger for text readability
+  ctx.fillStyle = 'rgba(0, 15, 30, 0.65)';
+  ctx.fillRect(0, 0, W, H);
+
+  // Title
+  const titleSize = Math.min(48, W * 0.08) * scale;
+  ctx.font = `800 ${titleSize}px 'Plus Jakarta Sans', sans-serif`;
+  ctx.textAlign = 'center';
+  ctx.fillStyle = PHARMACY_GREEN_LIGHT;
+  ctx.shadowColor = 'rgba(0,0,0,0.5)';
+  ctx.shadowBlur = 10;
+  ctx.fillText('DROGARIA RUNNER', W / 2, H * 0.3);
+  ctx.shadowBlur = 0;
+
+  // Cross icon
+  const crossSize = 24 * scale;
+  ctx.fillStyle = PHARMACY_GREEN;
+  const crossX = W / 2;
+  const crossY = H * 0.3 + titleSize * 0.7;
+  ctx.fillRect(crossX - crossSize / 6, crossY, crossSize / 3, crossSize);
+  ctx.fillRect(crossX - crossSize / 2, crossY + crossSize / 3, crossSize, crossSize / 3);
+
+  // Subtitle
+  ctx.font = `600 ${Math.min(16, W * 0.03) * scale}px 'Plus Jakarta Sans', sans-serif`;
+  ctx.fillStyle = 'rgba(255,255,255,0.8)';
+  ctx.fillText('Corrida pela Saúde — Acesso a Medicamentos', W / 2, H * 0.3 + titleSize * 0.7 + crossSize + 20);
+
+  // Description
+  ctx.font = `400 ${Math.min(14, W * 0.024) * scale}px 'Plus Jakarta Sans', sans-serif`;
+  ctx.fillStyle = 'rgba(255,255,255,0.7)';
+  ctx.shadowColor = 'rgba(0,0,0,0.6)';
+  ctx.shadowBlur = 4;
+  const descY = H * 0.50;
+  ctx.fillText('Desvie dos obstáculos e colete power-ups', W / 2, descY);
+  ctx.fillText('para alcançar o acesso à saúde!', W / 2, descY + 22 * scale);
+  ctx.shadowBlur = 0;
+
+  // CTA with dark backdrop
+  const ctaY = H * 0.62;
+  ctx.fillStyle = 'rgba(0,0,0,0.5)';
+  ctx.beginPath();
+  ctx.roundRect(W / 2 - 160, ctaY - 24, 320, 42, 8);
+  ctx.fill();
+  const pulse = 0.8 + Math.sin(game.titlePhase * 3) * 0.2;
+  ctx.globalAlpha = alpha * pulse;
+  ctx.font = `700 ${Math.min(22, W * 0.04) * scale}px 'Plus Jakarta Sans', sans-serif`;
+  ctx.fillStyle = WHITE;
+  ctx.shadowColor = 'rgba(0,0,0,0.8)';
+  ctx.shadowBlur = 6;
+  const ctaText = game.isMobile ? '▶ Toque para Jogar' : '▶ Clique para Jogar';
+  ctx.fillText(ctaText, W / 2, ctaY);
+  ctx.shadowBlur = 0;
+  ctx.globalAlpha = alpha;
+
+  // Controls info
+  if (!game.isMobile) {
+    ctx.font = `400 ${Math.min(11, W * 0.02) * scale}px 'Plus Jakarta Sans', sans-serif`;
+    ctx.fillStyle = 'rgba(255,255,255,0.5)';
+    ctx.shadowColor = 'rgba(0,0,0,0.8)';
+    ctx.shadowBlur = 4;
+    ctx.fillText('ESPAÇO / ↑ = Pular  |  D = Debug  |  M = Mudo', W / 2, ctaY + 30);
+    ctx.shadowBlur = 0;
+  }
+
+  // Legend - with dark backdrop panel
+  const legendY = H * 0.78;
+  const legendFontSize = Math.max(9, 10 * scale);
+  ctx.font = `600 ${legendFontSize}px 'Plus Jakarta Sans', sans-serif`;
+  const items = [
+    { label: '$$$ Preço Alto', color: '#cc3333' },
+    { label: 'FP Farm. Popular', color: PHARMACY_GREEN },
+    { label: '$ Desconto', color: GOLD },
+    { label: '💊 Genérico', color: BLUE_PILL },
+  ];
+  // Measure actual text widths for proper spacing
+  const iconW = 12; // color square + gap
+  const itemGap = 18;
+  const itemWidths = items.map(item => iconW + ctx.measureText(item.label).width);
+  const totalLegendW = itemWidths.reduce((a, b) => a + b, 0) + itemGap * (items.length - 1);
+  const startX = W / 2 - totalLegendW / 2;
+
+  // Legend backdrop
+  ctx.fillStyle = 'rgba(0,0,0,0.6)';
+  ctx.beginPath();
+  ctx.roundRect(startX - 12, legendY - 16, totalLegendW + 24, 30, 6);
+  ctx.fill();
+
+  let ix = startX;
+  items.forEach((item, i) => {
+    ctx.fillStyle = item.color;
+    ctx.fillRect(ix, legendY - 5, 8, 8);
+    ctx.fillStyle = 'rgba(255,255,255,0.8)';
+    ctx.textAlign = 'left';
+    ctx.fillText(item.label, ix + 12, legendY + 3);
+    ix += itemWidths[i] + itemGap;
+  });
+  ctx.textAlign = 'left';
+
+  ctx.restore();
+}
+
+// Character selection screen hitboxes (stored for click detection)
+let charSelectBoxes = { male: null, female: null };
+let pauseMenuButtons = { resume: null, quit: null };
+
+function pauseGame() {
+  if (game.state !== 'playing') return;
+  game.state = 'paused';
+  stopMusic();
+}
+
+function resumeGame() {
+  if (game.state !== 'paused') return;
+  game.state = 'playing';
+  startMusic();
+}
+
+function goToTitle() {
+  game.state = 'title';
+  game.titleAlpha = 0;
+  game.titlePhase = 0;
+  stopMusic();
+}
+
+function drawCharSelectScreen(ctx) {
+  bgLayers.forEach(l => l.draw(ctx));
+  drawGround(ctx);
+
+  ctx.save();
+  ctx.globalAlpha = game.charSelectAlpha;
+
+  // Dark overlay
+  ctx.fillStyle = 'rgba(0, 15, 30, 0.75)';
+  ctx.fillRect(0, 0, W, H);
+
+  // Title
+  const titleSize = Math.min(32, W * 0.06) * scale;
+  ctx.font = `800 ${titleSize}px 'Plus Jakarta Sans', sans-serif`;
+  ctx.textAlign = 'center';
+  ctx.fillStyle = PHARMACY_GREEN_LIGHT;
+  ctx.shadowColor = 'rgba(0,0,0,0.5)';
+  ctx.shadowBlur = 10;
+  ctx.fillText('ESCOLHA SEU PERSONAGEM', W / 2, H * 0.18);
+  ctx.shadowBlur = 0;
+
+  // Character cards
+  const cardW = Math.min(180, W * 0.35);
+  const cardH = cardW * 1.2;
+  const gap = Math.min(60, W * 0.05);
+  const totalCardW = cardW * 2 + gap;
+  const startCardX = W / 2 - totalCardW / 2;
+  const cardY = H * 0.25;
+
+  const chars = [
+    { key: 'male', label: 'Masculino', x: startCardX },
+    { key: 'female', label: 'Feminino', x: startCardX + cardW + gap },
+  ];
+
+  // Animated leg phase for previews
+  const previewLeg = game.titlePhase * 8;
+
+  chars.forEach(ch => {
+    const isSelected = game.selectedChar === ch.key;
+    const isHover = game.charHover === ch.key;
+
+    ctx.save();
+    // Card background
+    const borderColor = isSelected ? PHARMACY_GREEN_LIGHT : (isHover ? 'rgba(255,255,255,0.5)' : 'rgba(255,255,255,0.15)');
+    const bgColor = isSelected ? 'rgba(34,139,34,0.2)' : 'rgba(255,255,255,0.05)';
+
+    ctx.fillStyle = bgColor;
+    ctx.beginPath();
+    ctx.roundRect(ch.x, cardY, cardW, cardH, 12);
+    ctx.fill();
+
+    ctx.strokeStyle = borderColor;
+    ctx.lineWidth = isSelected ? 3 : 1.5;
+    ctx.beginPath();
+    ctx.roundRect(ch.x, cardY, cardW, cardH, 12);
+    ctx.stroke();
+
+    // Check mark for selected
+    if (isSelected) {
+      ctx.fillStyle = PHARMACY_GREEN;
+      ctx.beginPath();
+      ctx.arc(ch.x + cardW - 16, cardY + 16, 12, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = WHITE;
+      ctx.font = `bold 14px sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('✓', ch.x + cardW - 16, cardY + 16);
+      ctx.textBaseline = 'alphabetic';
+    }
+
+    // Character preview (drawn at 2x scale, centered in card)
+    const previewScale = 2.2;
+    const charPreviewW = PLAYER_W * previewScale;
+    const charPreviewX = ch.x + cardW / 2 - charPreviewW / 2;
+    const charPreviewY = cardY + cardH * 0.15;
+    drawCharacter(ctx, charPreviewX, charPreviewY, PLAYER_W * previewScale, true, previewLeg, false, ch.key === 'female', previewScale);
+
+    // Label
+    ctx.font = `700 ${Math.min(16, cardW * 0.1)}px 'Plus Jakarta Sans', sans-serif`;
+    ctx.fillStyle = isSelected ? PHARMACY_GREEN_LIGHT : WHITE;
+    ctx.textAlign = 'center';
+    ctx.fillText(ch.label, ch.x + cardW / 2, cardY + cardH - 20);
+
+    // Store hitbox for click detection
+    charSelectBoxes[ch.key] = { x: ch.x, y: cardY, w: cardW, h: cardH };
+
+    ctx.restore();
+  });
+
+  // Play button
+  const btnY = cardY + cardH + Math.min(30, H * 0.04);
+  const btnW = Math.min(260, W * 0.5);
+  const btnH = Math.min(50, H * 0.07);
+  const btnX = W / 2 - btnW / 2;
+
+  const pulse = 0.85 + Math.sin(game.titlePhase * 3) * 0.15;
+  ctx.globalAlpha = game.charSelectAlpha * pulse;
+  ctx.fillStyle = PHARMACY_GREEN;
+  ctx.beginPath();
+  ctx.roundRect(btnX, btnY, btnW, btnH, 10);
+  ctx.fill();
+
+  ctx.fillStyle = WHITE;
+  ctx.font = `700 ${Math.min(20, btnH * 0.45)}px 'Plus Jakarta Sans', sans-serif`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('▶ JOGAR', W / 2, btnY + btnH / 2);
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'alphabetic';
+
+  // Store play button hitbox
+  charSelectBoxes.play = { x: btnX, y: btnY, w: btnW, h: btnH };
+
+  ctx.restore();
+}
+
+function drawMenuButton(ctx, box, label) {
+  ctx.save();
+  ctx.fillStyle = 'rgba(255,255,255,0.12)';
+  ctx.beginPath();
+  ctx.roundRect(box.x, box.y, box.w, box.h, 10);
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(255,255,255,0.35)';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  ctx.fillStyle = WHITE;
+  ctx.font = `600 ${Math.min(18, W * 0.04) * scale}px 'Plus Jakarta Sans', sans-serif`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(label, box.x + box.w / 2, box.y + box.h / 2);
+  ctx.restore();
+}
+
+function drawPauseOverlay(ctx) {
+  ctx.save();
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.72)';
+  ctx.fillRect(0, 0, W, H);
+
+  ctx.fillStyle = PHARMACY_GREEN_LIGHT;
+  ctx.font = `800 ${Math.min(52, W * 0.1) * scale}px 'Plus Jakarta Sans', sans-serif`;
+  ctx.textAlign = 'center';
+  ctx.fillText('PAUSADO', W / 2, H * 0.28);
+
+  ctx.font = `600 ${Math.min(18, W * 0.04) * scale}px 'Plus Jakarta Sans', sans-serif`;
+  ctx.fillStyle = 'rgba(255,255,255,0.85)';
+  ctx.fillText('Pressione P ou ESC para continuar', W / 2, H * 0.34);
+
+  const btnW = Math.min(260, W * 0.55);
+  const btnH = 44 * scale;
+  const btnX = W / 2 - btnW / 2;
+  const btnY = H * 0.44;
+  const gap = 12 * scale;
+
+  pauseMenuButtons.resume = { x: btnX, y: btnY, w: btnW, h: btnH };
+  pauseMenuButtons.quit = { x: btnX, y: btnY + btnH + gap, w: btnW, h: btnH };
+
+  drawMenuButton(ctx, pauseMenuButtons.resume, 'Continuar');
+  drawMenuButton(ctx, pauseMenuButtons.quit, 'Voltar ao Menu');
+
+  ctx.restore();
+}
+
+function drawGameOverScreen(ctx) {
+  ctx.save();
+  ctx.globalAlpha = game.gameOverAlpha;
+
+  ctx.fillStyle = 'rgba(20, 0, 0, 0.7)';
+  ctx.fillRect(0, 0, W, H);
+
+  const titleSize = Math.min(42, W * 0.07) * scale;
+  ctx.font = `800 ${titleSize}px 'Plus Jakarta Sans', sans-serif`;
+  ctx.textAlign = 'center';
+  ctx.fillStyle = RED;
+  ctx.shadowColor = 'rgba(255,0,0,0.3)';
+  ctx.shadowBlur = 15;
+  ctx.fillText('FIM DE JOGO', W / 2, H * 0.32);
+  ctx.shadowBlur = 0;
+
+  ctx.font = `600 ${Math.min(18, W * 0.03) * scale}px 'Plus Jakarta Sans', sans-serif`;
+  ctx.fillStyle = WHITE;
+  ctx.fillText(`Pontuação: ${formatNumber(game.score)}`, W / 2, H * 0.42);
+  ctx.fillText(`Distância: ${formatNumber(game.distance / 10)}m`, W / 2, H * 0.48);
+
+  let msg;
+  if (game.lastDisease) {
+    msg = `O personagem morreu por ${game.lastDisease.nome}. ${game.lastDisease.agravante}`;
+  } else {
+    msg = "Você não conseguiu chegar ao medicamento a tempo.";
+  }
+  ctx.font = `600 ${Math.min(14, W * 0.025) * scale}px 'Plus Jakarta Sans', sans-serif`;
+  ctx.fillText(msg, W / 2, H * 0.55);
+
+  if (game.score >= game.highScore && game.highScore > 0) {
+    ctx.fillStyle = GOLD;
+    ctx.fillText('🏆 Novo Recorde!', W / 2, H * 0.62);
+  }
+
+  if (!leaderboardShowing) {
+    const pulse = 0.7 + Math.sin(performance.now() / 300) * 0.3;
+    ctx.globalAlpha = game.gameOverAlpha * pulse;
+    ctx.font = `700 ${Math.min(18, W * 0.03) * scale}px 'Plus Jakarta Sans', sans-serif`;
+    ctx.fillStyle = WHITE;
+    const restartText = game.isMobile ? 'Toque para Recomeçar' : 'Clique para Recomeçar';
+    ctx.fillText(restartText, W / 2, H * 0.75);
+  }
+  ctx.textAlign = 'left';
+  ctx.restore();
+}
+
+function drawVictoryScreen(ctx) {
+  ctx.save();
+  ctx.globalAlpha = game.victoryAlpha;
+
+  ctx.fillStyle = 'rgba(0, 40, 0, 0.7)';
+  ctx.fillRect(0, 0, W, H);
+
+  const titleSize = Math.min(42, W * 0.07) * scale;
+  ctx.font = `800 ${titleSize}px 'Plus Jakarta Sans', sans-serif`;
+  ctx.textAlign = 'center';
+  ctx.fillStyle = PHARMACY_GREEN_LIGHT;
+  ctx.shadowColor = 'rgba(34,139,34,0.5)';
+  ctx.shadowBlur = 20;
+  ctx.fillText('ACESSO GARANTIDO!', W / 2, H * 0.3);
+  ctx.shadowBlur = 0;
+
+  // Cross
+  const crossSize = 30 * scale;
+  ctx.fillStyle = PHARMACY_GREEN;
+  ctx.fillRect(W / 2 - crossSize / 6, H * 0.35, crossSize / 3, crossSize);
+  ctx.fillRect(W / 2 - crossSize / 2, H * 0.35 + crossSize / 3, crossSize, crossSize / 3);
+
+  ctx.font = `600 ${Math.min(18, W * 0.03) * scale}px 'Plus Jakarta Sans', sans-serif`;
+  ctx.fillStyle = WHITE;
+  ctx.fillText(`Pontuação Final: ${formatNumber(game.score)}`, W / 2, H * 0.52);
+  ctx.fillText(`Distância: ${formatNumber(game.distance / 10)}m`, W / 2, H * 0.59);
+
+  ctx.font = `400 ${Math.min(14, W * 0.025) * scale}px 'Plus Jakarta Sans', sans-serif`;
+  ctx.fillStyle = 'rgba(255,255,255,0.7)';
+  ctx.fillText('O acesso à saúde é um direito de todos!', W / 2, H * 0.67);
+
+  if (!leaderboardShowing) {
+    const pulse = 0.7 + Math.sin(performance.now() / 300) * 0.3;
+    ctx.globalAlpha = game.victoryAlpha * pulse;
+    ctx.font = `700 ${Math.min(18, W * 0.03) * scale}px 'Plus Jakarta Sans', sans-serif`;
+    ctx.fillStyle = WHITE;
+    const restartText = game.isMobile ? 'Toque para Jogar Novamente' : 'Clique para Jogar Novamente';
+    ctx.fillText(restartText, W / 2, H * 0.78);
+  }
+  ctx.textAlign = 'left';
+  ctx.restore();
+}
+
+function render() {
+  ctx.clearRect(0, 0, W, H);
+
+  if (game.state === 'title') {
+    drawTitleScreen(ctx);
+    particles.draw(ctx);
+    drawDebug(ctx);
+    return;
+  }
+
+  if (game.state === 'charSelect') {
+    drawCharSelectScreen(ctx);
+    particles.draw(ctx);
+    drawDebug(ctx);
+    return;
+  }
+
+  // === LAYER 1: Parallax Background (Sky, Buildings) ===
+  bgLayers.forEach(l => l.draw(ctx));
+
+  // === LAYER 2: Background NPCs (City inhabitants, Cars, Ambulances) ===
+  // NPCs no plano de fundo (Paralaxe 0.9) para não parecerem estar na frente do player
+  applyBackgroundTransform(ctx);
+  for (const n of bgNpcPool) if (n.active) n.draw(ctx);
+  unapplyCameraTransform(ctx);
+
+  // === LAYER 3: Gameplay elements (Player, Obstacles, Power-ups) ===
+  applyCameraTransform(ctx);
+  
+  drawGround(ctx);
+
+  // Power-ups
+  for (const p of powerUpPool) if (p.active) p.draw(ctx);
+
+  // Weapons
+  for (const w of weaponPool) if (w.active) w.draw(ctx);
+
+  // Obstacles (Viruses/Obstacles)
+  for (const o of obstaclePool) if (o.active) o.draw(ctx);
+
+  // Bullets
+  for (const b of bulletPool) if (b.active) b.draw(ctx);
+
+  // Player
+  player.draw(ctx);
+
+  // Particles (in world space)
+  particles.draw(ctx);
+
+  unapplyCameraTransform(ctx);
+
+  // === LAYER 4: HUD & Overlays (Screen space) ===
+  if (game.state === 'playing') {
+    drawHUD(ctx);
+  }
+
+  if (game.state === 'paused') {
+    drawPauseOverlay(ctx);
+  }
+
+  if (game.state === 'gameover') {
+    drawGameOverScreen(ctx);
+  } else if (game.state === 'victory') {
+    drawVictoryScreen(ctx);
+  }
+
+  drawDebug(ctx);
+}
+
+// ============================================================
+// CLICK/TAP HANDLING
+// ============================================================
+canvas.addEventListener('click', (e) => {
+  const rect = canvas.getBoundingClientRect();
+  const mx = e.clientX - rect.left;
+  const my = e.clientY - rect.top;
+
+  // Pause menu interaction
+  if (game.state === 'paused') {
+    if (pointInBox(mx, my, pauseMenuButtons.resume)) { resumeGame(); return; }
+    if (pointInBox(mx, my, pauseMenuButtons.quit)) { goToTitle(); return; }
+    resumeGame();
+    return;
+  }
+
+  // Character select screen
+  if (game.state === 'charSelect') {
+    if (pointInBox(mx, my, charSelectBoxes.male)) {
+      game.selectedChar = 'male';
+      sfxCollect();
+    } else if (pointInBox(mx, my, charSelectBoxes.female)) {
+      game.selectedChar = 'female';
+      sfxCollect();
+    } else if (pointInBox(mx, my, charSelectBoxes.play)) {
+      resetGame();
+    }
+    return;
+  }
+
+  // During gameplay - check button clicks
+  if (game.state === 'playing') {
+    // Pause button
+    const pauseX = 44;
+    const pauseY = 42;
+    const pauseDist = Math.sqrt((mx - pauseX) ** 2 + (my - pauseY) ** 2);
+    if (pauseDist < 20) {
+      pauseGame();
+      e.stopPropagation();
+      return;
+    }
+
+    // Mute button
+    const muteX = W - 44;
+    const muteY = 42;
+    const dist = Math.sqrt((mx - muteX) ** 2 + (my - muteY) ** 2);
+    if (dist < 20) {
+      toggleMute();
+      e.stopPropagation();
+      return;
+    }
+
+    // Leaderboard button
+    const lbBtnX = W - 44;
+    const lbBtnY = 72;
+    const lbDist = Math.sqrt((mx - lbBtnX) ** 2 + (my - lbBtnY) ** 2);
+    if (lbDist < 20) {
+      showLeaderboard(0, 0);
+      e.stopPropagation();
+      return;
+    }
+  }
+});
+
+// Hover detection for character select
+canvas.addEventListener('mousemove', (e) => {
+  if (game.state !== 'charSelect') { game.charHover = null; return; }
+  const rect = canvas.getBoundingClientRect();
+  const mx = e.clientX - rect.left;
+  const my = e.clientY - rect.top;
+  if (pointInBox(mx, my, charSelectBoxes.male)) {
+    game.charHover = 'male';
+    canvas.style.cursor = 'pointer';
+  } else if (pointInBox(mx, my, charSelectBoxes.female)) {
+    game.charHover = 'female';
+    canvas.style.cursor = 'pointer';
+  } else if (pointInBox(mx, my, charSelectBoxes.play)) {
+    game.charHover = null;
+    canvas.style.cursor = 'pointer';
+  } else {
+    game.charHover = null;
+    canvas.style.cursor = 'default';
+  }
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.code === 'KeyM') toggleMute();
+  // L key to toggle leaderboard
+  if (e.code === 'KeyL' && game.state === 'playing') {
+    showLeaderboard(0, 0);
+  }
+  // Escape to close leaderboard
+  if (e.code === 'Escape' && leaderboardShowing) {
+    hideLeaderboard();
+  }
+
+  // Loja: troca de skins
+  if (e.code === "Digit1") { // Jaleco
+    if (game.coins >= 100) {
+      game.coins -= 100;
+      game.skin = "jaleco";
+      sfxCollect();
+      saveProgress();
+    }
+  }
+  if (e.code === "Digit2") { // Farmácia Verde
+    if (game.coins >= 80) {
+      game.coins -= 80;
+      game.skin = "verde";
+      sfxCollect();
+      saveProgress();
+    }
+  }
+  if (e.code === "Digit3") { // Noturno Roxo
+    if (game.coins >= 80) {
+      game.coins -= 80;
+      game.skin = "roxo";
+      sfxCollect();
+      saveProgress();
+    }
+  }
+});
+
+// ============================================================
+// GAME LOOP (Fixed Timestep)
+// ============================================================
+const TICK_RATE = 1000 / 60;
+let lastTime = 0;
+let accumulator = 0;
+let running = true;
+
+function showFatalError(err) {
+  console.error(err);
+  running = false;
+  if (!ctx) return;
+  ctx.save();
+  ctx.fillStyle = 'rgba(0,0,0,0.85)';
+  ctx.fillRect(0, 0, W, H);
+  ctx.fillStyle = '#fff';
+  ctx.font = '18px Plus Jakarta Sans, sans-serif';
+  ctx.textAlign = 'center';
+
+  const message = err && err.message ? err.message : String(err);
+  const stack = err && err.stack ? err.stack.split('\n').slice(0, 4).join(' | ') : '';
+  ctx.fillText('Erro no jogo: ' + message, W / 2, H / 2 - 20);
+  if (stack) {
+    ctx.font = '14px Plus Jakarta Sans, sans-serif';
+    ctx.fillText(stack, W / 2, H / 2 + 10);
+  }
+  ctx.restore();
+}
+
+function gameLoop(timestamp) {
+  if (!running) return;
+  try {
+    updateDebug();
+
+    const deltaTime = timestamp - lastTime;
+    lastTime = timestamp;
+    accumulator += Math.min(deltaTime, 100);
+
+    while (accumulator >= TICK_RATE) {
+      update(TICK_RATE / 1000);
+      accumulator -= TICK_RATE;
+    }
+
+    render();
+    requestAnimationFrame(gameLoop);
+  } catch (e) {
+    showFatalError(e);
+  }
+}
+
+// Start
+generateClouds();
+generateBuildings();
+generateStorefronts();
+lastTime = performance.now();
+// Initialize camera position
+const initialViewWidth = W / camera.zoom;
+const initialLookAhead = Math.min(CAMERA_LOOK_AHEAD, initialViewWidth * 0.35);
+camera.x = player.x + initialLookAhead;
+camera.y = GROUND_Y - (H / (2 * camera.zoom) - GROUND_OFFSET / camera.zoom);
+requestAnimationFrame(gameLoop);
+
+// ============================================================
+// TESTING HOOKS
+// ============================================================
+window.render_game_to_text = function() {
+  const activeObstacles = obstaclePool.filter(o => o.active).map(o => ({
+    x: Math.round(o.x), y: Math.round(o.y), w: o.w, h: o.h, label: o.type.label.replace('\n', ''), passed: o.passed
+  }));
+  const activePowerUps = powerUpPool.filter(p => p.active).map(p => ({
+    x: Math.round(p.x), y: Math.round(p.y), w: p.w, h: p.h, label: p.type.label, effect: p.type.effect
+  }));
+  return JSON.stringify({
+    state: game.state,
+    score: Math.floor(game.score),
+    distance: Math.floor(game.distance / 10),
+    lives: game.lives,
+    phase: game.currentPhase,
+    phaseName: PHASES[game.currentPhase].name,
+    speed: Math.round(game.speed),
+    player: { x: Math.round(player.x), y: Math.round(player.y), vy: Math.round(player.vy), grounded: player.grounded },
+    camera: { x: Math.round(camera.x), y: Math.round(camera.y), zoom: camera.zoom },
+    activePowerUp: game.activePowerUp,
+    powerUpTimer: Math.round(game.powerUpTimer * 10) / 10,
+    obstacles: activeObstacles,
+    powerUps: activePowerUps,
+    highScore: Math.floor(game.highScore),
+    note: 'Coords: origin top-left, Y increases downward, GROUND_Y=' + Math.round(GROUND_Y) + ', Camera zoom=' + camera.zoom
+  });
+};
+
+window.advanceTime = function(ms) {
+  const steps = Math.max(1, Math.round(ms / TICK_RATE));
+  for (let i = 0; i < steps; i++) {
+    update(TICK_RATE / 1000);
+  }
+  render();
+};
+
+// ============================================================
+// RESPONSIVE HANDLER
+// ============================================================
+window.addEventListener('resize', () => {
+  resizeCanvas();
+  checkMobile();
+  generateClouds();
+  generateBuildings();
+  generateStorefronts();
+  player.y = Math.min(player.y, GROUND_Y - player.h);
+});
+</script>
+</body>
+</html>
