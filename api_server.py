@@ -7,6 +7,8 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -40,14 +42,12 @@ async def lifespan(app):
 app = FastAPI(lifespan=lifespan)
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 
-
 class ScoreSubmission(BaseModel):
     name: str = Field(..., min_length=1, max_length=20)
     score: int = Field(..., ge=0)
     distance: int = Field(..., ge=0)
     phase: str = ""
     character: str = "male"
-
 
 @app.get("/api/leaderboard")
 def get_leaderboard(limit: int = 20):
@@ -63,7 +63,6 @@ def get_leaderboard(limit: int = 20):
         }
         for r in rows
     ]
-
 
 @app.post("/api/leaderboard", status_code=201)
 def submit_score(entry: ScoreSubmission, request: Request):
@@ -81,7 +80,6 @@ def submit_score(entry: ScoreSubmission, request: Request):
     ).fetchone()[0] + 1
     return {"id": cur.lastrowid, "rank": rank}
 
-
 @app.get("/api/leaderboard/rank/{score}")
 def get_rank(score: int):
     """Check rank for a given score."""
@@ -91,6 +89,17 @@ def get_rank(score: int):
     total = db.execute("SELECT COUNT(*) FROM scores").fetchone()[0]
     return {"rank": rank, "total": total}
 
+# === Serve Game Static Files ===
+
+@app.get("/")
+async def read_index():
+    return FileResponse(os.path.join(BASE_DIR, "index.html"))
+
+# Mount videos and cutscenes (if they exist) or just everything in BASE_DIR for now
+# We exclude the python files by not serving .py if we use StaticFiles carefully
+# Actually, let's mount the current folder but be careful.
+# Better to mount specifically.
+app.mount("/", StaticFiles(directory=BASE_DIR, html=True), name="static")
 
 if __name__ == "__main__":
     import uvicorn
