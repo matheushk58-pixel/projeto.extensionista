@@ -139,10 +139,166 @@
     color: #2ecc40; font-weight: 600; font-size: 15px;
   }
   .lb-success.visible { display: block; }
+
+  /* --- Menu System --- */
+  .hidden { display: none !important; }
+  #menu-container {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,10,20,0.85); z-index: 300;
+    display: flex; justify-content: center; align-items: center;
+  }
+  .menu-panel {
+    background: linear-gradient(135deg, #0d1b2a 0%, #1b2838 100%);
+    border: 2px solid #2ecc40; border-radius: 16px;
+    padding: 30px; text-align: center;
+  }
+  .menu-title { font-size: 32px; font-weight: 800; color: #2ecc40; margin-bottom: 20px; }
+  .btn-action {
+    display: block; width: 250px; padding: 15px; margin: 10px auto;
+    font-size: 18px; font-weight: 700; border: none; border-radius: 8px;
+    cursor: pointer; background: #2ecc40; color: #0d1b2a;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+  .btn-action:hover { background: #3ddc50; }
+  .btn-secondary { background: rgba(255,255,255,0.1); color: #fff; }
+  .btn-secondary:hover { background: rgba(255,255,255,0.2); }
+  .shop-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 15px; margin: 20px 0; max-height: 400px; overflow-y: auto;
+  }
+  .shop-item {
+    background: rgba(255,255,255,0.05); border: 2px solid rgba(255,255,255,0.1);
+    border-radius: 8px; padding: 10px; cursor: pointer; transition: all 0.2s;
+  }
+  .shop-item:hover { border-color: #2ecc40; background: rgba(46,204,64,0.1); }
+  .shop-item.owned { border-color: #2ecc40; }
+  .shop-item.selected { border-color: #FFD700; box-shadow: 0 0 15px rgba(255,215,0,0.3); }
+  .shop-icon { font-size: 40px; display: block; margin-bottom: 5px; }
+  .shop-name { font-size: 12px; color: #fff; }
+
+  /* =================================================########### */
+  /* --- SISTEMA DE CUTSCENES (VÍDEO) --- */
+  /* =================================================########### */
+
+  /* Cutscene Overlay (Vídeo) */
+  #cutsceneOverlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.95);
+    z-index: 500;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+  }
+
+  #cutsceneVideo {
+    max-width: 90%;
+    max-height: 70vh;
+    width: auto;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 0 40px rgba(46, 204, 64, 0.3);
+  }
+
+  #cutsceneDialogue {
+    display: none;
+    position: absolute;
+    bottom: 8%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 5, 0, 0.9);
+    border: 3px solid #2ecc40;
+    border-radius: 16px;
+    padding: 20px 30px;
+    max-width: 94%;
+    width: auto;
+    min-width: 320px;
+    text-align: center;
+    box-sizing: border-box;
+    box-shadow: 0 0 30px rgba(46, 204, 64, 0.4);
+    z-index: 600;
+  }
+
+  #cutsceneDialogue p {
+    color: #fff;
+    font-size: clamp(16px, 4vw, 24px);
+    font-weight: 700;
+    margin: 0;
+    line-height: 1.5;
+    text-shadow: 0 2px 5px rgba(0,0,0,0.8);
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+
+  #nextCutsceneBtn {
+    margin-top: 15px;
+    background: #2ecc40;
+    color: #0d1b2a;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 8px;
+    font-weight: 800;
+    font-size: 16px;
+    cursor: pointer;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    transition: all 0.2s;
+  }
+
+  #nextCutsceneBtn:hover {
+    background: #3ddc50;
+    transform: scale(1.05);
+  }
+
+  #skipCutsceneBtn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.15);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    color: #fff;
+    font-size: 16px;
+    font-weight: 600;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+
+  #skipCutsceneBtn:hover {
+    background: rgba(255, 255, 255, 0.25);
+    border-color: #2ecc40;
+  }
 </style>
 </head>
 <body>
 <canvas id="gameCanvas"></canvas>
+
+<!-- SISTEMA DE MENUS E LOJA -->
+<div id="menu-container" class="hidden">
+  <!-- Menu Pausa -->
+  <div id="menu-pause" class="menu-panel hidden">
+    <div class="menu-title">PAUSADO</div>
+    <button class="btn-action" onclick="resumeGame()">RETOMAR</button>
+    <button class="btn-action btn-secondary" onclick="openShop()">LOJINHA 🛍️</button>
+    <button class="btn-action btn-secondary" onclick="resetGame()">REINICIAR</button>
+    <button class="btn-action btn-secondary" onclick="quitToMain()">SAIR</button>
+    <button class="btn-action btn-secondary" onclick="goToTitleFromMenu()">VOLTAR AO INÍCIO</button>
+  </div>
+
+  <!-- Menu Lojinha -->
+  <div id="menu-shop" class="menu-panel hidden">
+    <div class="menu-title">LOJINHA DE SKINS</div>
+    <div style="margin-bottom: 15px;">Moedas: <span id="shop-coins" style="color:#FFD700; font-weight:800;">0</span></div>
+    <div id="shop-grid" class="shop-grid"></div>
+    <button class="btn-action" onclick="closeShop()">VOLTAR</button>
+  </div>
+</div>
 
 <!-- Leaderboard overlay -->
 <div id="leaderboard-overlay">
@@ -167,9 +323,23 @@
   </div>
 </div>
 
+<!-- SISTEMA DE CUTSCENES (VÍDEO) -->
+<div id="cutsceneOverlay">
+  <video id="cutsceneVideo" preload="auto" playsinline muted>
+    <source src="" type="video/mp4">
+  </video>
+  <div id="cutsceneDialogue">
+    <p id="cutsceneText"></p>
+    <button id="nextCutsceneBtn" style="display:none;">PRÓXIMO [ENTER]</button>
+  </div>
+  <button id="skipCutsceneBtn">Pular [ESC]</button>
+</div>
+
 <div id="footer-attr">
   <a href="https://www.perplexity.ai/computer" target="_blank" rel="noopener noreferrer">Created with Perplexity Computer</a>
 </div>
+
+<script src="cutscenes.js"></script>
 <script>
 'use strict';
 
@@ -326,7 +496,7 @@ function saveProgress() {
 function awardCoins(amount) {
   game.coins = (game.coins || 0) + amount;
   game.totalCoins = (game.totalCoins || 0) + amount;
-  saveProgress();
+  // REMOVIDO: saveProgress() daqui para evitar lag durante o jogo
 }
 
 function spendCoins(amount) {
@@ -337,16 +507,35 @@ function spendCoins(amount) {
 }
 
 const SKINS = [
-  { id: "default",   label: "Padrão Azul",        colorMale: "#4488cc", colorFemale: "#cc44aa" },
-  { id: "jaleco",    label: "Jaleco Branco",      colorMale: "#f5f5f5", colorFemale: "#f5f5f5" },
-  { id: "verde",     label: "Farmácia Verde",     colorMale: "#228B22", colorFemale: "#2ecc71" },
-  { id: "vermelho",  label: "Plantão Vermelho",   colorMale: "#c0392b", colorFemale: "#e74c3c" },
-  { id: "roxo",      label: "Noturno Roxo",       colorMale: "#8e44ad", colorFemale: "#9b59b6" },
-  { id: "laranja",   label: "Urgência Laranja",   colorMale: "#e67e22", colorFemale: "#f39c12" },
-  { id: "ciano",     label: "UTI Ciano",          colorMale: "#16a085", colorFemale: "#1abc9c" },
-  { id: "grafite",   label: "Clínica Grafite",    colorMale: "#2c3e50", colorFemale: "#34495e" },
-  { id: "dourado",   label: "Prêmio Dourado",     colorMale: "#f1c40f", colorFemale: "#f9e79f" },
-  { id: "rosa",      label: "Farmacêutica Rosa",  colorMale: "#ff6f91", colorFemale: "#ff9ec4" },
+  { id: "default",   label: "Padrão Azul",        colorMale: "#4488cc", colorFemale: "#cc44aa", icon: '👨', price: 0 },
+  { id: "jaleco",    label: "Jaleco Branco",      colorMale: "#f5f5f5", colorFemale: "#f5f5f5", icon: '🥼', price: 50 },
+  { id: "verde",     label: "Farmácia Verde",     colorMale: "#228B22", colorFemale: "#2ecc71", icon: '🌿', price: 80 },
+  { id: "vermelho",  label: "Plantão Vermelho",   colorMale: "#c0392b", colorFemale: "#e74c3c", icon: '🚨', price: 100 },
+  { id: "roxo",      label: "Noturno Roxo",       colorMale: "#8e44ad", colorFemale: "#9b59b6", icon: '🌙', price: 120 },
+  { id: "laranja",   label: "Urgência Laranja",   colorMale: "#e67e22", colorFemale: "#f39c12", icon: '🔥', price: 150 },
+  { id: "ciano",     label: "UTI Ciano",          colorMale: "#16a085", colorFemale: "#1abc9c", icon: '❄️', price: 180 },
+  { id: "grafite",   label: "Clínica Grafite",    colorMale: "#2c3e50", colorFemale: "#34495e", icon: '🏛️', price: 200 },
+  { id: "dourado",   label: "Prêmio Dourado",     colorMale: "#f1c40f", colorFemale: "#f9e79f", icon: '🏆', price: 1000 },
+  { id: "rosa",      label: "Farmacêutica Rosa",  colorMale: "#ff6f91", colorFemale: "#ff9ec4", icon: '💖', price: 130 },
+  { id: "ninja",     label: "Ninja Noturno",      colorMale: "#1a1a1a", colorFemale: "#2a2a2a", icon: '🥷', price: 400 },
+  { id: "super",     label: "Super Herói",        colorMale: "#e74c3c", colorFemale: "#3498db", icon: '🦸', price: 500 },
+  { id: "pijama",    label: "Pijama Relax",       colorMale: "#aaccff", colorFemale: "#ffccdd", icon: '🛌', price: 60 },
+  { id: "cyber",     label: "Cyberpunk",          colorMale: "#00ffcc", colorFemale: "#ff00ff", icon: '🤖', price: 600 },
+  { id: "vampiro",   label: "Vampiro",            colorMale: "#4a0000", colorFemale: "#2a0000", icon: '🧛', price: 450 },
+  { id: "zumbi",     label: "Zumbi",              colorMale: "#4d5d53", colorFemale: "#5d6d63", icon: '🧟', price: 350 },
+  { id: "chef",      label: "Chef de Cozinha",    colorMale: "#ffffff", colorFemale: "#ffffff", icon: '👨‍🍳', price: 280 },
+  { id: "fogo",      label: "Fogo Intenso",       colorMale: "#ff4500", colorFemale: "#ff6347", icon: '🔥', price: 700 },
+  { id: "gelo",      label: "Gelo Ártico",        colorMale: "#00ffff", colorFemale: "#e0ffff", icon: '❄️', price: 700 },
+  { id: "natureza",  label: "Guardião da Mata",   colorMale: "#228b22", colorFemale: "#32cd32", icon: '🌳', price: 550 },
+  { id: "rainbow",   label: "Arco-Íris",          colorMale: "#ff0000", colorFemale: "#0000ff", icon: '🌈', price: 1200 },
+  { id: "prata",     label: "Elite de Prata",     colorMale: "#c0c0c0", colorFemale: "#e0e0e0", icon: '🥈', price: 800 },
+  { id: "bronze",    label: "Veterano Bronze",    colorMale: "#cd7f32", colorFemale: "#8b4513", icon: '🥉', price: 600 },
+  { id: "neon",      label: "Neon Flash",         colorMale: "#39ff14", colorFemale: "#ff007f", icon: '⚡', price: 900 },
+  { id: "fantasma",  label: "Fantasma",           colorMale: "rgba(255,255,255,0.4)", colorFemale: "rgba(255,255,255,0.4)", icon: '👻', price: 550 },
+  { id: "realeza",   label: "Realeza",            colorMale: "#4b0082", colorFemale: "#ee82ee", icon: '👑', price: 1500 },
+  { id: "pirata",    label: "Pirata",             colorMale: "#3e2723", colorFemale: "#5d4037", icon: '🏴‍☠️', price: 420 },
+  { id: "medico",    label: "Médico Chefe",       colorMale: "#e1f5fe", colorFemale: "#e1f5fe", icon: '🩺', price: 300 },
+  { id: "astronauta", label: "Astronauta",        colorMale: "#ffffff", colorFemale: "#ffffff", icon: '👩‍🚀', price: 1100 },
 ];
 
 const WEAPON_TYPES = [
@@ -376,6 +565,7 @@ let W, H, GROUND_Y, scale;
 
 const game = {
   state: 'title', 
+  selectedChar: 'male', // personagem padrão
   score: 0,
   distance: 0,
   coins: 0,
@@ -444,7 +634,7 @@ function checkMobile() {
 }
 
 function resizeCanvas() {
-  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const dpr = 2.0; // Forçar alta resolução (1080p Full HD feel)
   W = window.innerWidth;
   H = window.innerHeight;
   canvas.width = W * dpr;
@@ -452,6 +642,8 @@ function resizeCanvas() {
   canvas.style.width = W + 'px';
   canvas.style.height = H + 'px';
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = 'high';
   GROUND_Y = H - GROUND_OFFSET;
   scale = Math.min(W / 800, H / 600, 1.5);
 }
@@ -592,30 +784,68 @@ const POWERUP_TYPES = [
 // ============================================================
 // LEADERBOARD API
 // ============================================================
-const API = "https://projeto-extensionista-tjv4.onrender.com";
+const API = (window.location.port === '8000')
+  ? "" 
+  : (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:')
+    ? "http://localhost:8000"
+    : "https://projeto-extensionista-tjv4.onrender.com";
 
 async function fetchLeaderboard() {
+  console.log('Leaderboard: Tentando buscar de', API || 'localhost');
   try {
     const res = await fetch(`${API}/api/leaderboard?limit=20`);
-    if (!res.ok) throw new Error('Network error');
-    return await res.json();
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    console.log('Leaderboard: Dados recebidos:', data.length, 'entradas');
+    return data;
   } catch(e) {
     console.warn('Leaderboard fetch failed:', e);
+    // Tenta fallback para localhost se falhou e não estava no localhost
+    if (API !== "" && API !== "http://localhost:8000") {
+        console.log('Leaderboard: Tentando fallback para localhost:8000');
+        try {
+            const resLocal = await fetch(`http://localhost:8000/api/leaderboard?limit=20`);
+            if (resLocal.ok) return await resLocal.json();
+        } catch(e2) {
+            console.error('Leaderboard: Fallback falhou também', e2);
+        }
+    }
     return [];
   }
 }
 
 async function submitScore(name, score, distance, phase, character) {
+  console.log('Leaderboard: Tentando salvar para', API || 'localhost', { name, score, distance, phase, character });
   try {
     const res = await fetch(`${API}/api/leaderboard`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name, score: Math.floor(score), distance: Math.floor(distance / 10), phase, character }),
     });
-    if (!res.ok) throw new Error('Network error');
-    return await res.json();
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const result = await res.json();
+    console.log('Leaderboard: Score salvo com sucesso! Rank:', result.rank);
+    return result;
   } catch(e) {
     console.warn('Score submit failed:', e);
+    // Tenta fallback para localhost
+    if (API !== "" && API !== "http://localhost:8000") {
+        console.log('Leaderboard: Tentando fallback para salvar em localhost:8000');
+        try {
+            const resLocal = await fetch(`http://localhost:8000/api/leaderboard`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, score: Math.floor(score), distance: Math.floor(distance / 10), phase, character }),
+            });
+            if (resLocal.ok) {
+                const result = await resLocal.json();
+                console.log('Leaderboard: Salvo via localhost! Rank:', result.rank);
+                return result;
+            }
+        } catch(e2) {
+            console.error('Leaderboard: Fallback de salvamento falhou também', e2);
+        }
+    }
     return null;
   }
 }
@@ -770,6 +1000,19 @@ const Input = {
       e.preventDefault();
       const touch = e.touches[0];
       updateTouch(touch);
+      const mx = this.touchX;
+      const my = this.touchY;
+
+      // Handle leaderboard button on title
+      if (game.state === 'title') {
+          const lbBtnX = W - 44;
+          const lbBtnY = 42;
+          const lbDist = Math.sqrt((mx - lbBtnX) ** 2 + (my - lbBtnY) ** 2);
+          if (lbDist < 30) {
+            showLeaderboard(0, 0);
+            return;
+          }
+      }
 
       // Handle charSelect touches directly
       if (game.state === 'charSelect') {
@@ -777,23 +1020,68 @@ const Input = {
         const my = this.touchY;
         if (pointInBox(mx, my, charSelectBoxes.male)) {
           game.selectedChar = 'male';
+          saveProgress(); // Salva no localStorage para cutscenes
           initAudio(); if (audioCtx) audioCtx.resume();
           sfxCollect();
           return;
         } else if (pointInBox(mx, my, charSelectBoxes.female)) {
           game.selectedChar = 'female';
+          saveProgress(); // Salva no localStorage para cutscenes
           initAudio(); if (audioCtx) audioCtx.resume();
           sfxCollect();
           return;
         } else if (pointInBox(mx, my, charSelectBoxes.play)) {
-          resetGame();
+          if (typeof startIntro !== "undefined") {
+            startIntro();
+          } else {
+            resetGame();
+          }
           return;
+        } else {
+          // Check skin selection
+          for (const box of charSelectSkinBoxes) {
+            if (pointInBox(mx, my, box)) {
+              game.skin = box.id;
+              sfxCollect();
+              saveProgress();
+              return;
+            }
+          }
         }
       }
 
       this.touched = true;
       this.justTouched = true;
       this.justPressed['Touch'] = true;
+
+      // HUD buttons detection for mobile/desktop
+      if (game.state === 'playing') {
+          const btnSize = 18 * scale;
+          const btnMargin = 12 * scale;
+          const rx = W - 35 * scale;
+          const mY = 35 * scale;
+          const lY = mY + btnSize * 2 + btnMargin;
+          const pY = lY + btnSize * 2 + btnMargin;
+          const hitR = btnSize * 1.8; // Maior área de toque para mobile
+
+          // Mute button
+          if (Math.sqrt((mx - rx) ** 2 + (my - mY) ** 2) < hitR) {
+            toggleMute();
+            return;
+          }
+
+          // Leaderboard button
+          if (Math.sqrt((mx - rx) ** 2 + (my - lY) ** 2) < hitR) {
+            showLeaderboard(0, 0);
+            return;
+          }
+
+          // Pause button
+          if (Math.sqrt((mx - rx) ** 2 + (my - pY) ** 2) < hitR) {
+            pauseGame();
+            return;
+          }
+      }
     }, { passive: false });
 
     canvas.addEventListener('touchmove', (e) => {
@@ -813,6 +1101,19 @@ const Input = {
       this.justPressed['Mouse'] = true;
       this.touchX = e.offsetX;
       this.touchY = e.offsetY;
+      const mx = this.touchX;
+      const my = this.touchY;
+
+      // Handle leaderboard button on title
+      if (game.state === 'title') {
+          const lbBtnX = W - 44;
+          const lbBtnY = 42;
+          const lbDist = Math.sqrt((mx - lbBtnX) ** 2 + (my - lbBtnY) ** 2);
+          if (lbDist < 30) {
+            showLeaderboard(0, 0);
+            return;
+          }
+      }
     });
 
     canvas.addEventListener('mouseup', () => {
@@ -824,13 +1125,20 @@ const Input = {
 
   wantsJump() {
     const isShootTap = this.justTouched && isInShootButton(this.touchX, this.touchY);
-    return this.justPressed['Space'] || this.justPressed['ArrowUp'] || this.justPressed['KeyW'] || (this.justTouched && !isShootTap);
+    const isSpecialTap = this.justTouched && isInSpecialButton(this.touchX, this.touchY);
+    return this.justPressed['Space'] || this.justPressed['ArrowUp'] || this.justPressed['KeyW'] || (this.justTouched && !isShootTap && !isSpecialTap);
   },
 
   wantsShoot() {
     const hasKey = this.justPressed['KeyX'] || this.justPressed['KeyF'];
     const isTouchShoot = this.justTouched && isInShootButton(this.touchX, this.touchY);
     return hasKey || isTouchShoot;
+  },
+
+  wantsSpecial() {
+    const hasKey = this.justPressed['KeyE'];
+    const isTouchSpecial = this.justTouched && isInSpecialButton(this.touchX, this.touchY);
+    return hasKey || isTouchSpecial;
   },
 
   endFrame() {
@@ -844,6 +1152,16 @@ function isInShootButton(mx, my) {
   if (!game.isMobile) return false;
   const r = 40 * scale;
   const bx = W - 60;
+  const by = H - 80;
+  const dx = mx - bx;
+  const dy = my - by;
+  return dx * dx + dy * dy <= r * r;
+}
+
+function isInSpecialButton(mx, my) {
+  if (!game.isMobile) return false;
+  const r = 40 * scale;
+  const bx = 60;
   const by = H - 80;
   const dx = mx - bx;
   const dy = my - by;
@@ -1088,15 +1406,22 @@ function drawBuildingLayer(ctx, offset) {
     if (bx > W + 100 || bx + b.w < -100) continue;
     const by = GROUND_Y - b.h;
     
-    // Prédio Base
-    ctx.fillStyle = b.color;
+    // Prédio Base com Gradiente Vertical para realismo
+    const buildingGrad = ctx.createLinearGradient(bx, by, bx, by + b.h);
+    buildingGrad.addColorStop(0, b.color);
+    buildingGrad.addColorStop(1, adjustColor(b.color, -30));
+    ctx.fillStyle = buildingGrad;
     ctx.fillRect(bx, by, b.w, b.h);
     
-    // Detalhe arquitetônico lateral (sombra projetada no próprio prédio)
-    ctx.fillStyle = 'rgba(0,0,0,0.15)';
-    ctx.fillRect(bx + b.w - 8, by, 8, b.h);
+    // Sombra projetada na lateral do prédio (efeito 3D)
+    ctx.fillStyle = 'rgba(0,0,0,0.25)';
+    ctx.fillRect(bx + b.w - 12, by, 12, b.h);
 
-    // Windows com mais detalhes
+    // Detalhe de topo do prédio (cornija)
+    ctx.fillStyle = adjustColor(b.color, 20);
+    ctx.fillRect(bx - 4, by, b.w + 8, 8);
+
+    // Windows com mais detalhes e realismo
     const wSize = 12;
     const wGapH = (b.w - 20) / Math.max(b.windows, 1);
     for (let r = 0; r < b.windowRows; r++) {
@@ -1104,25 +1429,39 @@ function drawBuildingLayer(ctx, offset) {
         const wx = bx + 10 + c * wGapH;
         const wy = by + 15 + r * 35;
         
+        // Aleatoriedade para janelas acesas/apagadas
+        const isLit = ((r + c + Math.floor(bx/100)) % 3 !== 0);
+        
         // Moldura da janela
-        ctx.fillStyle = 'rgba(0,0,0,0.3)';
+        ctx.fillStyle = 'rgba(0,0,0,0.4)';
         ctx.fillRect(wx - 1, wy - 1, wSize + 2, wSize + 7);
         
-        // Vidro iluminado
-        ctx.fillStyle = 'rgba(255,240,150,0.7)';
+        // Vidro
+        if (isLit) {
+            const winGrad = ctx.createLinearGradient(wx, wy, wx, wy + wSize + 5);
+            winGrad.addColorStop(0, 'rgba(255,245,180,0.8)');
+            winGrad.addColorStop(1, 'rgba(255,210,100,0.6)');
+            ctx.fillStyle = winGrad;
+        } else {
+            ctx.fillStyle = 'rgba(20,25,40,0.85)';
+        }
         ctx.fillRect(wx, wy, wSize, wSize + 5);
         
-        // Brilho no vidro
-        ctx.fillStyle = 'rgba(255,255,255,0.4)';
-        ctx.fillRect(wx + 2, wy + 2, 3, 3);
+        // Brilho/Reflexo no vidro
+        if (isLit) {
+            ctx.fillStyle = 'rgba(255,255,255,0.3)';
+            ctx.fillRect(wx + 2, wy + 2, 3, 3);
+        } else {
+            ctx.fillStyle = 'rgba(255,255,255,0.05)';
+            ctx.fillRect(wx + 1, wy + 1, wSize - 2, 1);
+        }
 
         // Sacada opcional em alguns andares
-        if (c === 0 && r % 2 === 0 && b.w > 120) {
-            ctx.fillStyle = '#444';
-            ctx.fillRect(wx - 5, wy + wSize + 5, b.w - 10, 3);
-            // Grades da sacada
-            for(let g = 0; g < b.w - 15; g += 10) {
-                ctx.fillRect(wx - 5 + g, wy + wSize - 2, 2, 7);
+        if (c === 0 && r % 3 === 0 && b.w > 110) {
+            ctx.fillStyle = '#333';
+            ctx.fillRect(bx + 5, wy + wSize + 5, b.w - 10, 3);
+            for(let g = 0; g < b.w - 15; g += 12) {
+                ctx.fillRect(bx + 10 + g, wy + wSize - 3, 2, 8);
             }
         }
       }
@@ -1344,6 +1683,15 @@ function drawCharacter(ctx, x, y, w, grounded, legPhase, invincible, isFemale, d
   const cx = x + w / 2;
   const baseY = y;
 
+  // Sombra no chão (dinâmica e realista)
+  ctx.fillStyle = "rgba(0,0,0,0.25)";
+  const shadowW = 28 * s;
+  const shadowH = 6 * s;
+  const shadowY = baseY + 50 * s;
+  ctx.beginPath();
+  ctx.ellipse(cx, shadowY, shadowW/2, shadowH/2, 0, 0, Math.PI * 2);
+  ctx.fill();
+
   if (isFemale) {
     // === FEMALE CHARACTER ===
     // Body (dress)
@@ -1365,12 +1713,25 @@ function drawCharacter(ctx, x, y, w, grounded, legPhase, invincible, isFemale, d
     ctx.beginPath();
     ctx.arc(cx, baseY + 10 * s, 10 * s, 0, Math.PI * 2);
     ctx.fill();
+    
+    // Head detail: highlight
+    ctx.fillStyle = 'rgba(255,255,255,0.2)';
+    ctx.beginPath();
+    ctx.arc(cx - 3 * s, baseY + 7 * s, 3 * s, 0, Math.PI * 2);
+    ctx.fill();
 
     // Hair (long, flowing)
     ctx.fillStyle = '#8B4513';
     ctx.beginPath();
     ctx.arc(cx, baseY + 7 * s, 11 * s, Math.PI, Math.PI * 2);
     ctx.fill();
+    
+    // Hair highlights
+    ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+    ctx.lineWidth = 2 * s;
+    ctx.beginPath();
+    ctx.arc(cx, baseY + 7 * s, 9 * s, Math.PI + 0.4, Math.PI * 2 - 0.4);
+    ctx.stroke();
     // Side hair
     ctx.fillRect(cx - 11 * s, baseY + 5 * s, 4 * s, 18 * s);
     ctx.fillRect(cx + 7 * s, baseY + 5 * s, 4 * s, 18 * s);
@@ -1445,12 +1806,24 @@ function drawCharacter(ctx, x, y, w, grounded, legPhase, invincible, isFemale, d
     ctx.beginPath();
     ctx.arc(cx, baseY + 10 * s, 10 * s, 0, Math.PI * 2);
     ctx.fill();
+    
+    // Head detail: highlight
+    ctx.fillStyle = 'rgba(255,255,255,0.2)';
+    ctx.beginPath();
+    ctx.arc(cx - 3 * s, baseY + 7 * s, 3 * s, 0, Math.PI * 2);
+    ctx.fill();
 
-    // Hair
+    // Hair (cool style)
     ctx.fillStyle = '#553322';
     ctx.beginPath();
-    ctx.arc(cx, baseY + 6 * s, 10 * s, Math.PI, Math.PI * 2);
+    ctx.arc(cx, baseY + 6 * s, 10 * s, Math.PI + 0.2, Math.PI * 2 - 0.2);
     ctx.fill();
+    
+    // Hair spikes/texture
+    for(let i=0; i<3; i++) {
+       const tx = cx - 6 * s + i * 6 * s;
+       ctx.fillRect(tx, baseY + 2 * s, 3 * s, 5 * s);
+    }
 
     // Eyes
     ctx.fillStyle = '#333';
@@ -1497,6 +1870,12 @@ function drawNPCLikeCharacter(ctx, x, y, role, isFemale, legPhase, drawScale) {
   const s = drawScale || 1.0;
   const cx = x + (isFemale ? 11 : 10) * s; 
   const baseY = y;
+
+  // Sombra suave (realismo)
+  ctx.fillStyle = "rgba(0,0,0,0.18)";
+  ctx.beginPath();
+  ctx.ellipse(cx, baseY + 50 * s, 14 * s, 3 * s, 0, 0, Math.PI * 2);
+  ctx.fill();
 
   let bodyColor = "#555";
   let legColor = "#333";
@@ -1950,11 +2329,16 @@ class Obstacle {
       return; // Skip drawing label/indicator for cars
     }
 
-    // Body
+    // Body with glow if high difficulty
+    if (this.h > 48) {
+      ctx.shadowColor = this.type.color;
+      ctx.shadowBlur = 8;
+    }
     ctx.fillStyle = this.type.color;
     ctx.beginPath();
     ctx.roundRect(this.x, this.y, this.w, this.h, 6);
     ctx.fill();
+    ctx.shadowBlur = 0;
 
     // Border
     ctx.strokeStyle = 'rgba(255,255,255,0.2)';
@@ -2351,12 +2735,30 @@ function getPhase() {
   return 0;
 }
 
+function activateSpecialInGame() {
+  game.activePowerUp = 'invincible';
+  game.powerUpTimer = 10; 
+  player.invincible = true;
+  player.invincibleTimer = 10;
+  
+  // Efeito visual de explosão de luz
+  particles.emit(player.x, player.y, 100, {
+    speed: 300, life: 1.2, colors: [GOLD, WHITE, SKY_BLUE], size: 8, upBias: 50
+  });
+
+  game._specialSpeedMult = 1.6;
+  setTimeout(() => {
+    game._specialSpeedMult = 1.0;
+  }, 10000);
+}
+
 function getSpeed() {
   const phase = PHASES[game.currentPhase] || PHASES[0];
   const distFactor = 1 + Math.log(1 + game.distance / 6000) * 0.7;
   const base = BASE_SPEED * phase.speedMult * distFactor;
   const speedBoost = game.activePowerUp === "speedBoost" ? 1.4 : 1.0;
-  return Math.min(base * speedBoost, MAX_SPEED);
+  const specialMult = game._specialSpeedMult || 1.0;
+  return Math.min(base * speedBoost * specialMult, MAX_SPEED);
 }
 
 function spawnObstacle() {
@@ -2511,6 +2913,15 @@ function hitObstacle(o) {
 }
 
 function gameOver() {
+  if (game.state === 'gameover') return;
+  if (typeof onPlayerDeath !== "undefined") {
+    onPlayerDeath();
+  } else {
+    finishGameOver();
+  }
+}
+
+function finishGameOver() {
   game.state = 'gameover';
   game.gameOverAlpha = 0;
   stopMusic();
@@ -2560,6 +2971,8 @@ function resetGame() {
   game.shieldHits = 0;
   game.bulletTimer = 0;
   game.fireCooldown = 0.25;
+  game.specialTriggered = false;
+  game._phaseCutsceneSeen = {}; // Reset phase cutscene tracking
 
   player.reset();
   player.canDoubleJump = true; // Double jump is always available
@@ -2602,6 +3015,11 @@ async function showLeaderboard(scoreToSubmit, distToSubmit) {
   leaderboardShowing = true;
   leaderboardScoreToSubmit = scoreToSubmit || 0;
   leaderboardDistToSubmit = distToSubmit || 0;
+
+  // Toca cutscene de ranking (apenas se não for chamado do jogo)
+  if (typeof openRanking !== 'undefined' && scoreToSubmit === 0) {
+    openRanking();
+  }
 
   lbOverlay.classList.add('visible');
   lbSuccess.classList.remove('visible');
@@ -2674,7 +3092,11 @@ lbBtnSubmit.addEventListener('click', async () => {
   if (result) {
     lbSuccess.textContent = `Salvo! Você está em ${result.rank}º lugar!`;
     lbSuccess.classList.add('visible');
-    // Refresh leaderboard
+    
+    // Toca vídeo do placar após registrar
+    if (typeof openRanking === 'function') {
+      openRanking();
+    }
     const scores = await fetchLeaderboard();
     lbBody.innerHTML = '';
     scores.forEach((s, i) => {
@@ -2743,6 +3165,11 @@ function drawDebug(ctx) {
 // UPDATE
 // ============================================================
 function update(dt) {
+  if (typeof CutsceneSystem !== "undefined" && CutsceneSystem.isActive) {
+    Input.endFrame();
+    return;
+  }
+
   if (game.state === 'title') {
     game.titlePhase += dt;
     game.titleAlpha = Math.min(1, game.titleAlpha + dt * 2);
@@ -2781,6 +3208,9 @@ function update(dt) {
     if (!leaderboardShowing && (Input.wantsJump() || Input.justPressed['Enter']) && game.gameOverAlpha > 0.5) {
       resetGame();
     }
+    if (Input.justPressed['KeyH'] || Input.justPressed['Escape']) {
+      goToTitle();
+    }
     Input.endFrame();
     return;
   }
@@ -2802,10 +3232,12 @@ function update(dt) {
     return;
   }
 
-  if (game.state === 'paused') {
-    // Resume with P/Escape or touch/click
-    if (Input.wantsJump() || Input.justPressed['KeyP'] || Input.justPressed['Escape']) {
-      resumeGame();
+  if (game.state === 'paused' || game.state === 'shop') {
+    // Resume with P/Escape or touch/click (only if paused; in shop use the Back button)
+    if (game.state === 'paused') {
+      if (Input.wantsJump() || Input.justPressed['KeyP'] || Input.justPressed['Escape']) {
+        resumeGame();
+      }
     }
     Input.endFrame();
     return;
@@ -2821,17 +3253,20 @@ function update(dt) {
   const scoreMult = game.activePowerUp === 'scoreBoost' ? 0.04 : 0.02;
   game.score += spd * dt * scoreMult;
 
-  // 1 moeda a cada 500 pontos
-  const oldStep = Math.floor(oldScore / 500);
-  const newStep = Math.floor(game.score / 500);
-  if (newStep > oldStep) {
-    awardCoins(newStep - oldStep);
+  // 1 moeda a cada 3 metros (distância / 10 = metros)
+  const oldDistMeters = (game.distance - spd * dt) / 10;
+  const newDistMeters = game.distance / 10;
+  const oldCoinStep = Math.floor(oldDistMeters / 3);
+  const newCoinStep = Math.floor(newDistMeters / 3);
+  if (newCoinStep > oldCoinStep) {
+    awardCoins(newCoinStep - oldCoinStep);
   }
 
   // troca de fase linear por distância
   for (let i = 0; i < PHASES.length; i++) {
     if (game.distance >= PHASES[i].minDist && game.distance < PHASES[i].maxDist) {
       if (game.currentPhase !== i) {
+        const oldPhase = game.currentPhase;
         game.currentPhase = i;
         game.phaseBannerTimer = 2.5;
         game.hintTimer = 3;
@@ -2839,6 +3274,13 @@ function update(dt) {
         sfxMilestone();
         generateStorefronts(); // Regenerate storefronts for new scene
         saveProgress();
+        
+        // Cutscene de nova fase (apenas uma vez por fase)
+        if (!game._phaseCutsceneSeen) game._phaseCutsceneSeen = {};
+        if (oldPhase >= 0 && !game._phaseCutsceneSeen[i] && typeof onNewStageUnlocked !== 'undefined') {
+          game._phaseCutsceneSeen[i] = true;
+          onNewStageUnlocked();
+        }
       }
       break;
     }
@@ -2865,6 +3307,15 @@ function update(dt) {
   // Jump input
   if (Input.wantsJump()) {
     player.jump();
+  }
+
+  // Especial trigger (Cooldown de 30 segundos)
+  game.specialCooldown = (game.specialCooldown || 0) - dt;
+  if (Input.wantsSpecial() && game.specialCooldown <= 0) {
+    game.specialCooldown = 30; // 30s para usar de novo
+    if (typeof onSpecialActivated !== "undefined") {
+      onSpecialActivated();
+    }
   }
 
   // Shooting input (basic function)
@@ -3079,9 +3530,20 @@ function drawGround(ctx) {
     ctx.stroke();
   }
 
-  // Road
-  ctx.fillStyle = GROUND_COLOR;
+  // Road (Asfalto Realista)
+  const roadGrad = ctx.createLinearGradient(0, GROUND_Y + 8, 0, GROUND_Y + GROUND_OFFSET);
+  roadGrad.addColorStop(0, "#333");
+  roadGrad.addColorStop(0.5, "#444");
+  roadGrad.addColorStop(1, "#333");
+  ctx.fillStyle = roadGrad;
   ctx.fillRect(-W, GROUND_Y + 8, W * 5, GROUND_OFFSET - 8);
+
+  // Textura de asfalto (ruído sutil)
+  ctx.fillStyle = "rgba(255,255,255,0.03)";
+  for (let i = -W; i < W * 4; i += 40) {
+    const x = i - (game.distance % 40);
+    ctx.fillRect(x + Math.random() * 20, GROUND_Y + 12 + Math.random() * 30, 2, 2);
+  }
 
   // Grass patches near sidewalk
   ctx.fillStyle = "#2d5a27";
@@ -3112,133 +3574,139 @@ function drawHUD(ctx) {
   const fontSize = Math.max(14, 16 * scale);
   ctx.font = `700 ${fontSize}px 'Plus Jakarta Sans', sans-serif`;
 
-  // Score (top-left)
-  const boxH = game.highScore > 0 ? 110 : 90;
-  ctx.fillStyle = 'rgba(0,0,0,0.4)';
+  // Score (top-left) - Box with slightly more space to avoid overlap
+  const boxH = game.highScore > 0 ? 150 : 130;
+  ctx.fillStyle = 'rgba(0,0,0,0.5)';
   ctx.beginPath();
-  ctx.roundRect(8, 8, 220, boxH, 8);
+  ctx.roundRect(8, 8, 240, boxH, 10);
   ctx.fill();
+
   ctx.fillStyle = WHITE;
-  ctx.fillText(`Pontos: ${formatNumber(game.score)}`, 16, 28);
+  ctx.textAlign = 'left';
+  ctx.fillText(`Pontos: ${formatNumber(game.score)}`, 16, 32);
+  
   ctx.font = `600 ${fontSize * 0.85}px 'Plus Jakarta Sans', sans-serif`;
-  ctx.fillText(`Distância: ${formatNumber(game.distance / 10)}m`, 16, 48);
+  ctx.fillText(`Distância: ${formatNumber(game.distance / 10)}m`, 16, 54);
 
   // High score
   if (game.highScore > 0) {
     ctx.font = `600 ${fontSize * 0.7}px 'Plus Jakarta Sans', sans-serif`;
     ctx.fillStyle = GOLD;
-    ctx.fillText(`Recorde: ${formatNumber(game.highScore)}`, 16, 65);
+    ctx.fillText(`Recorde: ${formatNumber(game.highScore)}`, 16, 74);
   }
 
-  // Moedas + Lojinha
+  // Moedas
   ctx.fillStyle = GOLD;
-  ctx.font = `700 ${fontSize * 0.8}px Plus Jakarta Sans, sans-serif`;
-  ctx.fillText(`Moedas: ${formatNumber(game.coins)}`, 16, 85);
+  ctx.font = `700 ${fontSize * 0.85}px Plus Jakarta Sans, sans-serif`;
+  ctx.fillText(`Moedas: ${formatNumber(game.totalCoins || 0)}`, 16, 96);
 
+  // Super Especial Indicator - Fixed position to avoid overlap
+  const specialReady = (game.specialCooldown || 0) <= 0;
+  ctx.fillStyle = specialReady ? PHARMACY_GREEN_LIGHT : RED;
+  ctx.font = `bold ${fontSize * 0.75}px Plus Jakarta Sans, sans-serif`;
+  ctx.fillText(specialReady ? "ESPECIAL PRONTO [E]" : `ESPECIAL: ${Math.ceil(game.specialCooldown)}s`, 16, 120);
+
+  // Skins reminder (shifted down)
+  ctx.font = `600 ${fontSize * 0.65}px Plus Jakarta Sans, sans-serif`;
+  ctx.fillStyle = "rgba(255,255,255,0.7)";
+  ctx.fillText("Skins: 1=Jaleco  2=Verde  3=Roxo", 16, 142);
+
+  // Stats Box (bottom-left feel)
   ctx.fillStyle = "rgba(0,0,0,0.45)";
   ctx.beginPath();
-  ctx.roundRect(8, 112, 260, 44, 8);
+  ctx.roundRect(8, H - 65, 300, 48, 8);
   ctx.fill();
 
   ctx.fillStyle = GOLD;
   ctx.font = `700 ${fontSize * 0.72}px Plus Jakarta Sans, sans-serif`;
-  ctx.fillText(`Total guardado: ${formatNumber(game.totalCoins || 0)}`, 16, 130);
+  ctx.fillText(`Total acumulado: ${formatNumber(game.totalCoins || 0)}`, 16, H - 46);
 
-  ctx.fillStyle = "rgba(255,255,255,0.92)";
-  ctx.font = `600 ${fontSize * 0.68}px Plus Jakarta Sans, sans-serif`;
-  ctx.fillText(`Maior fase: ${Math.max(1, (game.furthestPhase || 0) + 1)}  Melhor score: ${formatNumber(game.bestScore || 0)}`, 16, 148);
-
-  ctx.font = `600 ${fontSize * 0.7}px Plus Jakarta Sans, sans-serif`;
   ctx.fillStyle = "rgba(255,255,255,0.9)";
-  ctx.fillText("1=Jaleco  2=Verde  3=Roxo", 16, 102);
+  ctx.font = `600 ${fontSize * 0.65}px Plus Jakarta Sans, sans-serif`;
+  ctx.fillText(`Fase máxima: ${Math.max(1, (game.furthestPhase || 0) + 1)} | Melhor: ${formatNumber(game.bestScore || 0)}`, 16, H - 28);
 
   // Phase (top-center)
   const phaseName = PHASES[game.currentPhase].name;
   ctx.font = `700 ${fontSize * 0.9}px 'Plus Jakarta Sans', sans-serif`;
   const phaseWidth = ctx.measureText(phaseName).width;
-  ctx.fillStyle = 'rgba(0,0,0,0.4)';
-  ctx.fillRect(W / 2 - phaseWidth / 2 - 12, 8, phaseWidth + 24, 28);
+  ctx.fillStyle = 'rgba(0,0,0,0.5)';
+  ctx.fillRect(W / 2 - phaseWidth / 2 - 15, 8, phaseWidth + 30, 32);
   ctx.fillStyle = PHARMACY_GREEN_LIGHT;
   ctx.textAlign = 'center';
-  ctx.fillText(phaseName, W / 2, 28);
-  ctx.textAlign = 'left';
+  ctx.fillText(phaseName, W / 2, 30);
 
   // Difficulty indicator
   const diffLabels = ['Fácil', 'Médio', 'Difícil', 'Extremo'];
   const diffColors = ['#2ecc40', '#FFD700', '#FF8844', '#FF4444'];
-  ctx.font = `600 ${fontSize * 0.65}px 'Plus Jakarta Sans', sans-serif`;
-  ctx.fillStyle = diffColors[game.currentPhase];
-  ctx.textAlign = 'center';
-  ctx.fillText(`● ${diffLabels[game.currentPhase]}`, W / 2, 48);
+  ctx.font = `600 ${fontSize * 0.7}px 'Plus Jakarta Sans', sans-serif`;
+  ctx.fillStyle = diffColors[Math.min(game.currentPhase, 3)];
+  ctx.fillText(`● ${diffLabels[Math.min(game.currentPhase, 3)]}`, W / 2, 52);
   ctx.textAlign = 'left';
 
-  // Lives (top-right)
-  const heartSize = 20 * scale;
+  // --- Top-Right Buttons Group (Mute, Leaderboard, Pause) ---
+  const btnSize = 18 * scale;
+  const btnMargin = 12 * scale;
+  const rightX = W - 35 * scale;
+  
+  // Mute button
+  const muteY = 35 * scale;
+  ctx.fillStyle = 'rgba(0,0,0,0.5)';
+  ctx.beginPath();
+  ctx.arc(rightX, muteY, btnSize, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = WHITE;
+  ctx.font = `${16 * scale}px sans-serif`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(audioMuted ? '🔇' : '🔊', rightX, muteY);
+
+  // Leaderboard button
+  const lbBtnY = muteY + btnSize * 2 + btnMargin;
+  ctx.fillStyle = 'rgba(0,0,0,0.5)';
+  ctx.beginPath();
+  ctx.arc(rightX, lbBtnY, btnSize, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = GOLD;
+  ctx.fillText('🏆', rightX, lbBtnY);
+
+  // Pause button
+  const pauseY = lbBtnY + btnSize * 2 + btnMargin;
+  ctx.fillStyle = 'rgba(0,0,0,0.5)';
+  ctx.beginPath();
+  ctx.arc(rightX, pauseY, btnSize, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = WHITE;
+  ctx.fillRect(rightX - 6 * scale, pauseY - 8 * scale, 4 * scale, 16 * scale);
+  ctx.fillRect(rightX + 2 * scale, pauseY - 8 * scale, 4 * scale, 16 * scale);
+
+  ctx.textBaseline = 'alphabetic';
+  ctx.textAlign = 'left';
+
+  // Lives (top-right but offset from buttons)
+  const heartSize = 22 * scale;
   for (let i = 0; i < 3; i++) {
-    const hx = W - 40 - i * (heartSize + 6);
-    const hy = 14;
+    const hx = W - 100 * scale - i * (heartSize + 8);
+    const hy = 25 * scale;
     ctx.fillStyle = i < game.lives ? RED : 'rgba(255,255,255,0.2)';
     drawHeart(ctx, hx, hy, heartSize);
   }
-  // Clear life count label
-  ctx.font = `600 ${fontSize * 0.6}px 'Plus Jakarta Sans', sans-serif`;
-  ctx.fillStyle = 'rgba(255,255,255,0.85)';
+  
+  ctx.font = `700 ${fontSize * 0.7}px 'Plus Jakarta Sans', sans-serif`;
+  ctx.fillStyle = WHITE;
   ctx.textAlign = 'right';
-  ctx.fillText(`Vidas: ${game.lives}`, W - 12, 14 + heartSize + 8);
+  ctx.fillText(`VIDAS`, W - 100 * scale + heartSize/2, 55 * scale);
   ctx.textAlign = 'left';
-
-  // Pause button (top-left)
-  const pauseX = 44;
-  const pauseY = 42;
-  ctx.fillStyle = 'rgba(0,0,0,0.4)';
-  ctx.beginPath();
-  ctx.arc(pauseX, pauseY, 14, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.fillStyle = WHITE;
-  ctx.fillRect(pauseX - 6, pauseY - 8, 4, 16);
-  ctx.fillRect(pauseX + 2, pauseY - 8, 4, 16);
-
-  // Mute button (top-right)
-  const muteX = W - 44;
-  const muteY = 42;
-  ctx.fillStyle = 'rgba(0,0,0,0.4)';
-  ctx.beginPath();
-  ctx.arc(muteX, muteY, 14, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.fillStyle = WHITE;
-  ctx.font = '14px sans-serif';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillText(audioMuted ? '🔇' : '🔊', muteX, muteY);
-  ctx.textAlign = 'left';
-  ctx.textBaseline = 'alphabetic';
-
-  // Leaderboard button (below mute)
-  const lbBtnX = W - 44;
-  const lbBtnY = 72;
-  ctx.fillStyle = 'rgba(0,0,0,0.4)';
-  ctx.beginPath();
-  ctx.arc(lbBtnX, lbBtnY, 14, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.fillStyle = GOLD;
-  ctx.font = '14px sans-serif';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillText('🏆', lbBtnX, lbBtnY);
-  ctx.textAlign = 'left';
-  ctx.textBaseline = 'alphabetic';
 
   // Active power-up indicator
   if (game.activePowerUp) {
     const puNames = { doubleJump: 'Pulo Duplo', speedBoost: 'Velocidade', invincible: 'Invencível', bullet: 'Tiro Ativo' };
     const puColors = { doubleJump: PHARMACY_GREEN, speedBoost: GOLD, invincible: BLUE_PILL, bullet: GOLD };
-    const barW = 140;
-    const barH = 8;
+    const barW = 160 * scale;
+    const barH = 10 * scale;
     const barX = W / 2 - barW / 2;
-    const barY = 58;
+    const barY = 75 * scale;
     
-    // Determine maxTime for this powerup
-    let maxTime = 3; // Default
+    let maxTime = 3;
     if (game.activePowerUp === 'doubleJump') maxTime = 5;
     else if (game.activePowerUp === 'invincible') maxTime = 4;
     else if (game.activePowerUp === 'bullet') maxTime = 6;
@@ -3246,37 +3714,39 @@ function drawHUD(ctx) {
 
     const pct = Math.min(1, game.powerUpTimer / maxTime);
 
-    ctx.fillStyle = 'rgba(0,0,0,0.4)';
-    ctx.fillRect(barX - 4, barY - 16, barW + 8, 30);
+    ctx.fillStyle = 'rgba(0,0,0,0.6)';
+    ctx.beginPath();
+    ctx.roundRect(barX - 10, barY - 20, barW + 20, 40, 6);
+    ctx.fill();
 
-    ctx.font = `600 ${fontSize * 0.7}px 'Plus Jakarta Sans', sans-serif`;
+    ctx.font = `800 ${fontSize * 0.8}px 'Plus Jakarta Sans', sans-serif`;
     ctx.fillStyle = puColors[game.activePowerUp] || WHITE;
     ctx.textAlign = 'center';
     ctx.fillText(puNames[game.activePowerUp] || 'Ativo', W / 2, barY - 2);
 
     ctx.fillStyle = 'rgba(255,255,255,0.2)';
-    ctx.fillRect(barX, barY + 2, barW, barH);
+    ctx.fillRect(barX, barY + 6, barW, barH);
     ctx.fillStyle = puColors[game.activePowerUp] || WHITE;
-    ctx.fillRect(barX, barY + 2, barW * pct, barH);
+    ctx.fillRect(barX, barY + 6, barW * pct, barH);
     ctx.textAlign = 'left';
   }
 
   // Shield Indicator
   if (game.shieldHits > 0) {
-    ctx.font = `700 ${fontSize * 0.7}px 'Plus Jakarta Sans', sans-serif`;
+    ctx.font = `800 ${fontSize * 0.8}px 'Plus Jakarta Sans', sans-serif`;
     ctx.fillStyle = '#3498db';
     ctx.textAlign = 'right';
-    ctx.fillText(`ESCUDO: ${game.shieldHits}`, W - 10, 80);
+    ctx.fillText(`🛡️ ESCUDO: ${game.shieldHits}`, W - 90 * scale, 95 * scale);
     ctx.textAlign = 'left';
   }
 
   // Tutorial hint
   if (PHASES[game.currentPhase].hint && game.hintTimer > 0) {
-    ctx.font = `600 ${fontSize * 0.8}px 'Plus Jakarta Sans', sans-serif`;
+    ctx.font = `600 ${fontSize * 0.9}px 'Plus Jakarta Sans', sans-serif`;
     ctx.fillStyle = `rgba(255,255,255,${Math.min(1, game.hintTimer)})`;
     ctx.textAlign = 'center';
-    const hintText = game.isMobile ? 'Toque para pular!' : 'ESPAÇO ou ↑ para pular!';
-    ctx.fillText(hintText, W / 2, H * 0.4);
+    const hintText = game.isMobile ? 'Toque na tela para pular!' : 'ESPAÇO ou ↑ para pular!';
+    ctx.fillText(hintText, W / 2, H * 0.45);
     ctx.textAlign = 'left';
   }
 
@@ -3284,24 +3754,49 @@ function drawHUD(ctx) {
   if (game.isMobile) {
     ctx.fillStyle = 'rgba(255,255,255,0.06)';
     ctx.beginPath();
-    ctx.roundRect(W * 0.05, H * 0.55, W * 0.9, H * 0.38, 16);
+    ctx.roundRect(W * 0.05, H * 0.55, W * 0.9, H * 0.38, 20);
     ctx.fill();
-    ctx.font = `600 ${Math.max(12, 14 * scale)}px 'Plus Jakarta Sans', sans-serif`;
-    ctx.fillStyle = 'rgba(255,255,255,0.15)';
+    ctx.font = `800 ${Math.max(14, 16 * scale)}px 'Plus Jakarta Sans', sans-serif`;
+    ctx.fillStyle = 'rgba(255,255,255,0.25)';
     ctx.textAlign = 'center';
-    ctx.fillText('TOQUE PARA PULAR', W / 2, H * 0.95);
+    ctx.fillText('TOQUE AQUI PARA PULAR', W / 2, H * 0.95);
     ctx.textAlign = 'left';
 
+    // Especial button
+    if (!game.specialTriggered) {
+      const specR = 45 * scale;
+      const specX = 70 * scale;
+      const specY = H - 100 * scale;
+      const isReady = (game.specialCooldown <= 0);
+      const specPulse = isReady ? (0.8 + Math.sin(performance.now() / 200) * 0.2) : 1;
+      
+      ctx.fillStyle = isReady ? 'rgba(255, 215, 0, 0.5)' : 'rgba(0,0,0,0.5)';
+      ctx.beginPath();
+      ctx.arc(specX, specY, specR * specPulse, 0, Math.PI * 2);
+      ctx.fill();
+      
+      ctx.fillStyle = isReady ? GOLD : 'rgba(255,255,255,0.9)';
+      ctx.font = `bold ${24 * scale}px 'Plus Jakarta Sans', sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      if (isReady) {
+        ctx.fillText('⚡', specX, specY);
+      } else {
+        ctx.font = `700 ${18 * scale}px sans-serif`;
+        ctx.fillText(Math.ceil(game.specialCooldown), specX, specY);
+      }
+    }
+
     // Shoot button
-    const btnR = 40 * scale;
-    const btnX = W - 60;
-    const btnY = H - 80;
-    ctx.fillStyle = 'rgba(0,0,0,0.4)';
+    const btnR = 45 * scale;
+    const btnX = W - 70 * scale;
+    const btnY = H - 100 * scale;
+    ctx.fillStyle = 'rgba(0,0,0,0.5)';
     ctx.beginPath();
     ctx.arc(btnX, btnY, btnR, 0, Math.PI * 2);
     ctx.fill();
-    ctx.fillStyle = 'rgba(255,255,255,0.85)';
-    ctx.font = `700 ${Math.max(14, 16 * scale)}px 'Plus Jakarta Sans', sans-serif`;
+    ctx.fillStyle = 'rgba(255,255,255,1.0)';
+    ctx.font = `bold ${24 * scale}px 'Plus Jakarta Sans', sans-serif`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText('💊', btnX, btnY);
@@ -3390,9 +3885,24 @@ function drawTitleScreen(ctx) {
     ctx.fillStyle = 'rgba(255,255,255,0.5)';
     ctx.shadowColor = 'rgba(0,0,0,0.8)';
     ctx.shadowBlur = 4;
-    ctx.fillText('ESPAÇO / ↑ = Pular  |  D = Debug  |  M = Mudo', W / 2, ctaY + 30);
+    ctx.fillText('ESPAÇO / ↑ = Pular  |  D = Debug  |  M = Mudo | L = Placar', W / 2, ctaY + 30);
     ctx.shadowBlur = 0;
   }
+
+  // Ranking button on Title Screen (Top-Right)
+  const lbBtnX = W - 44;
+  const lbBtnY = 42;
+  ctx.fillStyle = 'rgba(0,0,0,0.6)';
+  ctx.beginPath();
+  ctx.arc(lbBtnX, lbBtnY, 20, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = GOLD;
+  ctx.font = '20px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('🏆', lbBtnX, lbBtnY);
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'alphabetic';
 
   // Legend - with dark backdrop panel
   const legendY = H * 0.78;
@@ -3433,18 +3943,133 @@ function drawTitleScreen(ctx) {
 
 // Character selection screen hitboxes (stored for click detection)
 let charSelectBoxes = { male: null, female: null };
+let charSelectSkinBoxes = [];
 let pauseMenuButtons = { resume: null, quit: null };
 
 function pauseGame() {
   if (game.state !== 'playing') return;
   game.state = 'paused';
+  document.getElementById('menu-container').classList.remove('hidden');
+  document.getElementById('menu-pause').classList.remove('hidden');
   stopMusic();
+  saveProgress();
 }
 
 function resumeGame() {
   if (game.state !== 'paused') return;
   game.state = 'playing';
+  document.getElementById('menu-container').classList.add('hidden');
   startMusic();
+}
+
+// --- SISTEMA DE LOJA ---
+function openShop() {
+  game.state = 'shop';
+  document.getElementById('menu-pause').classList.add('hidden');
+  document.getElementById('menu-shop').classList.remove('hidden');
+  renderShop();
+}
+
+function clearObstacles() {
+  for (const o of obstaclePool) o.active = false;
+  for (const p of powerUpPool) p.active = false;
+  for (const w of weaponPool) w.active = false;
+}
+
+function closeShop() {
+  document.getElementById('menu-shop').classList.add('hidden');
+  document.getElementById('menu-container').classList.add('hidden');
+  if (game.lives > 0) {
+    game.state = 'playing';
+  } else {
+    game.state = 'gameover';
+  }
+}
+
+function renderShop() {
+  try {
+    const grid = document.getElementById('shop-grid');
+    const coinsDisplay = document.getElementById('shop-coins');
+    if (!grid || !coinsDisplay) return;
+    
+    coinsDisplay.textContent = game.totalCoins || 0;
+    grid.innerHTML = '';
+    
+    SKINS.forEach(skin => {
+      const div = document.createElement('div');
+      div.className = 'shop-item';
+      const owned = (game.unlockedSkins || ['default']).includes(skin.id);
+      const selected = game.skin === skin.id;
+      
+      if (owned) div.classList.add('owned');
+      if (selected) div.classList.add('selected');
+      
+      div.innerHTML = `
+        <span class="shop-icon">${skin.icon}</span>
+        <span class="shop-name">${skin.label}</span>
+        <span class="shop-price" style="color: ${skin.price === 0 ? '#2ecc40' : '#FFD700'}">${skin.price === 0 ? '✓' : (skin.price + '🪙')}</span>
+      `;
+      
+      div.onclick = (e) => {
+        e.stopPropagation();
+        buySkin(skin);
+      };
+      grid.appendChild(div);
+    });
+  } catch (err) {
+    console.error("Erro ao renderizar loja:", err);
+  }
+}
+
+function buySkin(skin) {
+  try {
+    const unlocked = game.unlockedSkins || ['default'];
+    const owned = unlocked.includes(skin.id);
+    
+    if (owned) {
+      game.skin = skin.id;
+      saveProgress();
+      renderShop();
+      return;
+    }
+    
+    const price = skin.price || 0;
+    if ((game.totalCoins || 0) >= price) {
+      game.totalCoins -= price;
+      if (!game.unlockedSkins) game.unlockedSkins = ['default'];
+      if (!game.unlockedSkins.includes(skin.id)) {
+        game.unlockedSkins.push(skin.id);
+      }
+      game.skin = skin.id;
+      saveProgress();
+      renderShop();
+      sfxCollect();
+    }
+  } catch (err) {
+    console.error("Erro ao comprar skin:", err);
+  }
+}
+
+function quitToMain() {
+  game.state = 'title';
+  game.titleAlpha = 0;
+  game.titlePhase = 0;
+  document.getElementById('menu-pause').classList.add('hidden');
+  document.getElementById('menu-container').classList.add('hidden');
+  stopMusic();
+}
+
+function goToTitleFromMenu() {
+  game.state = 'title';
+  game.titleAlpha = 0;
+  game.titlePhase = 0;
+  game.specialActive = false;
+  game.inCutscene = false;
+  document.getElementById('menu-container').classList.add('hidden');
+  document.getElementById('menu-pause').classList.add('hidden');
+  document.getElementById('menu-shop').classList.add('hidden');
+  if (typeof hideLeaderboardOverlay === 'function') hideLeaderboardOverlay();
+  stopMusic();
 }
 
 function goToTitle() {
@@ -3567,6 +4192,47 @@ function drawCharSelectScreen(ctx) {
 
   // Store play button hitbox
   charSelectBoxes.play = { x: btnX, y: btnY, w: btnW, h: btnH };
+
+  // --- SKIN SELECTION STRIP ---
+  const unlockedSkins = SKINS.filter(s => (game.unlockedSkins || ['default']).includes(s.id));
+  const skinCardW = 60 * scale;
+  const skinCardH = 60 * scale;
+  const skinGap = 10 * scale;
+  const totalSkinsW = (skinCardW + skinGap) * unlockedSkins.length - skinGap;
+  const skinStartX = W / 2 - totalSkinsW / 2;
+  const skinY = btnY + btnH + 20 * scale;
+
+  charSelectSkinBoxes = [];
+
+  unlockedSkins.forEach((skin, i) => {
+    const sx = skinStartX + i * (skinCardW + skinGap);
+    const isSelected = game.skin === skin.id;
+
+    ctx.save();
+    // Card backdrop
+    ctx.fillStyle = isSelected ? 'rgba(34,139,34,0.4)' : 'rgba(255,255,255,0.1)';
+    ctx.strokeStyle = isSelected ? PHARMACY_GREEN_LIGHT : 'rgba(255,255,255,0.3)';
+    ctx.lineWidth = isSelected ? 3 : 1;
+    
+    ctx.beginPath();
+    ctx.roundRect(sx, skinY, skinCardW, skinCardH, 8);
+    ctx.fill();
+    ctx.stroke();
+
+    // Icon
+    ctx.font = `${24 * scale}px sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(skin.icon, sx + skinCardW / 2, skinY + skinCardH / 2 - 5);
+
+    // Label
+    ctx.font = `600 ${10 * scale}px 'Plus Jakarta Sans', sans-serif`;
+    ctx.fillStyle = WHITE;
+    ctx.fillText(skin.label, sx + skinCardW / 2, skinY + skinCardH - 10);
+
+    charSelectSkinBoxes.push({ x: sx, y: skinY, w: skinCardW, h: skinCardH, id: skin.id });
+    ctx.restore();
+  });
 
   ctx.restore();
 }
@@ -3701,7 +4367,7 @@ function drawVictoryScreen(ctx) {
     ctx.globalAlpha = game.victoryAlpha * pulse;
     ctx.font = `700 ${Math.min(18, W * 0.03) * scale}px 'Plus Jakarta Sans', sans-serif`;
     ctx.fillStyle = WHITE;
-    const restartText = game.isMobile ? 'Toque para Jogar Novamente' : 'Clique para Jogar Novamente';
+    const restartText = game.isMobile ? 'Toque para Jogar Novamente' : 'Clique para Jogar Novamente ou [H] Início';
     ctx.fillText(restartText, W / 2, H * 0.78);
   }
   ctx.textAlign = 'left';
@@ -3759,12 +4425,16 @@ function render() {
 
   unapplyCameraTransform(ctx);
 
+  // Efeitos de Pós-processamento (Bloom, etc)
+  // Aplicados ANTES do HUD para não duplicar o texto
+  drawPostProcessing(ctx);
+
   // === LAYER 4: HUD & Overlays (Screen space) ===
   if (game.state === 'playing') {
     drawHUD(ctx);
   }
 
-  if (game.state === 'paused') {
+  if (game.state === 'paused' || game.state === 'shop') {
     drawPauseOverlay(ctx);
   }
 
@@ -3775,6 +4445,44 @@ function render() {
   }
 
   drawDebug(ctx);
+}
+
+function drawPostProcessing(ctx) {
+  ctx.save();
+  
+  // 1. Efeito de Brilho (Bloom) suave
+  // REMOVIDO drawImage(canvas) pois causava piscamento (flicker) em alguns navegadores
+  if (game.specialActive || game.activePowerUp) {
+    ctx.globalCompositeOperation = 'screen';
+    ctx.fillStyle = game.specialActive ? 'rgba(46, 204, 64, 0.15)' : 'rgba(255, 215, 0, 0.15)';
+    ctx.fillRect(0, 0, W, H);
+    ctx.globalCompositeOperation = 'source-over';
+  }
+
+  // 2. Scanlines Estilizadas (CRT retro)
+  ctx.globalAlpha = 0.04;
+  ctx.fillStyle = "#000";
+  for (let i = 0; i < H; i += 3) {
+    ctx.fillRect(0, i, W, 1);
+  }
+
+  // 3. Vinheta Profissional (Melhor degradê)
+  const grd = ctx.createRadialGradient(W/2, H/2, W*0.4, W/2, H/2, W*1.1);
+  grd.addColorStop(0, "rgba(0,0,0,0)");
+  grd.addColorStop(1, "rgba(0,10,20,0.6)");
+  ctx.fillStyle = grd;
+  ctx.globalAlpha = 0.5;
+  ctx.fillRect(0, 0, W, H);
+
+  // 4. Aberração Cromática Removida para evitar o "efeito refletindo" no placar
+  // Em vez disso, aumentamos um pouco a vinheta quando em alta velocidade
+  if (game.speed > MAX_SPEED * 0.8) {
+     ctx.globalAlpha = 0.15;
+     ctx.fillStyle = "rgba(0,0,0,0.2)";
+     ctx.fillRect(0, 0, W, H);
+  }
+
+  ctx.restore();
 }
 
 // ============================================================
@@ -3797,44 +4505,59 @@ canvas.addEventListener('click', (e) => {
   if (game.state === 'charSelect') {
     if (pointInBox(mx, my, charSelectBoxes.male)) {
       game.selectedChar = 'male';
+      saveProgress(); // Salva no localStorage para cutscenes
       sfxCollect();
     } else if (pointInBox(mx, my, charSelectBoxes.female)) {
       game.selectedChar = 'female';
+      saveProgress(); // Salva no localStorage para cutscenes
       sfxCollect();
     } else if (pointInBox(mx, my, charSelectBoxes.play)) {
-      resetGame();
+      if (typeof startIntro !== "undefined") {
+        startIntro();
+      } else {
+        resetGame();
+      }
+    } else {
+      // Check skin selection
+      for (const box of charSelectSkinBoxes) {
+        if (pointInBox(mx, my, box)) {
+          game.skin = box.id;
+          sfxCollect();
+          saveProgress();
+          break;
+        }
+      }
     }
     return;
   }
 
   // During gameplay - check button clicks
   if (game.state === 'playing') {
-    // Pause button
-    const pauseX = 44;
-    const pauseY = 42;
-    const pauseDist = Math.sqrt((mx - pauseX) ** 2 + (my - pauseY) ** 2);
-    if (pauseDist < 20) {
-      pauseGame();
-      e.stopPropagation();
-      return;
-    }
+    const btnSize = 18 * scale;
+    const btnMargin = 12 * scale;
+    const rx = W - 35 * scale;
+    const mY = 35 * scale;
+    const lY = mY + btnSize * 2 + btnMargin;
+    const pY = lY + btnSize * 2 + btnMargin;
+    const hitR = btnSize * 1.5;
 
     // Mute button
-    const muteX = W - 44;
-    const muteY = 42;
-    const dist = Math.sqrt((mx - muteX) ** 2 + (my - muteY) ** 2);
-    if (dist < 20) {
+    if (Math.sqrt((mx - rx) ** 2 + (my - mY) ** 2) < hitR) {
       toggleMute();
       e.stopPropagation();
       return;
     }
 
     // Leaderboard button
-    const lbBtnX = W - 44;
-    const lbBtnY = 72;
-    const lbDist = Math.sqrt((mx - lbBtnX) ** 2 + (my - lbBtnY) ** 2);
-    if (lbDist < 20) {
+    if (Math.sqrt((mx - rx) ** 2 + (my - lY) ** 2) < hitR) {
       showLeaderboard(0, 0);
+      e.stopPropagation();
+      return;
+    }
+
+    // Pause button
+    if (Math.sqrt((mx - rx) ** 2 + (my - pY) ** 2) < hitR) {
+      pauseGame();
       e.stopPropagation();
       return;
     }
@@ -3865,7 +4588,7 @@ canvas.addEventListener('mousemove', (e) => {
 document.addEventListener('keydown', (e) => {
   if (e.code === 'KeyM') toggleMute();
   // L key to toggle leaderboard
-  if (e.code === 'KeyL' && game.state === 'playing') {
+  if (e.code === 'KeyL' && (game.state === 'playing' || game.state === 'title')) {
     showLeaderboard(0, 0);
   }
   // Escape to close leaderboard
