@@ -3169,17 +3169,25 @@ let pauseMenuButtons = { resume: null, quit: null };
 function pauseGame() {
   if (game.state !== 'playing') return;
   game.state = 'paused';
-  document.getElementById('menu-container').classList.remove('hidden');
-  document.getElementById('menu-pause').classList.remove('hidden');
-  stopMusic();
-  saveProgress();
+  try {
+    document.getElementById('menu-container').classList.remove('hidden');
+    document.getElementById('menu-pause').classList.remove('hidden');
+  } catch(e) { console.error('pauseGame DOM error:', e); }
+  try { stopMusic(); } catch(e) {}
+  try { saveProgress(); } catch(e) {}
+  console.log('Game paused');
 }
 
 function resumeGame() {
   if (game.state !== 'paused') return;
   game.state = 'playing';
-  document.getElementById('menu-container').classList.add('hidden');
-  startMusic();
+  try {
+    document.getElementById('menu-container').classList.add('hidden');
+    document.getElementById('menu-pause').classList.add('hidden');
+    document.getElementById('menu-shop').classList.add('hidden');
+  } catch(e) { console.error('resumeGame DOM error:', e); }
+  try { startMusic(); } catch(e) {}
+  console.log('Game resumed');
 }
 
 function openShop() {
