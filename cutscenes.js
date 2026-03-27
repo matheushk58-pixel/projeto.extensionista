@@ -85,8 +85,6 @@ const CutsceneSystem = {
             this.nextBtn.onclick = (e) => { e.stopPropagation(); this.end(); };
         }
 
-        this.preloadAll();
-
         window.addEventListener('keydown', (e) => {
             if (this.isActive) {
                 if (e.key === 'Escape') this.end();
@@ -101,38 +99,40 @@ const CutsceneSystem = {
         console.log('CutsceneSystem: Inicializado');
     },
 
-    async preloadAll() {
-        console.log('CutsceneSystem: Iniciando pre-loading de vídeos...');
-        
+    async preloadVideo(type, gender) {
+        const key = `${type}_${gender}`;
+        if (this.preloadedVideos[key]) return this.preloadedVideos[key];
+
         const mapMale = {
-            'inicio_male': 'cutscenes personagem masculino/personagem masculino  cena 1.mp4',
-            'especial_male': 'cutscenes personagem masculino/Modo turbo.mp4',
-            'gameover_male': 'cutscenes personagem masculino/Game over.mp4',
-            'novafase_male': 'cutscenes personagem masculino/Nova fase.mp4',
-            'ranking_male': 'cutscenes personagem masculino/Placar de lideres.mp4'
+            'inicio': 'cutscenes personagem masculino/personagem masculino  cena 1.mp4',
+            'especial': 'cutscenes personagem masculino/Modo turbo.mp4',
+            'gameover': 'cutscenes personagem masculino/Game over.mp4',
+            'novafase': 'cutscenes personagem masculino/Nova fase.mp4',
+            'ranking': 'cutscenes personagem masculino/Placar de lideres.mp4'
         };
-        
+
         const mapFemale = {
-            'inicio_female': 'cutscenes personagem feminina/inicio fem.mp4',
-            'especial_female': 'cutscenes personagem feminina/modo turbo.mp4',
-            'gameover_female': 'cutscenes personagem feminina/gameover.mp4',
-            'novafase_female': 'cutscenes personagem feminina/nova fase.mp4',
-            'ranking_female': 'cutscenes personagem feminina/placar.mp4'
+            'inicio': 'cutscenes personagem feminina/inicio fem.mp4',
+            'especial': 'cutscenes personagem feminina/modo turbo.mp4',
+            'gameover': 'cutscenes personagem feminina/gameover.mp4',
+            'novafase': 'cutscenes personagem feminina/nova fase.mp4',
+            'ranking': 'cutscenes personagem feminina/placar.mp4'
         };
 
-        const allPaths = { ...mapMale, ...mapFemale };
+        const path = gender === 'female' ? mapFemale[type] : mapMale[type];
+        if (!path) return null;
 
-        for (const [key, path] of Object.entries(allPaths)) {
-            try {
-                const encodedPath = encodeURI(path);
-                const response = await fetch(encodedPath);
-                const blob = await response.blob();
-                const blobUrl = URL.createObjectURL(blob);
-                this.preloadedVideos[key] = blobUrl;
-                console.log(`CutsceneSystem: Vídeo pre-carregado: ${key}`);
-            } catch (error) {
-                console.warn(`CutsceneSystem: Erro ao pre-carregar ${key}:`, error);
-            }
+        try {
+            const encodedPath = encodeURI(path);
+            const response = await fetch(encodedPath);
+            const blob = await response.blob();
+            const blobUrl = URL.createObjectURL(blob);
+            this.preloadedVideos[key] = blobUrl;
+            console.log(`CutsceneSystem: Vídeo carregado sob demanda: ${key}`);
+            return blobUrl;
+        } catch (error) {
+            console.warn(`CutsceneSystem: Erro ao carregar ${key}:`, error);
+            return null;
         }
     },
 
@@ -222,35 +222,46 @@ const CutsceneSystem = {
 
         const gender = this.getGender();
         const preloadKey = `${type}_${gender}`;
-        let src = this.preloadedVideos[preloadKey];
-
-        if (src) {
-            console.log('CutsceneSystem: Usando vídeo pré-carregado (Instantâneo)');
-        } else {
-            console.log('CutsceneSystem: Vídeo não pré-carregado, buscando path direto');
-            src = this.getPath(type);
-        }
 
         this.isActive = true;
         this.onComplete = callback;
 
         if (this.nextBtn) this.nextBtn.style.display = 'none';
 
-        console.log('CutsceneSystem: Reproduzindo cutscene:', type, '| src:', src);
+        // Carrega o vídeo sob demanda (lazy loading)
+        const cachedSrc = this.preloadedVideos[preloadKey];
+        if (cachedSrc) {
+            console.log('CutsceneSystem: Usando vídeo em cache');
+            this._showVideo(cachedSrc, type);
+        } else {
+            console.log('CutsceneSystem: Carregando vídeo...');
+            this.preloadVideo(type, gender).then(src => {
+                if (!this.isActive) return;
+                if (src) {
+                    this._showVideo(src, type);
+                } else {
+                    // Fallback: tenta carregar direto pelo path
+                    const directSrc = this.getPath(type);
+                    this._showVideo(directSrc, type);
+                }
+            });
+        }
+    },
 
+    _showVideo(src, type) {
         // Reset Interface com Fade e Zoom In
         this.overlay.style.display = 'flex';
         this.overlay.style.opacity = '0';
         this.video.style.transform = "scale(0.8)";
-        
-        setTimeout(() => { 
+
+        setTimeout(() => {
             this.overlay.style.opacity = '1';
             this.video.style.transform = "scale(1)";
         }, 50);
 
         this.video.src = src;
         this.video.load();
-        
+
         // Inicia Diálogos
         this.startDialogue(type);
 
