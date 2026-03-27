@@ -3981,6 +3981,18 @@ function formatNumber(n) {
   return Math.floor(n).toLocaleString('pt-BR');
 }
 
+function drawHeart(ctx, x, y, size) {
+  ctx.save();
+  ctx.translate(x, y);
+  const s = size / 20;
+  ctx.beginPath();
+  ctx.moveTo(0, 3 * s);
+  ctx.bezierCurveTo(-5 * s, -5 * s, -13 * s, 0, 0, 12 * s);
+  ctx.bezierCurveTo(13 * s, 0, 5 * s, -5 * s, 0, 3 * s);
+  ctx.fill();
+  ctx.restore();
+}
+
 function drawHUD(ctx) {
   // HUD is drawn in screen space (not camera space)
   const fontSize = Math.max(14, 16 * scale);
