@@ -14,6 +14,19 @@ from pydantic import BaseModel, Field
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(BASE_DIR, "leaderboard.db")
 
+# Garante que o banco de dados tem a coluna character (caso seja um DB antigo)
+def migrate_db():
+    conn = sqlite3.connect(DB_PATH)
+    try:
+        conn.execute("ALTER TABLE scores ADD COLUMN character TEXT NOT NULL DEFAULT 'male'")
+        conn.commit()
+        print("Migração concluída: Coluna 'character' adicionada.")
+    except:
+        pass # Coluna já existe
+    conn.close()
+
+migrate_db()
+
 def get_db():
     db = sqlite3.connect(DB_PATH, check_same_thread=False)
     db.execute("PRAGMA journal_mode=WAL")
