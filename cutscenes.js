@@ -6,6 +6,7 @@ const CutsceneSystem = {
     isActive: false,
     onComplete: null,
     textInterval: null,
+    preloadedVideos: {},
     
     // Configurações de Diálogos (Sincronizados com os vídeos)
     texts: {
@@ -84,6 +85,8 @@ const CutsceneSystem = {
             this.nextBtn.onclick = (e) => { e.stopPropagation(); this.end(); };
         }
 
+        this.preloadAll();
+
         window.addEventListener('keydown', (e) => {
             if (this.isActive) {
                 if (e.key === 'Escape') this.end();
@@ -96,6 +99,41 @@ const CutsceneSystem = {
         });
         
         console.log('CutsceneSystem: Inicializado');
+    },
+
+    async preloadAll() {
+        console.log('CutsceneSystem: Iniciando pre-loading de vídeos...');
+        
+        const mapMale = {
+            'inicio_male': 'cutscenes personagem masculino/personagem masculino  cena 1.mp4',
+            'especial_male': 'cutscenes personagem masculino/Modo turbo.mp4',
+            'gameover_male': 'cutscenes personagem masculino/Game over.mp4',
+            'novafase_male': 'cutscenes personagem masculino/Nova fase.mp4',
+            'ranking_male': 'cutscenes personagem masculino/Placar de lideres.mp4'
+        };
+        
+        const mapFemale = {
+            'inicio_female': 'cutscenes personagem feminina/inicio fem.mp4',
+            'especial_female': 'cutscenes personagem feminina/modo turbo.mp4',
+            'gameover_female': 'cutscenes personagem feminina/gameover.mp4',
+            'novafase_female': 'cutscenes personagem feminina/nova fase.mp4',
+            'ranking_female': 'cutscenes personagem feminina/placar.mp4'
+        };
+
+        const allPaths = { ...mapMale, ...mapFemale };
+
+        for (const [key, path] of Object.entries(allPaths)) {
+            try {
+                const encodedPath = encodeURI(path);
+                const response = await fetch(encodedPath);
+                const blob = await response.blob();
+                const blobUrl = URL.createObjectURL(blob);
+                this.preloadedVideos[key] = blobUrl;
+                console.log(`CutsceneSystem: Vídeo pre-carregado: ${key}`);
+            } catch (error) {
+                console.warn(`CutsceneSystem: Erro ao pre-carregar ${key}:`, error);
+            }
+        }
     },
 
     getGender() {
@@ -182,7 +220,17 @@ const CutsceneSystem = {
             window.clearObstacles();
         }
 
-        const src = this.getPath(type);
+        const gender = this.getGender();
+        const preloadKey = `${type}_${gender}`;
+        let src = this.preloadedVideos[preloadKey];
+
+        if (src) {
+            console.log('CutsceneSystem: Usando vídeo pré-carregado (Instantâneo)');
+        } else {
+            console.log('CutsceneSystem: Vídeo não pré-carregado, buscando path direto');
+            src = this.getPath(type);
+        }
+
         this.isActive = true;
         this.onComplete = callback;
 
