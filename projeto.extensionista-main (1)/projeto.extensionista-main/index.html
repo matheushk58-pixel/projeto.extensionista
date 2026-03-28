@@ -997,6 +997,8 @@ const Input = {
     };
 
     canvas.addEventListener('touchstart', (e) => {
+      // Allow touch events to reach DOM menu elements when paused or in shop
+      if (game.state === 'paused' || game.state === 'shop') return;
       e.preventDefault();
       if (game.state !== 'playing' && game.state !== 'title' && game.state !== 'charSelect' && game.state !== 'gameover' && game.state !== 'victory') return;
       const touch = e.touches[0];
@@ -3207,12 +3209,8 @@ function clearObstacles() {
 
 function closeShop() {
   document.getElementById('menu-shop').classList.add('hidden');
-  document.getElementById('menu-container').classList.add('hidden');
-  if (game.lives > 0) {
-    game.state = 'playing';
-  } else {
-    game.state = 'gameover';
-  }
+  document.getElementById('menu-pause').classList.remove('hidden');
+  game.state = 'paused';
 }
 
 function renderShop() {
