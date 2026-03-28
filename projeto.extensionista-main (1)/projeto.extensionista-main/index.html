@@ -146,6 +146,7 @@
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     background: rgba(0,10,20,0.85); z-index: 300;
     display: flex; justify-content: center; align-items: center;
+    pointer-events: auto;
   }
   .menu-panel {
     background: linear-gradient(135deg, #0d1b2a 0%, #1b2838 100%);
@@ -3171,6 +3172,7 @@ let pauseMenuButtons = { resume: null, quit: null };
 function pauseGame() {
   if (game.state !== 'playing') return;
   game.state = 'paused';
+  canvas.style.pointerEvents = 'none';
   try {
     document.getElementById('menu-container').classList.remove('hidden');
     document.getElementById('menu-pause').classList.remove('hidden');
@@ -3183,6 +3185,7 @@ function pauseGame() {
 function resumeGame() {
   if (game.state !== 'paused') return;
   game.state = 'playing';
+  canvas.style.pointerEvents = 'auto';
   try {
     document.getElementById('menu-container').classList.add('hidden');
     document.getElementById('menu-pause').classList.add('hidden');
@@ -3279,6 +3282,7 @@ function quitToMain() {
   game.state = 'title';
   game.titleAlpha = 0;
   game.titlePhase = 0;
+  canvas.style.pointerEvents = 'auto';
   document.getElementById('menu-pause').classList.add('hidden');
   document.getElementById('menu-container').classList.add('hidden');
   stopMusic();
@@ -3290,6 +3294,7 @@ function goToTitleFromMenu() {
   game.titlePhase = 0;
   game.specialActive = false;
   game.inCutscene = false;
+  canvas.style.pointerEvents = 'auto';
   document.getElementById('menu-container').classList.add('hidden');
   document.getElementById('menu-pause').classList.add('hidden');
   document.getElementById('menu-shop').classList.add('hidden');
