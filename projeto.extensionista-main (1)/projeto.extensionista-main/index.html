@@ -784,11 +784,9 @@ const POWERUP_TYPES = [
 // ============================================================
 // LEADERBOARD API
 // ============================================================
-const API = (window.location.port === '8000')
-  ? "" 
-  : (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:')
-    ? "http://localhost:8000"
-    : "https://projeto-extensionista-tjv4.onrender.com";
+const API = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:')
+  ? "http://localhost:8000"
+  : "";
 
 async function fetchLeaderboard() {
   console.log('Leaderboard: Tentando buscar de', API || 'localhost');
