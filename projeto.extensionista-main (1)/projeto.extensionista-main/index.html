@@ -998,6 +998,7 @@ const Input = {
 
     canvas.addEventListener('touchstart', (e) => {
       e.preventDefault();
+      if (game.state !== 'playing' && game.state !== 'title' && game.state !== 'charSelect' && game.state !== 'gameover' && game.state !== 'victory') return;
       const touch = e.touches[0];
       updateTouch(touch);
       const mx = this.touchX;
@@ -1096,6 +1097,7 @@ const Input = {
     });
 
     canvas.addEventListener('mousedown', (e) => {
+      if (game.state !== 'playing' && game.state !== 'title' && game.state !== 'charSelect' && game.state !== 'gameover' && game.state !== 'victory') return;
       this.touched = true;
       this.justTouched = true;
       this.justPressed['Mouse'] = true;
@@ -4542,10 +4544,6 @@ function render() {
   // === LAYER 4: HUD & Overlays (Screen space) ===
   if (game.state === 'playing') {
     drawHUD(ctx);
-  }
-
-  if (game.state === 'paused' || game.state === 'shop') {
-    drawPauseOverlay(ctx);
   }
 
   if (game.state === 'gameover') {
