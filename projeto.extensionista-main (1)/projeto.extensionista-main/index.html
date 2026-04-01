@@ -281,9 +281,9 @@
 <canvas id="gameCanvas"></canvas>
 
 <!-- SISTEMA DE MENUS E LOJA -->
-<div id="menu-container" class="hidden">
+<div id="menu-container" class="hidden" onclick="resumeGame()">
   <!-- Menu Pausa -->
-  <div id="menu-pause" class="menu-panel hidden">
+  <div id="menu-pause" class="menu-panel hidden" onclick="event.stopPropagation()">
     <div class="menu-title">PAUSADO</div>
     <button class="btn-action" onclick="resumeGame()">RETOMAR</button>
     <button class="btn-action btn-secondary" onclick="openShop()">LOJINHA 🛍️</button>
@@ -293,7 +293,7 @@
   </div>
 
   <!-- Menu Lojinha -->
-  <div id="menu-shop" class="menu-panel hidden">
+  <div id="menu-shop" class="menu-panel hidden" onclick="event.stopPropagation()">
     <div class="menu-title">LOJINHA DE SKINS</div>
     <div style="margin-bottom: 15px;">Moedas: <span id="shop-coins" style="color:#FFD700; font-weight:800;">0</span></div>
     <div id="shop-grid" class="shop-grid"></div>
@@ -2994,6 +2994,14 @@ function resetGame() {
   if (audioCtx) audioCtx.resume();
   startMusic();
   saveProgress();
+
+  // Garante que menus estão ocultos ao reiniciar
+  try {
+    document.getElementById('menu-container').classList.add('hidden');
+    document.getElementById('menu-pause').classList.add('hidden');
+    document.getElementById('menu-shop').classList.add('hidden');
+    canvas.style.pointerEvents = 'auto';
+  } catch(e) {}
 }
 
 // ============================================================
@@ -3600,7 +3608,7 @@ function drawMenuButton(ctx, box, label) {
 
 function drawPauseOverlay(ctx) {
   ctx.save();
-  ctx.fillStyle = 'rgba(0, 0, 0, 0.72)';
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
   ctx.fillRect(0, 0, W, H);
 
   ctx.fillStyle = PHARMACY_GREEN_LIGHT;
@@ -3612,18 +3620,7 @@ function drawPauseOverlay(ctx) {
   ctx.fillStyle = 'rgba(255,255,255,0.85)';
   ctx.fillText('Pressione P ou ESC para continuar', W / 2, H * 0.34);
 
-  const btnW = Math.min(260, W * 0.55);
-  const btnH = 44 * scale;
-  const btnX = W / 2 - btnW / 2;
-  const btnY = H * 0.44;
-  const gap = 12 * scale;
-
-  pauseMenuButtons.resume = { x: btnX, y: btnY, w: btnW, h: btnH };
-  pauseMenuButtons.quit = { x: btnX, y: btnY + btnH + gap, w: btnW, h: btnH };
-
-  drawMenuButton(ctx, pauseMenuButtons.resume, 'Continuar');
-  drawMenuButton(ctx, pauseMenuButtons.quit, 'Voltar ao Menu');
-
+  // Removido o desenho de botões no canvas para evitar conflito com o menu DOM
   ctx.restore();
 }
 
@@ -4359,11 +4356,10 @@ canvas.addEventListener('click', (e) => {
   const mx = e.clientX - rect.left;
   const my = e.clientY - rect.top;
 
-  // Pause menu interaction (desktop only — mobile uses DOM buttons with onclick)
-  if (game.state === 'paused' && !game.isMobile) {
-    if (pointInBox(mx, my, pauseMenuButtons.resume)) { resumeGame(); return; }
-    if (pointInBox(mx, my, pauseMenuButtons.quit)) { goToTitle(); return; }
-    resumeGame();
+  // Pause menu interaction (desktop only)
+  if (game.state === 'paused') {
+    // Permite clicar em qualquer lugar para retomar, se desejar
+    // No entanto, o DOM menu deve estar no topo
     return;
   }
 
@@ -4543,8 +4539,12 @@ function render() {
   drawPostProcessing(ctx);
 
   // === LAYER 4: HUD & Overlays (Screen space) ===
-  if (game.state === 'playing') {
+  if (game.state === 'playing' || game.state === 'paused') {
     drawHUD(ctx);
+  }
+
+  if (game.state === 'paused') {
+    drawPauseOverlay(ctx);
   }
 
   if (game.state === 'gameover') {
