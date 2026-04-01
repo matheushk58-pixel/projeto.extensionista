@@ -3311,35 +3311,60 @@ function buySkin(skin) {
   }
 }
 
-function quitToMain() {
+function syncToTitleState() {
   game.state = 'title';
   game.titleAlpha = 0;
   game.titlePhase = 0;
+  game.charSelectAlpha = 0;
+  game.charHover = null;
+  game.pendingLeaderboard = false;
+  game.specialActive = false;
+  game.inCutscene = false;
+
+  if (pauseMenuReadyTimer) {
+    clearTimeout(pauseMenuReadyTimer);
+    pauseMenuReadyTimer = null;
+  }
+  pauseMenuReady = true;
+
+  if (typeof Input !== 'undefined') {
+    Input.keys = {};
+    Input.justPressed = {};
+    Input.touched = false;
+    Input.justTouched = false;
+    Input.touchX = 0;
+    Input.touchY = 0;
+  }
+
   canvas.style.pointerEvents = 'auto';
-  document.getElementById('menu-pause').classList.add('hidden');
-  document.getElementById('menu-container').classList.add('hidden');
+  canvas.style.cursor = 'default';
+
+  try {
+    document.getElementById('menu-container').classList.add('hidden');
+    document.getElementById('menu-pause').classList.add('hidden');
+    document.getElementById('menu-shop').classList.add('hidden');
+  } catch (e) {}
+
+  try { hideLeaderboard(); } catch (e) {}
+  try {
+    if (typeof CutsceneSystem !== 'undefined' && CutsceneSystem.isActive && typeof CutsceneSystem.end === 'function') {
+      CutsceneSystem.end();
+    }
+  } catch (e) {}
+
   stopMusic();
+}
+
+function quitToMain() {
+  syncToTitleState();
 }
 
 function goToTitleFromMenu() {
-  game.state = 'title';
-  game.titleAlpha = 0;
-  game.titlePhase = 0;
-  game.specialActive = false;
-  game.inCutscene = false;
-  canvas.style.pointerEvents = 'auto';
-  document.getElementById('menu-container').classList.add('hidden');
-  document.getElementById('menu-pause').classList.add('hidden');
-  document.getElementById('menu-shop').classList.add('hidden');
-  if (typeof hideLeaderboardOverlay === 'function') hideLeaderboardOverlay();
-  stopMusic();
+  syncToTitleState();
 }
 
 function goToTitle() {
-  game.state = 'title';
-  game.titleAlpha = 0;
-  game.titlePhase = 0;
-  stopMusic();
+  syncToTitleState();
 }
 
 function drawTitleScreen(ctx) {
