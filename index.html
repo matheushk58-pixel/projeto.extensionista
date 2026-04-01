@@ -146,6 +146,7 @@
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     background: rgba(0,10,20,0.85); z-index: 300;
     display: flex; justify-content: center; align-items: center;
+    pointer-events: auto;
   }
   .menu-panel {
     background: linear-gradient(135deg, #0d1b2a 0%, #1b2838 100%);
@@ -189,7 +190,9 @@
     width: 100%;
     height: 100%;
     background: rgba(0, 0, 0, 0.95);
-    z-index: 500;
+    z-index: 600;
+    pointer-events: auto;
+    touch-action: none;
     justify-content: center;
     align-items: center;
     flex-direction: column;
@@ -280,9 +283,9 @@
 <canvas id="gameCanvas"></canvas>
 
 <!-- SISTEMA DE MENUS E LOJA -->
-<div id="menu-container" class="hidden">
+<div id="menu-container" class="hidden" onclick="resumeGame()">
   <!-- Menu Pausa -->
-  <div id="menu-pause" class="menu-panel hidden">
+  <div id="menu-pause" class="menu-panel hidden" onclick="event.stopPropagation()">
     <div class="menu-title">PAUSADO</div>
     <button class="btn-action" onclick="resumeGame()">RETOMAR</button>
     <button class="btn-action btn-secondary" onclick="openShop()">LOJINHA 🛍️</button>
@@ -292,7 +295,7 @@
   </div>
 
   <!-- Menu Lojinha -->
-  <div id="menu-shop" class="menu-panel hidden">
+  <div id="menu-shop" class="menu-panel hidden" onclick="event.stopPropagation()">
     <div class="menu-title">LOJINHA DE SKINS</div>
     <div style="margin-bottom: 15px;">Moedas: <span id="shop-coins" style="color:#FFD700; font-weight:800;">0</span></div>
     <div id="shop-grid" class="shop-grid"></div>
@@ -429,7 +432,7 @@ function getCurrentScene() {
   return PHASE_SCENES[game.currentPhase] || "popular";
 }
 
-const SAVE_KEY = "drogaria_runner_v5_save";
+const SAVE_KEY = "drogaria_runner_v6_save";
 
 function getDefaultSave() {
   return {
@@ -784,11 +787,9 @@ const POWERUP_TYPES = [
 // ============================================================
 // LEADERBOARD API
 // ============================================================
-const API = (window.location.port === '8000')
-  ? "" 
-  : (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:')
-    ? "http://localhost:8000"
-    : "https://projeto-extensionista-tjv4.onrender.com";
+const API = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:')
+  ? "http://localhost:8000"
+  : "";
 
 async function fetchLeaderboard() {
   console.log('Leaderboard: Tentando buscar de', API || 'localhost');
@@ -997,7 +998,10 @@ const Input = {
     };
 
     canvas.addEventListener('touchstart', (e) => {
+      // Allow touch events to reach DOM menu elements when paused or in shop
+      if (game.state === 'paused' || game.state === 'shop') return;
       e.preventDefault();
+      if (game.state !== 'playing' && game.state !== 'title' && game.state !== 'charSelect' && game.state !== 'gameover' && game.state !== 'victory') return;
       const touch = e.touches[0];
       updateTouch(touch);
       const mx = this.touchX;
@@ -1096,6 +1100,7 @@ const Input = {
     });
 
     canvas.addEventListener('mousedown', (e) => {
+      if (game.state !== 'playing' && game.state !== 'title' && game.state !== 'charSelect' && game.state !== 'gameover' && game.state !== 'victory') return;
       this.touched = true;
       this.justTouched = true;
       this.justPressed['Mouse'] = true;
@@ -2991,6 +2996,14 @@ function resetGame() {
   if (audioCtx) audioCtx.resume();
   startMusic();
   saveProgress();
+
+  // Garante que menus estão ocultos ao reiniciar
+  try {
+    document.getElementById('menu-container').classList.add('hidden');
+    document.getElementById('menu-pause').classList.add('hidden');
+    document.getElementById('menu-shop').classList.add('hidden');
+    canvas.style.pointerEvents = 'auto';
+  } catch(e) {}
 }
 
 // ============================================================
@@ -3165,10 +3178,28 @@ function drawDebug(ctx) {
 let charSelectBoxes = { male: null, female: null };
 let charSelectSkinBoxes = [];
 let pauseMenuButtons = { resume: null, quit: null };
+let pauseMenuReady = true;
+let pauseMenuReadyTimer = null;
+const PAUSE_MENU_GRACE_MS = 350;
 
 function pauseGame() {
   if (game.state !== 'playing') return;
   game.state = 'paused';
+  canvas.style.pointerEvents = 'none';
+  if (pauseMenuReadyTimer) {
+    clearTimeout(pauseMenuReadyTimer);
+  }
+  pauseMenuReady = false;
+  pauseMenuReadyTimer = setTimeout(() => {
+    pauseMenuReady = true;
+    pauseMenuReadyTimer = null;
+  }, PAUSE_MENU_GRACE_MS);
+  if (typeof Input !== 'undefined') {
+    Input.touched = false;
+    Input.justTouched = false;
+    Input.justPressed['Touch'] = false;
+    Input.justPressed['Mouse'] = false;
+  }
   try {
     document.getElementById('menu-container').classList.remove('hidden');
     document.getElementById('menu-pause').classList.remove('hidden');
@@ -3178,9 +3209,16 @@ function pauseGame() {
   console.log('Game paused');
 }
 
-function resumeGame() {
+function resumeGame(force = false) {
   if (game.state !== 'paused') return;
+  if (!force && !pauseMenuReady) return;
+  if (pauseMenuReadyTimer) {
+    clearTimeout(pauseMenuReadyTimer);
+    pauseMenuReadyTimer = null;
+  }
+  pauseMenuReady = true;
   game.state = 'playing';
+  canvas.style.pointerEvents = 'auto';
   try {
     document.getElementById('menu-container').classList.add('hidden');
     document.getElementById('menu-pause').classList.add('hidden');
@@ -3205,12 +3243,8 @@ function clearObstacles() {
 
 function closeShop() {
   document.getElementById('menu-shop').classList.add('hidden');
-  document.getElementById('menu-container').classList.add('hidden');
-  if (game.lives > 0) {
-    game.state = 'playing';
-  } else {
-    game.state = 'gameover';
-  }
+  document.getElementById('menu-pause').classList.remove('hidden');
+  game.state = 'paused';
 }
 
 function renderShop() {
@@ -3281,6 +3315,7 @@ function quitToMain() {
   game.state = 'title';
   game.titleAlpha = 0;
   game.titlePhase = 0;
+  canvas.style.pointerEvents = 'auto';
   document.getElementById('menu-pause').classList.add('hidden');
   document.getElementById('menu-container').classList.add('hidden');
   stopMusic();
@@ -3292,6 +3327,7 @@ function goToTitleFromMenu() {
   game.titlePhase = 0;
   game.specialActive = false;
   game.inCutscene = false;
+  canvas.style.pointerEvents = 'auto';
   document.getElementById('menu-container').classList.add('hidden');
   document.getElementById('menu-pause').classList.add('hidden');
   document.getElementById('menu-shop').classList.add('hidden');
@@ -3597,7 +3633,7 @@ function drawMenuButton(ctx, box, label) {
 
 function drawPauseOverlay(ctx) {
   ctx.save();
-  ctx.fillStyle = 'rgba(0, 0, 0, 0.72)';
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
   ctx.fillRect(0, 0, W, H);
 
   ctx.fillStyle = PHARMACY_GREEN_LIGHT;
@@ -3609,18 +3645,7 @@ function drawPauseOverlay(ctx) {
   ctx.fillStyle = 'rgba(255,255,255,0.85)';
   ctx.fillText('Pressione P ou ESC para continuar', W / 2, H * 0.34);
 
-  const btnW = Math.min(260, W * 0.55);
-  const btnH = 44 * scale;
-  const btnX = W / 2 - btnW / 2;
-  const btnY = H * 0.44;
-  const gap = 12 * scale;
-
-  pauseMenuButtons.resume = { x: btnX, y: btnY, w: btnW, h: btnH };
-  pauseMenuButtons.quit = { x: btnX, y: btnY + btnH + gap, w: btnW, h: btnH };
-
-  drawMenuButton(ctx, pauseMenuButtons.resume, 'Continuar');
-  drawMenuButton(ctx, pauseMenuButtons.quit, 'Voltar ao Menu');
-
+  // Removido o desenho de botões no canvas para evitar conflito com o menu DOM
   ctx.restore();
 }
 
@@ -3785,9 +3810,9 @@ function update(dt) {
   }
 
   if (game.state === 'paused' || game.state === 'shop') {
-    // Resume with P/Escape or touch/click (only if paused; in shop use the Back button)
+    // Resume with keyboard only; touch/click resumes via DOM pause menu
     if (game.state === 'paused') {
-      if (Input.wantsJump() || Input.justPressed['KeyP'] || Input.justPressed['Escape']) {
+      if (Input.justPressed['KeyP'] || Input.justPressed['Escape'] || Input.justPressed['Enter']) {
         resumeGame();
       }
     }
@@ -4356,11 +4381,10 @@ canvas.addEventListener('click', (e) => {
   const mx = e.clientX - rect.left;
   const my = e.clientY - rect.top;
 
-  // Pause menu interaction
+  // Pause menu interaction (desktop only)
   if (game.state === 'paused') {
-    if (pointInBox(mx, my, pauseMenuButtons.resume)) { resumeGame(); return; }
-    if (pointInBox(mx, my, pauseMenuButtons.quit)) { goToTitle(); return; }
-    resumeGame();
+    // Permite clicar em qualquer lugar para retomar, se desejar
+    // No entanto, o DOM menu deve estar no topo
     return;
   }
 
@@ -4540,11 +4564,11 @@ function render() {
   drawPostProcessing(ctx);
 
   // === LAYER 4: HUD & Overlays (Screen space) ===
-  if (game.state === 'playing') {
+  if (game.state === 'playing' || game.state === 'paused') {
     drawHUD(ctx);
   }
 
-  if (game.state === 'paused' || game.state === 'shop') {
+  if (game.state === 'paused') {
     drawPauseOverlay(ctx);
   }
 

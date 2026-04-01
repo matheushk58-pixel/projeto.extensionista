@@ -2,11 +2,14 @@
 // CUTSCENE SYSTEM - DROGARIA RUNNER (v. Pro) - CORRIGIDO
 // ============================================================
 
+const MOBILE_USER_AGENT = /Mobi|Android|iP(hone|od|ad)/i;
+
 const CutsceneSystem = {
     isActive: false,
     onComplete: null,
     textInterval: null,
     preloadedVideos: {},
+    allowOverlayCloseAt: 0,
     
     // Configurações de Diálogos (Sincronizados com os vídeos)
     texts: {
@@ -56,6 +59,19 @@ const CutsceneSystem = {
             return;
         }
 
+        this.overlay.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+        }, { passive: false });
+        this.overlay.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+        }, { passive: false });
+        this.overlay.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+        }, { passive: false });
+
         // Estética Profissional
         this.overlay.style.background = "radial-gradient(circle, rgba(0,20,10,1) 0%, rgba(0,0,0,1) 100%)";
         this.video.style.boxShadow = "0 0 60px rgba(46, 204, 64, 0.5)";
@@ -71,18 +87,26 @@ const CutsceneSystem = {
             this.end();
         };
 
-        this.overlay.onclick = () => this.end();
+        this.overlay.onclick = (e) => {
+            if (e.target !== this.overlay) return;
+            if (performance.now() < this.allowOverlayCloseAt) return;
+            this.end();
+        };
         
         if (this.skipBtn) {
             this.skipBtn.style.background = "rgba(46, 204, 64, 0.2)";
             this.skipBtn.style.border = "2px solid #2ecc40";
             this.skipBtn.style.color = "#2ecc40";
             this.skipBtn.style.fontWeight = "bold";
-            this.skipBtn.onclick = (e) => { e.stopPropagation(); this.end(); };
+            this.skipBtn.onclick = (e) => { e.preventDefault(); e.stopPropagation(); this.end(); };
+            this.skipBtn.addEventListener('touchstart', (e) => { e.preventDefault(); e.stopPropagation(); }, { passive: false });
+            this.skipBtn.addEventListener('touchend', (e) => { e.preventDefault(); e.stopPropagation(); this.end(); }, { passive: false });
         }
 
         if (this.nextBtn) {
-            this.nextBtn.onclick = (e) => { e.stopPropagation(); this.end(); };
+            this.nextBtn.onclick = (e) => { e.preventDefault(); e.stopPropagation(); this.end(); };
+            this.nextBtn.addEventListener('touchstart', (e) => { e.preventDefault(); e.stopPropagation(); }, { passive: false });
+            this.nextBtn.addEventListener('touchend', (e) => { e.preventDefault(); e.stopPropagation(); this.end(); }, { passive: false });
         }
 
         window.addEventListener('keydown', (e) => {
@@ -142,7 +166,7 @@ const CutsceneSystem = {
         
         // Tenta obter do localStorage (onde o jogo salva)
         try {
-            const saveData = localStorage.getItem('drogaria_runner_v5_save');
+            const saveData = localStorage.getItem('drogaria_runner_v6_save');
             if (saveData) {
                 const parsed = JSON.parse(saveData);
                 rawValue = parsed.selectedChar || null;
@@ -233,19 +257,30 @@ const CutsceneSystem = {
         if (cachedSrc) {
             console.log('CutsceneSystem: Usando vídeo em cache');
             this._showVideo(cachedSrc, type);
-        } else {
-            console.log('CutsceneSystem: Carregando vídeo...');
-            this.preloadVideo(type, gender).then(src => {
-                if (!this.isActive) return;
-                if (src) {
-                    this._showVideo(src, type);
-                } else {
-                    // Fallback: tenta carregar direto pelo path
-                    const directSrc = this.getPath(type);
-                    this._showVideo(directSrc, type);
-                }
-            });
+            return;
         }
+
+        const preferDirectLoad = (typeof window !== 'undefined' && window.game && window.game.isMobile) ||
+            (typeof navigator !== 'undefined' && MOBILE_USER_AGENT.test(navigator.userAgent)) ||
+            typeof fetch !== 'function';
+
+        if (preferDirectLoad) {
+            const directSrc = this.getPath(type);
+            this._showVideo(directSrc, type);
+            return;
+        }
+
+        console.log('CutsceneSystem: Carregando vídeo...');
+        this.preloadVideo(type, gender).then(src => {
+            if (!this.isActive) return;
+            if (src) {
+                this._showVideo(src, type);
+            } else {
+                // Fallback: tenta carregar direto pelo path
+                const directSrc = this.getPath(type);
+                this._showVideo(directSrc, type);
+            }
+        });
     },
 
     _showVideo(src, type) {
@@ -253,6 +288,7 @@ const CutsceneSystem = {
         this.overlay.style.display = 'flex';
         this.overlay.style.opacity = '0';
         this.video.style.transform = "scale(0.8)";
+        this.allowOverlayCloseAt = performance.now() + 500;
 
         setTimeout(() => {
             this.overlay.style.opacity = '1';
@@ -316,6 +352,7 @@ const CutsceneSystem = {
     end() {
         if (!this.isActive) return;
         this.isActive = false;
+        this.allowOverlayCloseAt = 0;
         clearInterval(this.textInterval);
 
         this.overlay.style.opacity = '0';
