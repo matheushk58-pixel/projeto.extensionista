@@ -190,7 +190,9 @@
     width: 100%;
     height: 100%;
     background: rgba(0, 0, 0, 0.95);
-    z-index: 500;
+    z-index: 600;
+    pointer-events: auto;
+    touch-action: none;
     justify-content: center;
     align-items: center;
     flex-direction: column;
@@ -281,11 +283,11 @@
 <canvas id="gameCanvas"></canvas>
 
 <!-- SISTEMA DE MENUS E LOJA -->
-<div id="menu-container" class="hidden" onclick="resumeGame()">
+<div id="menu-container" class="hidden" onclick="resumeGame(true)">
   <!-- Menu Pausa -->
   <div id="menu-pause" class="menu-panel hidden" onclick="event.stopPropagation()">
     <div class="menu-title">PAUSADO</div>
-    <button class="btn-action" onclick="resumeGame()">RETOMAR</button>
+    <button class="btn-action" onclick="resumeGame(true)">RETOMAR</button>
     <button class="btn-action btn-secondary" onclick="openShop()">LOJINHA 🛍️</button>
     <button class="btn-action btn-secondary" onclick="resetGame()">REINICIAR</button>
     <button class="btn-action btn-secondary" onclick="quitToMain()">SAIR</button>
@@ -3143,7 +3145,7 @@ document.addEventListener('keydown', (e) => {
   if (e.code === 'KeyD') debugVisible = !debugVisible;
   if (e.code === 'KeyP' || e.code === 'Escape') {
     if (game.state === 'playing') pauseGame();
-    else if (game.state === 'paused') resumeGame();
+    else if (game.state === 'paused') resumeGame(true);
   }
 });
 
@@ -3176,11 +3178,22 @@ function drawDebug(ctx) {
 let charSelectBoxes = { male: null, female: null };
 let charSelectSkinBoxes = [];
 let pauseMenuButtons = { resume: null, quit: null };
+let pauseMenuReady = true;
+let pauseMenuReadyTimer = null;
+const PAUSE_MENU_GRACE_MS = 350;
 
 function pauseGame() {
   if (game.state !== 'playing') return;
   game.state = 'paused';
   canvas.style.pointerEvents = 'none';
+  if (pauseMenuReadyTimer) {
+    clearTimeout(pauseMenuReadyTimer);
+  }
+  pauseMenuReady = false;
+  pauseMenuReadyTimer = setTimeout(() => {
+    pauseMenuReady = true;
+    pauseMenuReadyTimer = null;
+  }, PAUSE_MENU_GRACE_MS);
   try {
     document.getElementById('menu-container').classList.remove('hidden');
     document.getElementById('menu-pause').classList.remove('hidden');
@@ -3190,8 +3203,14 @@ function pauseGame() {
   console.log('Game paused');
 }
 
-function resumeGame() {
+function resumeGame(force = false) {
   if (game.state !== 'paused') return;
+  if (!force && !pauseMenuReady) return;
+  if (pauseMenuReadyTimer) {
+    clearTimeout(pauseMenuReadyTimer);
+    pauseMenuReadyTimer = null;
+  }
+  pauseMenuReady = true;
   game.state = 'playing';
   canvas.style.pointerEvents = 'auto';
   try {
@@ -3788,7 +3807,7 @@ function update(dt) {
     // Resume with P/Escape or touch/click (only if paused; in shop use the Back button)
     if (game.state === 'paused') {
       if (Input.wantsJump() || Input.justPressed['KeyP'] || Input.justPressed['Escape']) {
-        resumeGame();
+        resumeGame(true);
       }
     }
     Input.endFrame();

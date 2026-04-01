@@ -2,6 +2,8 @@
 // CUTSCENE SYSTEM - DROGARIA RUNNER (v. Pro) - CORRIGIDO
 // ============================================================
 
+const MOBILE_USER_AGENT = /Mobi|Android|iP(hone|od|ad)/i;
+
 const CutsceneSystem = {
     isActive: false,
     onComplete: null,
@@ -56,6 +58,10 @@ const CutsceneSystem = {
             return;
         }
 
+        this.overlay.addEventListener('touchstart', (e) => e.stopPropagation());
+        this.overlay.addEventListener('touchmove', (e) => e.stopPropagation());
+        this.overlay.addEventListener('touchend', (e) => e.stopPropagation());
+
         // Estética Profissional
         this.overlay.style.background = "radial-gradient(circle, rgba(0,20,10,1) 0%, rgba(0,0,0,1) 100%)";
         this.video.style.boxShadow = "0 0 60px rgba(46, 204, 64, 0.5)";
@@ -79,10 +85,12 @@ const CutsceneSystem = {
             this.skipBtn.style.color = "#2ecc40";
             this.skipBtn.style.fontWeight = "bold";
             this.skipBtn.onclick = (e) => { e.stopPropagation(); this.end(); };
+            this.skipBtn.addEventListener('touchstart', (e) => e.stopPropagation());
         }
 
         if (this.nextBtn) {
             this.nextBtn.onclick = (e) => { e.stopPropagation(); this.end(); };
+            this.nextBtn.addEventListener('touchstart', (e) => e.stopPropagation());
         }
 
         window.addEventListener('keydown', (e) => {
@@ -233,19 +241,30 @@ const CutsceneSystem = {
         if (cachedSrc) {
             console.log('CutsceneSystem: Usando vídeo em cache');
             this._showVideo(cachedSrc, type);
-        } else {
-            console.log('CutsceneSystem: Carregando vídeo...');
-            this.preloadVideo(type, gender).then(src => {
-                if (!this.isActive) return;
-                if (src) {
-                    this._showVideo(src, type);
-                } else {
-                    // Fallback: tenta carregar direto pelo path
-                    const directSrc = this.getPath(type);
-                    this._showVideo(directSrc, type);
-                }
-            });
+            return;
         }
+
+        const preferDirectLoad = (typeof window !== 'undefined' && window.game && window.game.isMobile) ||
+            (typeof navigator !== 'undefined' && MOBILE_USER_AGENT.test(navigator.userAgent)) ||
+            typeof fetch !== 'function';
+
+        if (preferDirectLoad) {
+            const directSrc = this.getPath(type);
+            this._showVideo(directSrc, type);
+            return;
+        }
+
+        console.log('CutsceneSystem: Carregando vídeo...');
+        this.preloadVideo(type, gender).then(src => {
+            if (!this.isActive) return;
+            if (src) {
+                this._showVideo(src, type);
+            } else {
+                // Fallback: tenta carregar direto pelo path
+                const directSrc = this.getPath(type);
+                this._showVideo(directSrc, type);
+            }
+        });
     },
 
     _showVideo(src, type) {
