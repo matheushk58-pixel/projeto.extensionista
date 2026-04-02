@@ -429,19 +429,43 @@ document.addEventListener('DOMContentLoaded', () => CutsceneSystem.init());
 // Funções de Gatilho para o index.html
 function startIntro() { 
     console.log('CutsceneSystem: startIntro() chamado');
-    CutsceneSystem.play('inicio', () => { if(window.resetGame) resetGame(); }); 
+    if (typeof resetGame === 'function') {
+        resetGame();
+        return;
+    }
+    if (typeof CutsceneSystem !== 'undefined' && typeof CutsceneSystem.play === 'function') {
+        CutsceneSystem.play('inicio', () => { if(window.resetGame) resetGame(); });
+    }
 }
 function onPlayerDeath() { 
     console.log('CutsceneSystem: onPlayerDeath() chamado');
-    CutsceneSystem.play('gameover', () => { if(window.finishGameOver) finishGameOver(); }); 
+    if (typeof finishGameOver === 'function') {
+        finishGameOver();
+        return;
+    }
+    if (typeof CutsceneSystem !== 'undefined' && typeof CutsceneSystem.play === 'function') {
+        CutsceneSystem.play('gameover', () => { if(window.finishGameOver) finishGameOver(); });
+    }
 }
 function onSpecialActivated() { 
     console.log('CutsceneSystem: onSpecialActivated() chamado');
-    CutsceneSystem.play('especial', () => { if(window.activateSpecialInGame) activateSpecialInGame(); }); 
+    if (typeof activateSpecialInGame === 'function') {
+        activateSpecialInGame();
+        return;
+    }
+    if (typeof CutsceneSystem !== 'undefined' && typeof CutsceneSystem.play === 'function') {
+        CutsceneSystem.play('especial', () => { if(window.activateSpecialInGame) activateSpecialInGame(); });
+    }
 }
 function onNewStageUnlocked() {
     console.log('CutsceneSystem: onNewStageUnlocked() chamado');
-    CutsceneSystem.play('novafase');
+    if (typeof onNewStageUnlockedWithoutCutscene === 'function') {
+        onNewStageUnlockedWithoutCutscene();
+        return;
+    }
+    if (typeof CutsceneSystem !== 'undefined' && typeof CutsceneSystem.play === 'function') {
+        CutsceneSystem.play('novafase');
+    }
 }
 function openRanking() {
     console.log('CutsceneSystem: openRanking() chamado');
