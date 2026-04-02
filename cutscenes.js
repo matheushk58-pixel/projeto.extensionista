@@ -87,8 +87,15 @@ const CutsceneSystem = {
         this.video.onplaying = () => {
             this.clearFailSafeTimer();
         };
+        this.video.onwaiting = () => {
+            console.warn('CutsceneSystem: evento waiting do vídeo. Forçando fim.');
+            this.clearFailSafeTimer();
+            this.end();
+        };
         this.video.onstalled = () => {
-            console.warn('CutsceneSystem: evento stalled do vídeo.');
+            console.warn('CutsceneSystem: evento stalled do vídeo. Forçando fim.');
+            this.clearFailSafeTimer();
+            this.end();
         };
         this.video.onerror = (e) => {
             console.error('CutsceneSystem: Erro no vídeo', e);
