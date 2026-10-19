@@ -382,6 +382,52 @@
   .quiz-acao { margin-top: 20px; display: none; }
   .quiz-acao.visivel { display: inline-block; }
 
+  /* ---------- minijogo ---------- */
+  .arena {
+    position: relative; margin-top: 32px; height: clamp(460px, 56vw, 620px); border-radius: 18px; overflow: hidden;
+    background: linear-gradient(180deg, #1F7891 0%, #145067 45%, #0B2733 100%); border: 1.5px solid var(--linha);
+  }
+  .arena:focus-visible { outline-offset: 4px; }
+  .arena canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
+  .arena.sem-webgl { display: none; }
+  .hud { position: absolute; top: 12px; left: 12px; right: 12px; display: flex; flex-wrap: wrap; gap: 8px; pointer-events: none; font-family: var(--display); }
+  .hud > span { background: rgba(7,22,29,.74); color: #fff; padding: 6px 12px; border-radius: 999px; font-size: .92rem; display: inline-flex; gap: 6px; align-items: center; }
+  .hud b { font-weight: 800; font-variant-numeric: tabular-nums; display: inline-block; }
+  .hud b.pulo { animation: pulo .3s var(--ease); }
+  @keyframes pulo { 50% { transform: scale(1.3); } }
+  .vidas svg { transition: opacity .2s, transform .2s; }
+  .vidas svg.perdida { opacity: .25; transform: scale(.8); }
+  .toast {
+    position: absolute; left: 50%; bottom: 16px; transform: translate(-50%, 8px); width: max-content; max-width: min(560px, calc(100% - 24px));
+    background: #fff; color: #0F2733; font-size: 1rem; line-height: 1.4; padding: 10px 16px; border-radius: 12px;
+    opacity: 0; transition: opacity .2s, transform .2s var(--ease); pointer-events: none; text-align: center;
+  }
+  .toast.visivel { opacity: 1; transform: translate(-50%, 0); }
+  .toast b { font-family: var(--display); }
+  .tela { position: absolute; inset: 0; display: grid; place-items: center; padding: 16px; background: rgba(7,22,29,.55); -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px); overflow-y: auto; }
+  .tela[hidden] { display: none; }
+  .cartao { background: var(--filtro); color: var(--tinta); border-radius: 16px; padding: clamp(20px, 4vw, 30px); max-width: 460px; width: 100%; }
+  .cartao h3 { font-family: var(--display); font-weight: 800; font-size: 1.6rem; letter-spacing: -.02em; line-height: 1.1; margin-bottom: 12px; }
+  .cartao > p { font-size: 1rem; margin-bottom: 14px; }
+  .cartao ul { list-style: none; margin: 0 0 20px; }
+  .cartao li { display: grid; grid-template-columns: 26px 1fr; gap: 10px; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--linha); font-size: 1rem; line-height: 1.4; }
+  .cartao li b { font-family: var(--display); font-weight: 600; }
+  .btn-jogo { font-family: var(--display); font-weight: 600; font-size: 1.05rem; min-height: 52px; padding: 0 28px; border-radius: 12px; border: 0; background: var(--tinta); color: var(--filtro); cursor: pointer; transition: background-color .15s, transform .1s; }
+  .btn-jogo:hover { background: var(--pe); color: #fff; }
+  .btn-jogo:active { transform: scale(.97); }
+  .teclas { font-family: var(--display); font-size: .88rem; color: var(--tinta-suave); margin-top: 12px; }
+  .placar { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 4px 0 16px; }
+  .placar strong { display: block; font-family: var(--display); font-weight: 800; font-size: 2.1rem; letter-spacing: -.03em; line-height: 1; font-variant-numeric: tabular-nums; }
+  .placar span { font-family: var(--display); font-size: .88rem; color: var(--tinta-suave); }
+  .placar .fundo strong { color: var(--pe); }
+  @media (max-width: 560px) {
+    .arena { height: 600px; }
+    .cartao h3 { font-size: 1.3rem; }
+    .cartao li { font-size: .9rem; padding: 6px 0; }
+    .placar strong { font-size: 1.7rem; }
+  }
+  .licao { font-size: 1rem; padding: 12px 14px; border-left: 4px solid var(--pet); background: var(--filtro-2); border-radius: 0 10px 10px 0; margin-bottom: 18px; }
+
   /* ---------- o que fazer ---------- */
   .acoes { display: grid; grid-template-columns: 1fr 1fr; gap: 72px; margin-top: 40px; }
   @media (max-width: 860px) { .acoes { grid-template-columns: 1fr; gap: 48px; } }
@@ -428,6 +474,7 @@
       <li><a href="#agua">Ecossistemas aquáticos</a></li>
       <li><a href="#corpo">Corpo humano</a></li>
       <li><a href="#quiz">Quiz</a></li>
+      <li><a href="#jogo">Jogo</a></li>
       <li><a href="#acoes">O que fazer</a></li>
       <li><a href="#referencias">Referências</a></li>
     </ul>
@@ -675,6 +722,50 @@
       </div>
       <div class="retorno" id="retorno" role="status" aria-live="polite"></div>
       <button type="button" class="quiz-acao" id="quizAcao">Próxima afirmação</button>
+    </div>
+  </div>
+</section>
+
+<!-- ================= JOGO ================= -->
+<section id="jogo">
+  <div class="envoltorio">
+    <h2 class="sec-titulo">Missão: limpar o oceano</h2>
+    <div class="prosa"><p>Recolha o plástico antes que ele afunde e se quebre em microplásticos. Depois de fragmentado, ele fica no fundo e não dá mais para tirar.</p></div>
+    <div class="arena" id="arena" tabindex="0" aria-label="Minijogo. Use as setas ou as teclas A e D para mover o submarino.">
+      <canvas id="jogo3d" aria-hidden="true"></canvas>
+      <div class="hud" aria-hidden="true">
+        <span>Pontos <b id="hudPontos">0</b></span>
+        <span>Tempo <b id="hudTempo">60</b></span>
+        <span class="vidas" id="hudVidas"><svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M9 16S2 11.5 2 6.5A3.5 3.5 0 0 1 9 5a3.5 3.5 0 0 1 7 1.5C16 11.5 9 16 9 16z" fill="#F07CA8"/></svg><svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M9 16S2 11.5 2 6.5A3.5 3.5 0 0 1 9 5a3.5 3.5 0 0 1 7 1.5C16 11.5 9 16 9 16z" fill="#F07CA8"/></svg><svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M9 16S2 11.5 2 6.5A3.5 3.5 0 0 1 9 5a3.5 3.5 0 0 1 7 1.5C16 11.5 9 16 9 16z" fill="#F07CA8"/></svg></span>
+        <span>No fundo <b id="hudFundo">0</b></span>
+      </div>
+      <p class="toast" id="toast" role="status" aria-live="polite"></p>
+      <div class="tela" id="telaInicio">
+        <div class="cartao">
+          <h3>Como jogar</h3>
+          <ul>
+            <li><svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><path d="M9 2h4v3l2 3v12H7V8l2-3z" fill="#7CC8E8" stroke="#0F2733" stroke-width="1.4"/><rect x="7" y="11" width="8" height="3" fill="#E3A821"/></svg><span><b>Garrafas, sacolas, canudos e redes:</b> pegue com a rede do submarino. Valem 10 a 15 pontos.</span></li>
+            <li><svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><path d="M6 9l4-3 3 4-4 3z" fill="#D9366B"/><circle cx="15" cy="14" r="2" fill="#1C9CC0"/><path d="M5 16l3-1 1 3z" fill="#E3A821"/></svg><span><b>Microplásticos:</b> pequenos e difíceis de pegar. Valem 3 pontos.</span></li>
+            <li><svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><path d="M1 17q10-4 20 0v4H1z" fill="#9E8C66"/><circle cx="7" cy="16" r="1.3" fill="#D9366B"/><circle cx="11" cy="15.5" r="1.3" fill="#1C9CC0"/><circle cx="15" cy="16" r="1.3" fill="#E3A821"/></svg><span><b>Se o plástico grande chegar ao fundo,</b> ele se quebra em microplásticos que ficam na areia.</span></li>
+            <li><svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><ellipse cx="11" cy="11" rx="7" ry="5" fill="#F57A1F" stroke="#0F2733" stroke-width="1.4"/><path d="M4 11 0 7v8z" fill="#F57A1F"/><circle cx="14" cy="10" r="1.3" fill="#0F2733"/></svg><span><b>Desvie dos peixes e tartarugas.</b> Cada batida custa uma vida.</span></li>
+          </ul>
+          <button class="btn-jogo" id="btnJogar" type="button">Começar missão</button>
+          <p class="teclas" id="dicaTeclas">Mova com o mouse, as setas ou as teclas A e D. São 60 segundos.</p>
+        </div>
+      </div>
+      <div class="tela" id="telaFim" hidden>
+        <div class="cartao" role="dialog" aria-labelledby="fimTitulo">
+          <h3 id="fimTitulo">Fim da missão</h3>
+          <div class="placar">
+            <div><strong id="fimPontos">0</strong><span>pontos</span></div>
+            <div><strong id="fimItens">0</strong><span>itens recolhidos</span></div>
+            <div class="fundo"><strong id="fimFundo">0</strong><span>microplásticos no fundo</span></div>
+            <div><strong id="fimRecorde">0</strong><span>seu recorde</span></div>
+          </div>
+          <p class="licao" id="fimLicao"></p>
+          <button class="btn-jogo" id="btnDeNovo" type="button">Jogar de novo</button>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -1542,6 +1633,256 @@ addEventListener('DOMContentLoaded', () => {
     return true;
   }
   iniciarCopo();
+
+  /* =========================================================
+     Minijogo: Missão limpar o oceano
+     ========================================================= */
+  function iniciarJogo() {
+    const arena = document.getElementById('arena'), canvas = document.getElementById('jogo3d');
+    if (!window.THREE) return false;
+    let renderer;
+    try { renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true }); } catch (e) { return false; }
+    const T = THREE, K = kitToon(T);
+    renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2)); renderer.setClearColor(0, 0);
+    const cena = new T.Scene(); cena.fog = new T.Fog(0x145067, 16, 40);
+    const cam = new T.PerspectiveCamera(50, 1, .1, 100); cam.position.set(0, 2.4, 16); cam.lookAt(0, 1.8, 0);
+    cena.add(new T.HemisphereLight(0xD6F6FF, 0x173540, 1));
+    const sol = new T.DirectionalLight(0xffffff, .8); sol.position.set(4, 18, 10); cena.add(sol);
+
+    const FUNDO_Y = -4.6, SUB_Y = -2.9, TOPO_Y = 11, DUR = 60;
+    const chao = new T.PlaneGeometry(70, 24, 35, 12); chao.rotateX(-Math.PI / 2);
+    const pc = chao.attributes.position;
+    for (let i = 0; i < pc.count; i++) pc.setY(i, Math.sin(pc.getX(i) * .5) * .15 + Math.cos(pc.getZ(i) * .4) * .2);
+    chao.computeVertexNormals();
+    const areia = new T.Mesh(chao, K.mat(0x9E8C66)); areia.position.y = FUNDO_Y; cena.add(areia);
+    const algas = [];
+    [-11, -8.5, -5, 4.5, 8, 11.5].forEach((x, i) => { const a = fazerAlga(K, 3 + (i % 3), i % 2 ? 0x2EA36B : 0x4CC27E, i); a.g.position.set(x, FUNDO_Y, -4 - (i % 2) * 2); cena.add(a.g); algas.push(a); });
+    [[-7, -5], [6.5, -6], [0, -7]].forEach(([x, z], i) => { const pd = K.malha(new T.DodecahedronGeometry(1, 0), 0x3E5A66); pd.position.set(x, FUNDO_Y + .2, z); pd.scale.set(1.6, .8, 1.1); cena.add(pd); });
+
+    // submarino com rede
+    const sub = new T.Group(); sub.position.set(0, SUB_Y, 0); sub.scale.setScalar(1.15); cena.add(sub);
+    const casco = K.malha(new T.SphereGeometry(1, 28, 18), 0xF2C230); casco.scale.set(1.5, .85, .85); sub.add(casco);
+    const torre = K.malha(new T.CylinderGeometry(.32, .4, .5, 20), 0xF2C230); torre.position.set(-.45, .85, 0); sub.add(torre);
+    for (const x of [.15, -.65]) {
+      const zz = .85 * Math.sqrt(1 - (x / 1.5) ** 2) + .02;
+      const vid = new T.Mesh(new T.CircleGeometry(.2, 20), K.mat(0x9FE6F5)); vid.position.set(x, -.05, zz); sub.add(vid);
+      const aro = new T.Mesh(new T.TorusGeometry(.2, .05, 8, 20), K.mat(0xE3A821)); aro.position.copy(vid.position); sub.add(aro);
+    }
+    for (const z of [1, -1]) { const o = K.olho(.2); o.position.set(1.25, .22, .3 * z); if (z < 0) o.scale.z = -1; sub.add(o); }
+    const sorr = K.sorriso(.13); sorr.position.set(1.47, -.12, 0); sorr.rotation.set(0, Math.PI / 2, Math.PI); sub.add(sorr);
+    const helice = new T.Group(); helice.position.set(-1.58, 0, 0); sub.add(helice);
+    for (let i = 0; i < 2; i++) { const p = K.malha(new T.BoxGeometry(.08, .75, .2), 0xD9366B); p.rotation.x = i * Math.PI / 2; helice.add(p); }
+    const haste = K.malha(new T.CylinderGeometry(.05, .05, .5, 8), 0xE8EFEC); haste.position.set(.35, 1.0, 0); sub.add(haste);
+    const aroRede = K.malha(new T.TorusGeometry(.95, .07, 10, 32), 0xffffff, { k: 1.15 }); aroRede.rotation.x = Math.PI / 2; aroRede.position.set(.35, 1.3, 0); sub.add(aroRede);
+    const malhaRede = new T.Mesh(new T.ConeGeometry(.95, .9, 14, 3, true), new T.MeshBasicMaterial({ color: 0xffffff, wireframe: true, transparent: true, opacity: .55 }));
+    malhaRede.rotation.x = Math.PI; malhaRede.position.set(.35, .85, 0); sub.add(malhaRede);
+
+    // itens que afundam
+    const CORES = [0xD9366B, 0x1C9CC0, 0xE3A821, 0x7A55C9, 0x2EA36B];
+    const perfil = [[0, -1.7], [.78, -1.7], [.9, -1.55], [.9, .7], [.52, 1.5], [.35, 1.78], [.35, 2.1]].map(([x, y]) => new T.Vector2(x * .38, y * .38));
+    const ITENS = {
+      garrafa: { nome: 'Garrafa PET', pts: 10, peso: .24, vel: 1, grande: true,
+        fato: '<b>Garrafa PET.</b> Com sol, calor e atrito, o plástico se quebra em pedaços cada vez menores.',
+        fazer() { const g = new T.Group(); g.add(K.malha(new T.LatheGeometry(perfil, 20), 0x7CC8E8, { mat: { side: T.DoubleSide } })); const tp = K.malha(new T.CylinderGeometry(.15, .15, .14, 14), 0x1C9CC0); tp.position.y = .86; g.add(tp); const rt = K.malha(new T.CylinderGeometry(.35, .35, .26, 20, 1, true), 0xE3A821, { contorno: false, mat: { side: T.DoubleSide } }); rt.position.y = -.1; g.add(rt); return g; } },
+      sacola: { nome: 'Sacola', pts: 10, peso: .2, vel: .62, grande: true, balanco: 1.6,
+        fato: '<b>Sacola.</b> É feita de polietileno, um dos plásticos mais encontrados no sangue humano.',
+        fazer() { const g = new T.Group(); const c = K.malha(new T.SphereGeometry(.7, 16, 10, 0, Math.PI * 2, 0, Math.PI * .62), 0xF4F1E6, { mat: { side: T.DoubleSide } }); c.scale.set(1, .9, .75); c.rotation.x = Math.PI; g.add(c); for (const x of [-.25, .25]) { const a = K.malha(new T.TorusGeometry(.18, .04, 6, 14, Math.PI), 0xF4F1E6); a.position.set(x, .62, 0); g.add(a); } return g; } },
+      canudo: { nome: 'Canudo', pts: 10, peso: .18, vel: 1.15, grande: true,
+        fato: '<b>Canudo.</b> É de polipropileno, o plástico mais comum nos estudos da USP com pulmão e cérebro.',
+        fazer() { const g = new T.Group(); const c = K.malha(new T.CylinderGeometry(.08, .08, 1.6, 10), 0xD9366B); c.rotation.z = .9; g.add(c); for (const y of [-.4, 0, .4]) { const f = new T.Mesh(new T.CylinderGeometry(.085, .085, .14, 10), K.mat(0xffffff)); f.position.y = y; c.add(f); } return g; } },
+      rede: { nome: 'Rede de pesca', pts: 15, peso: .1, vel: .85, grande: true,
+        fato: '<b>Rede de pesca.</b> Redes abandonadas soltam fibras de náilon que viram microplástico.',
+        fazer() { return K.malha(new T.TorusKnotGeometry(.34, .07, 60, 6, 2, 3), 0x2EA36B, { k: 1.12 }); } },
+      micro: { nome: 'Microplástico', pts: 3, peso: .28, vel: .75,
+        fato: '<b>Microplástico.</b> Tem menos de 5 mm: é difícil de ver e mais ainda de recolher.',
+        fazer() { return K.malha(new T.IcosahedronGeometry(.17, 0), CORES[Math.floor(Math.random() * 5)], { k: 1.15 }); } },
+    };
+    const sorteio = Object.entries(ITENS);
+
+    // microplásticos acumulados na areia
+    const MAX_F = 500;
+    const fundo = new T.InstancedMesh(new T.IcosahedronGeometry(.11, 0), K.mat(0xffffff), MAX_F);
+    for (let i = 0; i < MAX_F; i++) fundo.setColorAt(i, new T.Color(CORES[i % 5]));
+    fundo.instanceColor.needsUpdate = true; fundo.count = 0; cena.add(fundo); // cores antes de zerar: o buffer de cor usa o count
+    const aux = new T.Object3D();
+    function assentar(x, n) {
+      for (let k = 0; k < n && fundo.count < MAX_F; k++) {
+        aux.position.set(x + (Math.random() - .5) * 1.8, FUNDO_Y + .12, (Math.random() - .5) * 2.4);
+        aux.rotation.set(Math.random() * 6, Math.random() * 6, 0); aux.scale.setScalar(.7 + Math.random() * .6); aux.updateMatrix();
+        fundo.setMatrixAt(fundo.count++, aux.matrix);
+      }
+      fundo.instanceMatrix.needsUpdate = true;
+    }
+
+    // estado
+    const ui = {
+      pontos: document.getElementById('hudPontos'), tempo: document.getElementById('hudTempo'), fundo: document.getElementById('hudFundo'),
+      vidas: [...document.querySelectorAll('#hudVidas svg')], toast: document.getElementById('toast'),
+      inicio: document.getElementById('telaInicio'), fim: document.getElementById('telaFim'),
+    };
+    let estado = 'inicio', itens = [], animais = [], pontos = 0, vidas = 3, tempo = DUR, recolhidos = 0, noFundo = 0;
+    let proxItem = 0, proxAnimal = 4, invul = 0, vistos = new Set(), meiaLargura = 8, alvoX = 0, dirTecla = 0, toastAte = 0;
+    let recorde = 0; try { recorde = +localStorage.getItem('recorde-micro') || 0; } catch (e) {}
+
+    function aviso(html, seg = 2.8) { ui.toast.innerHTML = html; ui.toast.classList.add('visivel'); toastAte = performance.now() + seg * 1000; }
+    function pular(el) { el.classList.remove('pulo'); void el.offsetWidth; el.classList.add('pulo'); }
+    function hud() {
+      ui.pontos.textContent = pontos; ui.tempo.textContent = Math.ceil(tempo); ui.fundo.textContent = noFundo;
+      ui.vidas.forEach((v, i) => v.classList.toggle('perdida', i >= vidas));
+    }
+    function limpar() {
+      itens.forEach(it => cena.remove(it.g)); animais.forEach(a => cena.remove(a.g));
+      itens = []; animais = []; fundo.count = 0; fundo.instanceMatrix.needsUpdate = true;
+    }
+    function comecar() {
+      limpar(); pontos = 0; vidas = 3; tempo = DUR; recolhidos = 0; noFundo = 0; proxItem = .3; proxAnimal = 5; invul = 0; vistos = new Set();
+      sub.position.x = 0; alvoX = 0; estado = 'jogando'; hud();
+      ui.inicio.hidden = true; ui.fim.hidden = true; arena.focus({ preventScroll: true });
+      aviso('Pegue o plástico com a rede antes que ele chegue ao fundo.', 3);
+    }
+    function terminar() {
+      estado = 'fim';
+      if (pontos > recorde) { recorde = pontos; try { localStorage.setItem('recorde-micro', recorde); } catch (e) {} }
+      document.getElementById('fimPontos').textContent = pontos;
+      document.getElementById('fimItens').textContent = recolhidos;
+      document.getElementById('fimFundo').textContent = noFundo;
+      document.getElementById('fimRecorde').textContent = recorde;
+      document.getElementById('fimTitulo').textContent = vidas <= 0 ? 'Missão encerrada: três batidas em animais' : 'Fim da missão';
+      document.getElementById('fimLicao').textContent = noFundo === 0
+        ? 'Perfeito: nenhum pedaço chegou ao fundo. Na vida real, o jeito mais eficaz de fazer isso é evitar que o plástico chegue à água.'
+        : `${noFundo} microplásticos ficaram na areia. Recolher um pedaço grande é fácil; depois que ele se fragmenta, não dá mais. Por isso o melhor caminho é evitar que o plástico chegue à água.`;
+      ui.fim.hidden = false; ui.toast.classList.remove('visivel');
+      document.getElementById('btnDeNovo').focus({ preventScroll: true });
+    }
+    document.getElementById('btnJogar').addEventListener('click', comecar);
+    document.getElementById('btnDeNovo').addEventListener('click', comecar);
+
+    function novoItem() {
+      let r = Math.random(), tipo = 'micro';
+      for (const [k, v] of sorteio) { if ((r -= v.peso) <= 0) { tipo = k; break; } }
+      const def = ITENS[tipo], g = def.fazer();
+      g.position.set((Math.random() * 2 - 1) * meiaLargura, TOPO_Y, 0);
+      g.rotation.set(Math.random() * 6, Math.random() * 6, Math.random() * 6);
+      cena.add(g);
+      const ritmo = 1 + (DUR - tempo) / DUR * .7;
+      itens.push({ g, tipo, def, vy: (1.5 + Math.random() * .7) * def.vel * ritmo, f: Math.random() * 6, x0: g.position.x, pego: 0 });
+    }
+    function novoAnimal() {
+      const lado = Math.random() < .5 ? -1 : 1, tart = Math.random() < .35;
+      const a = tart ? fazerTartaruga(K) : fazerPeixe(K, Math.random() < .5 ? { cor: 0xF57A1F, cauda: 0xF57A1F, listras: true } : { cor: 0x2F6FD6, cauda: 0xF2C230 });
+      a.g.scale.setScalar(tart ? .55 : .6);
+      a.g.position.set(-lado * (meiaLargura + 4), SUB_Y + (Math.random() - .3) * .8, .3);
+      a.g.rotation.y = lado > 0 ? 0 : Math.PI;
+      cena.add(a.g);
+      animais.push({ ...a, tart, vx: lado * (2.2 + Math.random() * 1.2), fuga: 0, f: Math.random() * 6 });
+    }
+
+    // controles
+    const teclas = new Set();
+    arena.addEventListener('keydown', e => {
+      if (estado !== 'jogando') return;
+      if (['ArrowLeft', 'ArrowRight', 'a', 'd', 'A', 'D'].includes(e.key)) { teclas.add(e.key.toLowerCase()); e.preventDefault(); }
+    });
+    arena.addEventListener('keyup', e => teclas.delete(e.key.toLowerCase()));
+    arena.addEventListener('blur', () => teclas.clear());
+    function ponteiro(e) {
+      if (estado !== 'jogando') return;
+      const r = canvas.getBoundingClientRect();
+      alvoX = ((e.clientX - r.left) / r.width * 2 - 1) * (meiaLargura + 1.2);
+    }
+    canvas.addEventListener('pointermove', ponteiro);
+    canvas.addEventListener('pointerdown', ponteiro);
+
+    function ajustar() {
+      const w = arena.clientWidth, h = arena.clientHeight;
+      renderer.setSize(w, h, false); cam.aspect = w / h; cam.fov = w < 600 ? 62 : 50; cam.updateProjectionMatrix();
+      const altura = 2 * Math.tan(cam.fov * Math.PI / 360) * cam.position.z;
+      meiaLargura = Math.max(3, altura * cam.aspect / 2 - 1.4);
+    }
+    ajustar(); addEventListener('resize', ajustar);
+    if (matchMedia('(hover: none)').matches) document.getElementById('dicaTeclas').textContent = 'Arraste o dedo pela área do jogo para mover o submarino. São 60 segundos.';
+
+    let visivel = false, ultimo = performance.now(), t = 0;
+    new IntersectionObserver(([e]) => { const antes = visivel; visivel = e.isIntersecting; if (visivel && !antes) { ultimo = performance.now(); requestAnimationFrame(quadro); } }).observe(arena);
+
+    function quadro(agora) {
+      if (!visivel) return;
+      const dt = Math.min(.05, (agora - ultimo) / 1000); ultimo = agora; t += dt;
+      const jogando = estado === 'jogando' && !document.hidden;
+
+      algas.forEach(a => a.segs.forEach((s, i) => { s.rotation.z = Math.sin(t * 1.2 + a.fase + i * .55) * .1; }));
+      helice.rotation.x += dt * (jogando ? 14 : 4);
+      sub.position.y = SUB_Y + Math.sin(t * 2) * .06;
+
+      if (jogando) {
+        tempo -= dt;
+        // movimento do submarino
+        const dir = (teclas.has('arrowright') || teclas.has('d') ? 1 : 0) - (teclas.has('arrowleft') || teclas.has('a') ? 1 : 0);
+        if (dir) alvoX = sub.position.x + dir * 2;
+        alvoX = Math.max(-meiaLargura, Math.min(meiaLargura, alvoX));
+        const antes = sub.position.x;
+        sub.position.x += (alvoX - sub.position.x) * Math.min(1, dt * (dir ? 6 : 9));
+        const vx = (sub.position.x - antes) / Math.max(dt, .001);
+        sub.rotation.z += (-vx * .025 - sub.rotation.z) * Math.min(1, dt * 8);
+        sub.rotation.y = 0;
+        if (invul > 0) { invul -= dt; sub.visible = Math.floor(invul * 10) % 2 === 0; } else sub.visible = true;
+
+        // geração
+        proxItem -= dt; proxAnimal -= dt;
+        if (proxItem <= 0) { novoItem(); proxItem = Math.max(.5, 1.25 - (DUR - tempo) * .012) * (.7 + Math.random() * .6); }
+        if (proxAnimal <= 0) { novoAnimal(); proxAnimal = 4.5 + Math.random() * 3.5; }
+
+        // itens
+        const redeX = sub.position.x + .4, redeY = sub.position.y + 1.5;
+        for (let i = itens.length - 1; i >= 0; i--) {
+          const it = itens[i], g = it.g;
+          if (it.pego) {
+            it.pego += dt * 4; g.position.x += (redeX - g.position.x) * .3; g.position.y += (redeY - .3 - g.position.y) * .3;
+            g.scale.setScalar(Math.max(.01, 1 - it.pego)); if (it.pego >= 1) { cena.remove(g); itens.splice(i, 1); } continue;
+          }
+          g.position.y -= it.vy * dt;
+          g.position.x = it.x0 + Math.sin(t * 1.4 + it.f) * .35 * (it.def.balanco || 1);
+          g.rotation.x += dt * .8; g.rotation.y += dt * .6;
+          if (Math.abs(g.position.x - redeX) < 1.3 && g.position.y < redeY + .5 && g.position.y > redeY - .6) {
+            it.pego = .01; pontos += it.def.pts; recolhidos++; pular(ui.pontos);
+            if (!vistos.has(it.tipo)) { vistos.add(it.tipo); aviso(`+${it.def.pts} · ${it.def.fato}`, 4); }
+            else if (performance.now() > toastAte) aviso(`<b>+${it.def.pts}</b> ${it.def.nome}`, 1.1);
+            continue;
+          }
+          if (g.position.y < FUNDO_Y + .3) {
+            const n = it.def.grande ? 5 : 1;
+            assentar(g.position.x, n); noFundo += n; pular(ui.fundo);
+            if (it.def.grande && !vistos.has('quebrou')) { vistos.add('quebrou'); aviso('<b>Ops!</b> Um pedaço chegou ao fundo e se quebrou em 5 microplásticos.', 3.5); }
+            cena.remove(g); itens.splice(i, 1);
+          }
+        }
+
+        // animais
+        for (let i = animais.length - 1; i >= 0; i--) {
+          const a = animais[i];
+          a.g.position.x += a.vx * dt;
+          if (a.fuga) { a.g.position.y += dt * 4; a.g.rotation.z = Math.sign(a.vx) * .5; }
+          else a.g.position.y += Math.sin(t * 2 + a.f) * dt * .3;
+          if (a.cauda) a.cauda.rotation.y = Math.sin(t * 10 + a.f) * .5;
+          if (a.nad) a.nad.forEach(n => { n.piv.rotation.x = n.z * Math.sin(t * 3 + (n.frente ? 0 : 1)) * .5; });
+          if (!a.fuga && invul <= 0 && Math.abs(a.g.position.x - sub.position.x) < 1.7 && Math.abs(a.g.position.y - sub.position.y) < 1.0) {
+            vidas--; invul = 1.6; a.fuga = 1; hud();
+            aviso(a.tart ? '<b>Cuidado com a tartaruga!</b> Tartarugas marinhas também confundem plástico com comida.' : '<b>Cuidado com o peixe!</b> Peixes também engolem plástico por engano.', 3);
+            if (vidas <= 0) { terminar(); break; }
+          }
+          if (Math.abs(a.g.position.x) > meiaLargura + 6 || a.g.position.y > TOPO_Y) { cena.remove(a.g); animais.splice(i, 1); }
+        }
+        if (estado === 'jogando') { if (tempo <= 0) { tempo = 0; terminar(); } hud(); }
+      }
+      if (performance.now() > toastAte) ui.toast.classList.remove('visivel');
+
+      renderer.render(cena, cam);
+      requestAnimationFrame(quadro);
+    }
+    hud();
+    return true;
+  }
+  if (!iniciarJogo()) document.getElementById('arena').classList.add('sem-webgl');
 
   /* =========================================================
      Mapa do corpo
