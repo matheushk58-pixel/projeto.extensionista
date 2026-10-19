@@ -1,11 +1,19 @@
 {
-  // Publicado pelo Workers Builds do projeto "projeto-extensionista-2" a cada push na main.
-  // O site "Microplásticos e Saúde" fica em /extensionista%204/; a raiz redireciona para ele
-  // (atalho: /microplasticos).
+  // Publicado pelo Workers Builds a cada push na main.
+  // O site "Microplásticos e Saúde" fica em /extensionista%204/; a raiz redireciona para ele.
+  // worker.js atende só /api/* (placar de líderes, guardado no D1); o resto sai direto dos assets.
+  // O banco D1 do placar é criado sozinho no primeiro deploy (sem database_id fixo).
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "projeto-extensionista-2",
+  "main": "worker.js",
   "compatibility_date": "2026-10-01",
   "assets": {
-    "directory": "."
-  }
+    "directory": ".",
+    "binding": "ASSETS",
+    "run_worker_first": ["/api/*"]
+  },
+  "d1_databases": [
+    { "binding": "DB", "database_name": "placar-microplasticos" }
+  ],
+  "observability": { "enabled": true }
 }
