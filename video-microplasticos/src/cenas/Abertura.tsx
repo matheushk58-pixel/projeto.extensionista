@@ -5,7 +5,7 @@ export const Abertura: React.FC = () => {
   const f = useCurrentFrame();
   return (
     <AbsoluteFill style={{ background: COR.escuro, color: "#fff", fontFamily: FONTES.serif }}>
-      <Particulas semente="abertura" />
+      <Particulas semente="abertura" opacidade={0.6} />
       <AbsoluteFill style={{ padding: "110px 140px 150px", display: "flex", flexDirection: "column", justifyContent: "flex-end", gap: 28 }}>
         <p style={{ margin: 0, fontFamily: FONTES.display, fontWeight: 600, fontSize: T.apoio, color: COR.cianoClaro, ...surge(f, 6) }}>Projeto extensionista</p>
         <h1 style={{ margin: 0, fontFamily: FONTES.display, fontWeight: 800, fontSize: 168, lineHeight: 0.95, letterSpacing: -5 }}>

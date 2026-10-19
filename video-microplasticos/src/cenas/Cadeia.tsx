@@ -3,7 +3,7 @@ import { Cena, COR, FONTES, Fonte, FRAGMENTOS, P, prog, surge, Titulo } from "..
 
 // Quatro elos; o plástico viaja pela linha e se acumula em cada um.
 const ELOS = [
-  { nome: "Plâncton", texto: "confunde microesferas com comida" },
+  { nome: "Plâncton", texto: "engole microesferas" },
   { nome: "Filtradores", texto: "mexilhões retêm o que passa" },
   { nome: "Peixes", texto: "1 em 4 vendidos tinha detritos" },
   { nome: "Pessoas", texto: "frutos do mar, sal e água" },

@@ -40,12 +40,12 @@ export const Escala: React.FC = () => {
           ))}
         </div>
       </div>
-      <div style={{ display: "flex", gap: 14, opacity: prog(f, 40) }}>
+      <div style={{ display: "flex", gap: 14, marginBottom: 20, opacity: prog(f, 40) }}>
         {ZONAS.map((z, i) => {
           const ativa = f > INICIO && PARADAS[idx].zona === i;
           return (
-            <div key={z.texto} style={{ flex: z.flex, background: z.cor, borderRadius: 20, padding: "26px 30px", opacity: ativa ? 1 : 0.38, scale: ativa ? "1.02" : "1" }}>
-              <p style={{ margin: 0, fontFamily: FONTES.display, fontWeight: 700, fontSize: 38, lineHeight: 1.15, color: COR.tinta }}>{z.texto}</p>
+            <div key={z.texto} style={{ flex: z.flex, background: z.cor, borderRadius: 20, padding: "26px 30px", opacity: ativa ? 1 : 0.6, scale: ativa ? "1.02" : "1", outline: ativa ? `4px solid ${COR.tinta}` : "none" }}>
+              <p style={{ margin: 0, fontFamily: FONTES.display, fontWeight: 700, fontSize: 40, lineHeight: 1.15, color: COR.tinta }}>{z.texto}</p>
             </div>
           );
         })}

@@ -28,26 +28,21 @@ export const Projeto: React.FC = () => {
 };
 
 const REFS = [
-  "Thompson et al., 2004 · Science", "OMS, 2022", "PNUMA, 2021", "Eriksen et al., 2014 · PLOS ONE", "Jambeck et al., 2015 · Science",
-  "Rochman et al., 2015 · Sci. Reports", "Cole et al., 2013 · ES&T", "Wright et al., 2013 · Environ. Pollut.", "GESAMP, 2015", "OMS, 2019",
-  "Cox et al., 2019 · ES&T", "Qian et al., 2024 · PNAS", "Ragusa et al., 2021 · Environ. Int.", "Amato-Lourenço et al., 2021 · J. Hazard. Mater.",
-  "Leslie et al., 2022 · Environ. Int.", "Marfella et al., 2024 · NEJM", "Amato-Lourenço et al., 2024 · JAMA Netw. Open", "Nihart et al., 2025 · Nature Medicine",
-  "EFSA, 2016 · EFSA Journal", "Napper e Thompson, 2016 · Mar. Pollut. Bull.", "Schuyler et al., 2014 · Conserv. Biol.",
+  "OMS, 2019 e 2022", "PNUMA, 2021", "Eriksen et al., 2014 · PLOS ONE", "Cox et al., 2019 · ES&T",
+  "Marfella et al., 2024 · NEJM", "Nihart et al., 2025 · Nature Medicine", "Amato-Lourenço et al., 2021 e 2024 · USP", "EFSA, 2016",
 ];
 
 export const Fontes: React.FC = () => {
   const f = useCurrentFrame();
   return (
     <Cena fundo={COR.filtro}>
-      <Titulo>Fontes</Titulo>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "18px 48px" }}>
+      <Titulo>Principais fontes</Titulo>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "26px 72px" }}>
         {REFS.map((r, i) => (
-          <p key={r} style={{ margin: 0, fontFamily: FONTES.display, fontSize: 32, lineHeight: 1.3, color: COR.tintaSuave, opacity: prog(f, 15 + i * 3, 14) }}>
-            <b style={{ color: COR.tinta }}>{i + 1}.</b> {r}
-          </p>
+          <p key={r} style={{ margin: 0, fontFamily: FONTES.display, fontSize: 46, lineHeight: 1.25, color: COR.tintaSuave, borderBottom: `2px solid ${COR.filtro3}`, paddingBottom: 18, opacity: prog(f, 12 + i * 5, 14) }}>{r}</p>
         ))}
       </div>
-      <P estilo={{ opacity: prog(f, 90, 20) }}>Referências completas, no formato ABNT e com DOI, no site do projeto.</P>
+      <P tamanho={T.corpo} cor={COR.tinta} estilo={{ opacity: prog(f, 70, 20) }}>As 21 referências completas, em ABNT e com DOI, estão no site.</P>
     </Cena>
   );
 };
@@ -56,7 +51,7 @@ export const Encerramento: React.FC = () => {
   const f = useCurrentFrame();
   return (
     <AbsoluteFill style={{ background: COR.escuro, color: "#fff", fontFamily: FONTES.serif }}>
-      <Particulas semente="fim" />
+      <Particulas semente="fim" opacidade={0.6} />
       <AbsoluteFill style={{ padding: "110px 140px 150px", display: "flex", flexDirection: "column", justifyContent: "center", gap: 30 }}>
         <h2 style={{ margin: 0, fontFamily: FONTES.display, fontWeight: 800, fontSize: 168, letterSpacing: -5, lineHeight: 1, ...surge(f, 8, 24, 60) }}>Obrigado!</h2>
         <P cor={COR.escuroTexto} tamanho={T.corpo} estilo={surge(f, 28)}>Teste o que aprendeu no quiz e no minijogo do site.</P>

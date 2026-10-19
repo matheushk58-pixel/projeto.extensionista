@@ -20,31 +20,32 @@ import { COR } from "./tema";
 // Duração de cada cena em quadros (30 fps), pensada para dar tempo de ler.
 export const CENAS = [
   { id: "Abertura", componente: Abertura, duracao: 195 },
-  { id: "OQueSao", componente: OQueSao, duracao: 390 },
+  { id: "OQueSao", componente: OQueSao, duracao: 450 },
   { id: "Escala", componente: Escala, duracao: 450 },
-  { id: "Oceanos", componente: Oceanos, duracao: 330 },
+  { id: "Oceanos", componente: Oceanos, duracao: 270 },
   { id: "Cadeia", componente: Cadeia, duracao: 450 },
   { id: "Efeitos", componente: Efeitos, duracao: 330 },
   { id: "Exposicao", componente: Exposicao, duracao: 420 },
   { id: "Corpo", componente: Corpo, duracao: 510 },
   { id: "Arterias", componente: Arterias, duracao: 300 },
   { id: "Brasil", componente: Brasil, duracao: 360 },
-  { id: "Incertezas", componente: Incertezas, duracao: 390 },
+  { id: "Incertezas", componente: Incertezas, duracao: 480 },
   { id: "Acoes", componente: Acoes, duracao: 420 },
   { id: "Projeto", componente: Projeto, duracao: 300 },
-  { id: "Fontes", componente: Fontes, duracao: 270 },
+  { id: "Fontes", componente: Fontes, duracao: 240 },
   { id: "Encerramento", componente: Encerramento, duracao: 180 },
 ];
 export const TRANSICAO = 15;
 export const DURACAO_TOTAL = CENAS.reduce((s, c) => s + c.duracao, 0) - TRANSICAO * (CENAS.length - 1);
 
-// Barra fina no topo: mostra quanto falta do vídeo.
+// Barra fina na base: mostra quanto falta do vídeo.
 const Progresso: React.FC = () => {
   const f = useCurrentFrame();
   const { durationInFrames } = useVideoConfig();
   return (
     <AbsoluteFill style={{ pointerEvents: "none" }}>
-      <div style={{ position: "absolute", left: 0, top: 0, height: 8, background: COR.ciano, width: `${interpolate(f, [0, durationInFrames - 1], [0, 100])}%`, opacity: 0.85 }} />
+      <div style={{ position: "absolute", left: 0, bottom: 0, height: 8, width: "100%", background: "rgba(15,39,51,.25)" }} />
+      <div style={{ position: "absolute", left: 0, bottom: 0, height: 8, background: COR.ambar, width: `${interpolate(f, [0, durationInFrames - 1], [0, 100])}%` }} />
     </AbsoluteFill>
   );
 };
@@ -60,7 +61,8 @@ export const Apresentacao: React.FC = () => (
           </TransitionSeries.Sequence>
         );
         if (i === CENAS.length - 1) return [seq];
-        const apresentacao = i % 4 === 1 ? slide({ direction: "from-right" }) : fade();
+        // slide só na virada do ambiente aquático para o corpo humano
+        const apresentacao = CENAS[i + 1].id === "Exposicao" ? slide({ direction: "from-right" }) : fade();
         return [seq, <TransitionSeries.Transition key={c.id + "-t"} presentation={apresentacao} timing={linearTiming({ durationInFrames: TRANSICAO })} />];
       })}
     </TransitionSeries>
