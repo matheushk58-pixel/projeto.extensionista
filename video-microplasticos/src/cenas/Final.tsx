@@ -22,7 +22,7 @@ export const Projeto: React.FC = () => {
           </div>
         ))}
       </div>
-      <p style={{ margin: 0, fontFamily: FONTES.display, fontWeight: 700, fontSize: 56, color: COR.ambarClaro, ...surge(f, 170) }}>[endereço do site]</p>
+      <p style={{ margin: 0, fontFamily: FONTES.display, fontWeight: 700, fontSize: 50, color: COR.ambarClaro, ...surge(f, 170) }}>projeto-extensionista.qjperfumaria.workers.dev/microplasticos</p>
     </AbsoluteFill>
   );
 };
