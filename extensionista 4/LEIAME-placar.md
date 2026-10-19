@@ -43,14 +43,31 @@ const FIREBASE_CONFIG = {
 > A `apiKey` do Firebase para web **não é uma senha**: ela fica pública no site de propósito.
 > Quem protege os dados são as regras do `firestore.rules`.
 
-## 5. Publicar o site
+## 5. Publicar o site na Cloudflare
 
-O login Google precisa que o site esteja num endereço próprio (GitHub Pages, Vercel ou
-Netlify). Dentro da prévia do Claude (artifact) o pop-up do Google é bloqueado.
+A pasta já vem pronta para virar um **Cloudflare Worker** só de arquivos estáticos
+(`wrangler.jsonc`, `_headers` e `.assetsignore`). O repositório já está ligado à
+Cloudflare, então é só criar um Worker novo apontando para esta pasta:
 
-Com GitHub Pages, por exemplo: **Settings › Pages** do repositório → branch com o site →
-o endereço fica `https://<usuario>.github.io/projeto.extensionista/extensionista%204/`.
-Lembre de autorizar `<usuario>.github.io` no passo 2.3.
+1. Painel da Cloudflare → **Workers & Pages** → **Create** → **Import a repository**.
+2. Escolha `matheushk58-pixel/projeto.extensionista`.
+3. Configure:
+   - **Project name:** `microplasticos-saude`
+   - **Production branch:** a branch com o site (ou `main`, depois de juntar as mudanças)
+   - **Root directory:** `extensionista 4`
+   - **Build command:** deixe em branco
+   - **Deploy command:** `npx wrangler deploy`
+4. **Save and Deploy**. O endereço fica `https://microplasticos-saude.<sua-conta>.workers.dev`.
+5. No Firebase, em **Authentication › Settings › Authorized domains**, adicione
+   `microplasticos-saude.<sua-conta>.workers.dev` (e o seu domínio próprio, se usar um).
+
+A cada `git push` nessa branch, a Cloudflare publica a versão nova sozinha.
+
+Pelo terminal também funciona: dentro de `extensionista 4`, rode `npx wrangler login`
+e depois `npx wrangler deploy`.
+
+Dentro da prévia do Claude (artifact) o pop-up do Google é bloqueado: o placar
+online só funciona no endereço publicado.
 
 ## O que as regras garantem
 
