@@ -1,6 +1,6 @@
 {
   // Publicado pelo Workers Builds do projeto "projeto-extensionista-2" a cada push na main.
-  // A raiz serve o jogo original; o site "Microplásticos e Saúde" fica em /extensionista%204/
+  // O site "Microplásticos e Saúde" fica em /extensionista%204/; a raiz redireciona para ele
   // (atalho: /microplasticos).
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "projeto-extensionista-2",

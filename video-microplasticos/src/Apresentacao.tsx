@@ -1,4 +1,4 @@
-import { AbsoluteFill, interpolate, useCurrentFrame, useVideoConfig } from "remotion";
+import { AbsoluteFill, Audio, interpolate, staticFile, useCurrentFrame, useVideoConfig } from "remotion";
 import { linearTiming, TransitionSeries } from "@remotion/transitions";
 import { fade } from "@remotion/transitions/fade";
 import { slide } from "@remotion/transitions/slide";
@@ -68,5 +68,7 @@ export const Apresentacao: React.FC = () => (
       })}
     </TransitionSeries>
     <Progresso />
+    {/* Trilha ambiente original, gerada por scripts/trilha.py */}
+    <Audio src={staticFile("trilha.mp3")} volume={0.8} />
   </AbsoluteFill>
 );

@@ -2,7 +2,6 @@
 .gitignore
 .assetsignore
 wrangler.jsonc
-README.md
 node_modules
 .wrangler
 video-microplasticos
@@ -10,3 +9,4 @@ extensionista 4/wrangler.jsonc
 extensionista 4/.assetsignore
 extensionista 4/firestore.rules
 extensionista 4/LEIAME-placar.md
+README.md
