@@ -382,21 +382,28 @@
   .quiz-acao { margin-top: 20px; display: none; }
   .quiz-acao.visivel { display: inline-block; }
 
-  /* ---------- minijogo ---------- */
+  /* ---------- minijogo (corrida em 3 faixas) ---------- */
   .arena {
-    position: relative; margin-top: 32px; height: clamp(460px, 56vw, 620px); border-radius: 18px; overflow: hidden;
-    background: linear-gradient(180deg, #1F7891 0%, #145067 45%, #0B2733 100%); border: 1.5px solid var(--linha);
+    position: relative; margin-top: 32px; height: clamp(480px, 58vw, 640px); border-radius: 18px; overflow: hidden;
+    background: linear-gradient(180deg, #2A8AA3 0%, #145067 40%, #0B2733 100%); border: 1.5px solid var(--linha);
+    -webkit-user-select: none; user-select: none;
   }
   .arena:focus-visible { outline-offset: 4px; }
   .arena canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
   .arena.sem-webgl { display: none; }
-  .hud { position: absolute; top: 12px; left: 12px; right: 12px; display: flex; flex-wrap: wrap; gap: 8px; pointer-events: none; font-family: var(--display); }
+  .hud { position: absolute; top: 12px; left: 12px; right: 60px; display: flex; flex-wrap: wrap; gap: 8px; pointer-events: none; font-family: var(--display); }
   .hud > span { background: rgba(7,22,29,.74); color: #fff; padding: 6px 12px; border-radius: 999px; font-size: .92rem; display: inline-flex; gap: 6px; align-items: center; }
   .hud b { font-weight: 800; font-variant-numeric: tabular-nums; display: inline-block; }
-  .hud b.pulo { animation: pulo .3s var(--ease); }
+  .hud .multi { background: var(--pet); color: #0F2733; font-weight: 800; }
+  .hud .multi.x1 { background: rgba(7,22,29,.74); color: #fff; }
+  .hud .pulo { animation: pulo .32s var(--ease); }
   @keyframes pulo { 50% { transform: scale(1.3); } }
-  .vidas svg { transition: opacity .2s, transform .2s; }
-  .vidas svg.perdida { opacity: .25; transform: scale(.8); }
+  .poder { position: absolute; top: 56px; left: 12px; display: flex; align-items: center; gap: 8px; background: rgba(7,22,29,.74); color: #fff; padding: 6px 12px; border-radius: 999px; font-family: var(--display); font-size: .88rem; pointer-events: none; }
+  .poder[hidden] { display: none; }
+  .poder i { width: 80px; height: 6px; border-radius: 3px; background: rgba(255,255,255,.25); overflow: hidden; display: block; }
+  .poder i b { display: block; height: 100%; background: #6FD0EA; transform-origin: 0 50%; }
+  .pausa-btn { position: absolute; top: 10px; right: 10px; width: 44px; height: 44px; border-radius: 50%; border: 0; background: rgba(7,22,29,.74); cursor: pointer; display: grid; place-items: center; }
+  .pausa-btn[hidden] { display: none; }
   .toast {
     position: absolute; left: 50%; bottom: 16px; transform: translate(-50%, 8px); width: max-content; max-width: min(560px, calc(100% - 24px));
     background: #fff; color: #0F2733; font-size: 1rem; line-height: 1.4; padding: 10px 16px; border-radius: 12px;
@@ -404,29 +411,35 @@
   }
   .toast.visivel { opacity: 1; transform: translate(-50%, 0); }
   .toast b { font-family: var(--display); }
-  .tela { position: absolute; inset: 0; display: grid; place-items: center; padding: 16px; background: rgba(7,22,29,.55); -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px); overflow-y: auto; }
+  .aviso-centro { position: absolute; left: 50%; top: 38%; transform: translate(-50%, -50%) scale(.8); font-family: var(--display); font-weight: 800; font-size: clamp(2.4rem, 7vw, 4.4rem); letter-spacing: -.03em; color: #fff; text-shadow: 0 4px 0 #0a1c24; opacity: 0; pointer-events: none; transition: opacity .2s, transform .3s var(--ease); white-space: nowrap; }
+  .aviso-centro.visivel { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  .tela { position: absolute; inset: 0; display: grid; place-items: center; padding: 16px; background: rgba(7,22,29,.5); -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px); overflow-y: auto; }
   .tela[hidden] { display: none; }
-  .cartao { background: var(--filtro); color: var(--tinta); border-radius: 16px; padding: clamp(20px, 4vw, 30px); max-width: 460px; width: 100%; }
+  .cartao { background: var(--filtro); color: var(--tinta); border-radius: 16px; padding: clamp(20px, 4vw, 28px); max-width: 470px; width: 100%; }
   .cartao h3 { font-family: var(--display); font-weight: 800; font-size: 1.6rem; letter-spacing: -.02em; line-height: 1.1; margin-bottom: 12px; }
   .cartao > p { font-size: 1rem; margin-bottom: 14px; }
-  .cartao ul { list-style: none; margin: 0 0 20px; }
-  .cartao li { display: grid; grid-template-columns: 26px 1fr; gap: 10px; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--linha); font-size: 1rem; line-height: 1.4; }
+  .cartao ul { list-style: none; margin: 0 0 16px; }
+  .cartao li { display: grid; grid-template-columns: 70px 1fr; gap: 10px; align-items: center; padding: 7px 0; border-bottom: 1px solid var(--linha); font-size: .98rem; line-height: 1.35; }
   .cartao li b { font-family: var(--display); font-weight: 600; }
+  kbd { font-family: var(--display); font-weight: 600; font-size: .85rem; display: inline-grid; place-items: center; min-width: 28px; height: 28px; padding: 0 6px; border-radius: 6px; background: var(--filtro-2); border: 1.5px solid var(--linha); border-bottom-width: 3px; margin-right: 3px; }
   .btn-jogo { font-family: var(--display); font-weight: 600; font-size: 1.05rem; min-height: 52px; padding: 0 28px; border-radius: 12px; border: 0; background: var(--tinta); color: var(--filtro); cursor: pointer; transition: background-color .15s, transform .1s; }
   .btn-jogo:hover { background: var(--pe); color: #fff; }
   .btn-jogo:active { transform: scale(.97); }
   .teclas { font-family: var(--display); font-size: .88rem; color: var(--tinta-suave); margin-top: 12px; }
-  .placar { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 4px 0 16px; }
-  .placar strong { display: block; font-family: var(--display); font-weight: 800; font-size: 2.1rem; letter-spacing: -.03em; line-height: 1; font-variant-numeric: tabular-nums; }
-  .placar span { font-family: var(--display); font-size: .88rem; color: var(--tinta-suave); }
-  .placar .fundo strong { color: var(--pe); }
+  .placar { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 4px 0 14px; }
+  .placar strong { display: block; font-family: var(--display); font-weight: 800; font-size: 1.9rem; letter-spacing: -.03em; line-height: 1; font-variant-numeric: tabular-nums; }
+  .placar span { font-family: var(--display); font-size: .84rem; color: var(--tinta-suave); }
+  .placar .destaque strong { color: var(--pe); }
+  .placar .novo strong { color: var(--verde); }
+  .motivo { font-size: .98rem; margin-bottom: 10px; }
+  .licao { font-size: .98rem; padding: 12px 14px; border-left: 4px solid var(--pet); background: var(--filtro-2); border-radius: 0 10px 10px 0; margin-bottom: 16px; }
   @media (max-width: 560px) {
-    .arena { height: 600px; }
+    .arena { height: 620px; }
     .cartao h3 { font-size: 1.3rem; }
-    .cartao li { font-size: .9rem; padding: 6px 0; }
-    .placar strong { font-size: 1.7rem; }
+    .cartao li { font-size: .9rem; padding: 6px 0; grid-template-columns: 62px 1fr; }
+    .placar strong { font-size: 1.5rem; }
+    .hud > span { font-size: .82rem; padding: 5px 10px; }
   }
-  .licao { font-size: 1rem; padding: 12px 14px; border-left: 4px solid var(--pet); background: var(--filtro-2); border-radius: 0 10px 10px 0; margin-bottom: 18px; }
 
   /* ---------- o que fazer ---------- */
   .acoes { display: grid; grid-template-columns: 1fr 1fr; gap: 72px; margin-top: 40px; }
@@ -730,40 +743,56 @@
 <section id="jogo">
   <div class="envoltorio">
     <h2 class="sec-titulo">Missão: limpar o oceano</h2>
-    <div class="prosa"><p>Recolha o plástico antes que ele afunde e se quebre em microplásticos. Depois de fragmentado, ele fica no fundo e não dá mais para tirar.</p></div>
-    <div class="arena" id="arena" tabindex="0" aria-label="Minijogo. Use as setas ou as teclas A e D para mover o submarino.">
+    <div class="prosa"><p>Corra pelo fundo do mar recolhendo plástico antes que ele se quebre em microplásticos. Desvie dos corais, pule as pedras, mergulhe sob as redes fantasma e não bata nos peixes.</p></div>
+    <div class="arena" id="arena" tabindex="0" aria-label="Minijogo de corrida. Setas para trocar de faixa, pular e mergulhar. P para pausar.">
       <canvas id="jogo3d" aria-hidden="true"></canvas>
       <div class="hud" aria-hidden="true">
         <span>Pontos <b id="hudPontos">0</b></span>
-        <span>Tempo <b id="hudTempo">60</b></span>
-        <span class="vidas" id="hudVidas"><svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M9 16S2 11.5 2 6.5A3.5 3.5 0 0 1 9 5a3.5 3.5 0 0 1 7 1.5C16 11.5 9 16 9 16z" fill="#F07CA8"/></svg><svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M9 16S2 11.5 2 6.5A3.5 3.5 0 0 1 9 5a3.5 3.5 0 0 1 7 1.5C16 11.5 9 16 9 16z" fill="#F07CA8"/></svg><svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M9 16S2 11.5 2 6.5A3.5 3.5 0 0 1 9 5a3.5 3.5 0 0 1 7 1.5C16 11.5 9 16 9 16z" fill="#F07CA8"/></svg></span>
-        <span>No fundo <b id="hudFundo">0</b></span>
+        <span>Plástico <b id="hudPlastico">0</b></span>
+        <span class="multi x1" id="hudMulti">x1</span>
+        <span><b id="hudDist">0</b> m</span>
       </div>
+      <div class="poder" id="hudPoder" hidden aria-hidden="true"><span id="poderNome">Ímã</span><i><b id="poderBarra"></b></i></div>
+      <button class="pausa-btn" id="btnPausa" type="button" aria-label="Pausar" hidden><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><rect x="3" y="2" width="3.5" height="12" rx="1" fill="#fff"/><rect x="9.5" y="2" width="3.5" height="12" rx="1" fill="#fff"/></svg></button>
+      <div class="aviso-centro" id="avisoCentro" aria-hidden="true"></div>
       <p class="toast" id="toast" role="status" aria-live="polite"></p>
+
       <div class="tela" id="telaInicio">
         <div class="cartao">
-          <h3>Como jogar</h3>
+          <h3>Corra e recolha o plástico</h3>
           <ul>
-            <li><svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><path d="M9 2h4v3l2 3v12H7V8l2-3z" fill="#7CC8E8" stroke="#0F2733" stroke-width="1.4"/><rect x="7" y="11" width="8" height="3" fill="#E3A821"/></svg><span><b>Garrafas, sacolas, canudos e redes:</b> pegue com a rede do submarino. Valem 10 a 15 pontos.</span></li>
-            <li><svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><path d="M6 9l4-3 3 4-4 3z" fill="#D9366B"/><circle cx="15" cy="14" r="2" fill="#1C9CC0"/><path d="M5 16l3-1 1 3z" fill="#E3A821"/></svg><span><b>Microplásticos:</b> pequenos e difíceis de pegar. Valem 3 pontos.</span></li>
-            <li><svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><path d="M1 17q10-4 20 0v4H1z" fill="#9E8C66"/><circle cx="7" cy="16" r="1.3" fill="#D9366B"/><circle cx="11" cy="15.5" r="1.3" fill="#1C9CC0"/><circle cx="15" cy="16" r="1.3" fill="#E3A821"/></svg><span><b>Se o plástico grande chegar ao fundo,</b> ele se quebra em microplásticos que ficam na areia.</span></li>
-            <li><svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><ellipse cx="11" cy="11" rx="7" ry="5" fill="#F57A1F" stroke="#0F2733" stroke-width="1.4"/><path d="M4 11 0 7v8z" fill="#F57A1F"/><circle cx="14" cy="10" r="1.3" fill="#0F2733"/></svg><span><b>Desvie dos peixes e tartarugas.</b> Cada batida custa uma vida.</span></li>
+            <li><span><kbd>←</kbd><kbd>→</kbd></span><span><b>Trocar de faixa</b> para desviar de corais e peixes</span></li>
+            <li><span><kbd>↑</kbd></span><span><b>Pular</b> pedras</span></li>
+            <li><span><kbd>↓</kbd></span><span><b>Mergulhar</b> sob redes fantasma</span></li>
+            <li><span><svg width="44" height="22" viewBox="0 0 44 22" aria-hidden="true"><path d="M4 9l5-4 4 5-5 4z" fill="#D9366B"/><path d="M18 7h4v3l2 2v8h-8v-8l2-2z" fill="#7CC8E8" stroke="#0F2733" stroke-width="1.2"/><circle cx="36" cy="11" r="6" fill="#9FE6F5" stroke="#0F2733" stroke-width="1.2"/></svg></span><span><b>Fragmentos</b> valem 10, <b>itens grandes</b> 30. Pegue <b>ímãs e bolhas</b> para ajudar.</span></li>
           </ul>
-          <button class="btn-jogo" id="btnJogar" type="button">Começar missão</button>
-          <p class="teclas" id="dicaTeclas">Mova com o mouse, as setas ou as teclas A e D. São 60 segundos.</p>
+          <button class="btn-jogo" id="btnJogar" type="button">Começar corrida</button>
+          <p class="teclas" id="dicaTeclas">Também funciona com W, A, S, D e barra de espaço. P pausa.</p>
         </div>
       </div>
+
+      <div class="tela" id="telaPausa" hidden>
+        <div class="cartao">
+          <h3>Pausado</h3>
+          <p>A corrida continua de onde parou.</p>
+          <button class="btn-jogo" id="btnContinuar" type="button">Continuar</button>
+        </div>
+      </div>
+
       <div class="tela" id="telaFim" hidden>
         <div class="cartao" role="dialog" aria-labelledby="fimTitulo">
-          <h3 id="fimTitulo">Fim da missão</h3>
+          <h3 id="fimTitulo">Fim da corrida</h3>
           <div class="placar">
-            <div><strong id="fimPontos">0</strong><span>pontos</span></div>
-            <div><strong id="fimItens">0</strong><span>itens recolhidos</span></div>
-            <div class="fundo"><strong id="fimFundo">0</strong><span>microplásticos no fundo</span></div>
-            <div><strong id="fimRecorde">0</strong><span>seu recorde</span></div>
+            <div id="fimPontosBox"><strong id="fimPontos">0</strong><span id="fimPontosRotulo">pontos</span></div>
+            <div><strong id="fimDist">0</strong><span>metros</span></div>
+            <div><strong id="fimRecorde">0</strong><span>recorde</span></div>
+            <div><strong id="fimPlastico">0</strong><span>recolhidos</span></div>
+            <div class="destaque"><strong id="fimEscapou">0</strong><span>escaparam</span></div>
+            <div><strong id="fimCombo">x1</strong><span>maior combo</span></div>
           </div>
+          <p class="motivo" id="fimMotivo"></p>
           <p class="licao" id="fimLicao"></p>
-          <button class="btn-jogo" id="btnDeNovo" type="button">Jogar de novo</button>
+          <button class="btn-jogo" id="btnDeNovo" type="button">Correr de novo</button>
         </div>
       </div>
     </div>
@@ -1635,7 +1664,7 @@ addEventListener('DOMContentLoaded', () => {
   iniciarCopo();
 
   /* =========================================================
-     Minijogo: Missão limpar o oceano
+     Minijogo: corrida em 3 faixas pelo fundo do mar
      ========================================================= */
   function iniciarJogo() {
     const arena = document.getElementById('arena'), canvas = document.getElementById('jogo3d');
@@ -1643,243 +1672,421 @@ addEventListener('DOMContentLoaded', () => {
     let renderer;
     try { renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true }); } catch (e) { return false; }
     const T = THREE, K = kitToon(T);
-    renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2)); renderer.setClearColor(0, 0);
-    const cena = new T.Scene(); cena.fog = new T.Fog(0x145067, 16, 40);
-    const cam = new T.PerspectiveCamera(50, 1, .1, 100); cam.position.set(0, 2.4, 16); cam.lookAt(0, 1.8, 0);
+    renderer.setPixelRatio(Math.min(devicePixelRatio || 1, arena.clientWidth < 700 ? 1.5 : 2));
+    renderer.setClearColor(0, 0);
+    const cena = new T.Scene(); cena.fog = new T.Fog(0x145067, 24, 80);
+    const cam = new T.PerspectiveCamera(54, 1, .1, 160);
     cena.add(new T.HemisphereLight(0xD6F6FF, 0x173540, 1));
-    const sol = new T.DirectionalLight(0xffffff, .8); sol.position.set(4, 18, 10); cena.add(sol);
+    const sol = new T.DirectionalLight(0xffffff, .8); sol.position.set(5, 18, 8); cena.add(sol);
 
-    const FUNDO_Y = -4.6, SUB_Y = -2.9, TOPO_Y = 11, DUR = 60;
-    const chao = new T.PlaneGeometry(70, 24, 35, 12); chao.rotateX(-Math.PI / 2);
-    const pc = chao.attributes.position;
-    for (let i = 0; i < pc.count; i++) pc.setY(i, Math.sin(pc.getX(i) * .5) * .15 + Math.cos(pc.getZ(i) * .4) * .2);
-    chao.computeVertexNormals();
-    const areia = new T.Mesh(chao, K.mat(0x9E8C66)); areia.position.y = FUNDO_Y; cena.add(areia);
-    const algas = [];
-    [-11, -8.5, -5, 4.5, 8, 11.5].forEach((x, i) => { const a = fazerAlga(K, 3 + (i % 3), i % 2 ? 0x2EA36B : 0x4CC27E, i); a.g.position.set(x, FUNDO_Y, -4 - (i % 2) * 2); cena.add(a.g); algas.push(a); });
-    [[-7, -5], [6.5, -6], [0, -7]].forEach(([x, z], i) => { const pd = K.malha(new T.DodecahedronGeometry(1, 0), 0x3E5A66); pd.position.set(x, FUNDO_Y + .2, z); pd.scale.set(1.6, .8, 1.1); cena.add(pd); });
-
-    // submarino com rede
-    const sub = new T.Group(); sub.position.set(0, SUB_Y, 0); sub.scale.setScalar(1.15); cena.add(sub);
-    const casco = K.malha(new T.SphereGeometry(1, 28, 18), 0xF2C230); casco.scale.set(1.5, .85, .85); sub.add(casco);
-    const torre = K.malha(new T.CylinderGeometry(.32, .4, .5, 20), 0xF2C230); torre.position.set(-.45, .85, 0); sub.add(torre);
-    for (const x of [.15, -.65]) {
-      const zz = .85 * Math.sqrt(1 - (x / 1.5) ** 2) + .02;
-      const vid = new T.Mesh(new T.CircleGeometry(.2, 20), K.mat(0x9FE6F5)); vid.position.set(x, -.05, zz); sub.add(vid);
-      const aro = new T.Mesh(new T.TorusGeometry(.2, .05, 8, 20), K.mat(0xE3A821)); aro.position.copy(vid.position); sub.add(aro);
+    // materiais e geometrias compartilhados: a corrida cria e descarta muitos objetos
+    const mats = new Map();
+    const cm = (cor, extra) => { const k = cor + '|' + JSON.stringify(extra || {}); if (!mats.has(k)) mats.set(k, K.mat(cor, extra)); return mats.get(k); };
+    const contorno = new T.MeshBasicMaterial({ color: 0x0a1c24, side: T.BackSide });
+    function peca(geo, cor, o = {}) {
+      const m = new T.Mesh(geo, cm(cor, o.mat));
+      if (o.contorno !== false) { const c = new T.Mesh(geo, contorno); c.scale.setScalar(o.k || 1.08); m.add(c); }
+      return m;
     }
-    for (const z of [1, -1]) { const o = K.olho(.2); o.position.set(1.25, .22, .3 * z); if (z < 0) o.scale.z = -1; sub.add(o); }
-    const sorr = K.sorriso(.13); sorr.position.set(1.47, -.12, 0); sorr.rotation.set(0, Math.PI / 2, Math.PI); sub.add(sorr);
-    const helice = new T.Group(); helice.position.set(-1.58, 0, 0); sub.add(helice);
-    for (let i = 0; i < 2; i++) { const p = K.malha(new T.BoxGeometry(.08, .75, .2), 0xD9366B); p.rotation.x = i * Math.PI / 2; helice.add(p); }
-    const haste = K.malha(new T.CylinderGeometry(.05, .05, .5, 8), 0xE8EFEC); haste.position.set(.35, 1.0, 0); sub.add(haste);
-    const aroRede = K.malha(new T.TorusGeometry(.95, .07, 10, 32), 0xffffff, { k: 1.15 }); aroRede.rotation.x = Math.PI / 2; aroRede.position.set(.35, 1.3, 0); sub.add(aroRede);
-    const malhaRede = new T.Mesh(new T.ConeGeometry(.95, .9, 14, 3, true), new T.MeshBasicMaterial({ color: 0xffffff, wireframe: true, transparent: true, opacity: .55 }));
-    malhaRede.rotation.x = Math.PI; malhaRede.position.set(.35, .85, 0); sub.add(malhaRede);
-
-    // itens que afundam
-    const CORES = [0xD9366B, 0x1C9CC0, 0xE3A821, 0x7A55C9, 0x2EA36B];
-    const perfil = [[0, -1.7], [.78, -1.7], [.9, -1.55], [.9, .7], [.52, 1.5], [.35, 1.78], [.35, 2.1]].map(([x, y]) => new T.Vector2(x * .38, y * .38));
-    const ITENS = {
-      garrafa: { nome: 'Garrafa PET', pts: 10, peso: .24, vel: 1, grande: true,
-        fato: '<b>Garrafa PET.</b> Com sol, calor e atrito, o plástico se quebra em pedaços cada vez menores.',
-        fazer() { const g = new T.Group(); g.add(K.malha(new T.LatheGeometry(perfil, 20), 0x7CC8E8, { mat: { side: T.DoubleSide } })); const tp = K.malha(new T.CylinderGeometry(.15, .15, .14, 14), 0x1C9CC0); tp.position.y = .86; g.add(tp); const rt = K.malha(new T.CylinderGeometry(.35, .35, .26, 20, 1, true), 0xE3A821, { contorno: false, mat: { side: T.DoubleSide } }); rt.position.y = -.1; g.add(rt); return g; } },
-      sacola: { nome: 'Sacola', pts: 10, peso: .2, vel: .62, grande: true, balanco: 1.6,
-        fato: '<b>Sacola.</b> É feita de polietileno, um dos plásticos mais encontrados no sangue humano.',
-        fazer() { const g = new T.Group(); const c = K.malha(new T.SphereGeometry(.7, 16, 10, 0, Math.PI * 2, 0, Math.PI * .62), 0xF4F1E6, { mat: { side: T.DoubleSide } }); c.scale.set(1, .9, .75); c.rotation.x = Math.PI; g.add(c); for (const x of [-.25, .25]) { const a = K.malha(new T.TorusGeometry(.18, .04, 6, 14, Math.PI), 0xF4F1E6); a.position.set(x, .62, 0); g.add(a); } return g; } },
-      canudo: { nome: 'Canudo', pts: 10, peso: .18, vel: 1.15, grande: true,
-        fato: '<b>Canudo.</b> É de polipropileno, o plástico mais comum nos estudos da USP com pulmão e cérebro.',
-        fazer() { const g = new T.Group(); const c = K.malha(new T.CylinderGeometry(.08, .08, 1.6, 10), 0xD9366B); c.rotation.z = .9; g.add(c); for (const y of [-.4, 0, .4]) { const f = new T.Mesh(new T.CylinderGeometry(.085, .085, .14, 10), K.mat(0xffffff)); f.position.y = y; c.add(f); } return g; } },
-      rede: { nome: 'Rede de pesca', pts: 15, peso: .1, vel: .85, grande: true,
-        fato: '<b>Rede de pesca.</b> Redes abandonadas soltam fibras de náilon que viram microplástico.',
-        fazer() { return K.malha(new T.TorusKnotGeometry(.34, .07, 60, 6, 2, 3), 0x2EA36B, { k: 1.12 }); } },
-      micro: { nome: 'Microplástico', pts: 3, peso: .28, vel: .75,
-        fato: '<b>Microplástico.</b> Tem menos de 5 mm: é difícil de ver e mais ainda de recolher.',
-        fazer() { return K.malha(new T.IcosahedronGeometry(.17, 0), CORES[Math.floor(Math.random() * 5)], { k: 1.15 }); } },
+    const perfilG = [[0, -1.7], [.78, -1.7], [.9, -1.55], [.9, .7], [.52, 1.5], [.35, 1.78], [.35, 2.1]].map(([x, y]) => new T.Vector2(x * .28, y * .28));
+    const G = {
+      frag: new T.IcosahedronGeometry(.22, 0),
+      pedra: new T.DodecahedronGeometry(1, 0),
+      coluna: new T.CylinderGeometry(.75, .9, 1, 9),
+      bola: new T.SphereGeometry(.5, 14, 10),
+      poste: new T.CylinderGeometry(.08, .08, 1, 8),
+      garrafa: new T.LatheGeometry(perfilG, 18),
+      tampa: new T.CylinderGeometry(.11, .11, .1, 12),
+      sacola: new T.SphereGeometry(.45, 14, 8, 0, Math.PI * 2, 0, Math.PI * .62),
+      alca: new T.TorusGeometry(.12, .03, 6, 12, Math.PI),
+      canudo: new T.CylinderGeometry(.06, .06, 1.1, 8),
+      rede: new T.TorusKnotGeometry(.26, .055, 48, 6, 2, 3),
+      ima: new T.TorusGeometry(.28, .1, 8, 18, Math.PI),
+      ponta: new T.CylinderGeometry(.1, .1, .16, 10),
+      bolhaP: new T.SphereGeometry(.55, 18, 12),
+      bolhinha: new T.SphereGeometry(.08, 8, 6),
     };
-    const sorteio = Object.entries(ITENS);
+    const CORES = [0xD9366B, 0x1C9CC0, 0xE3A821, 0x7A55C9, 0x2EA36B];
+    const FAIXA = 2.2, BASE_Y = .8, LONGE = -82, PERTO = 12;
 
-    // microplásticos acumulados na areia
-    const MAX_F = 500;
-    const fundo = new T.InstancedMesh(new T.IcosahedronGeometry(.11, 0), K.mat(0xffffff), MAX_F);
-    for (let i = 0; i < MAX_F; i++) fundo.setColorAt(i, new T.Color(CORES[i % 5]));
-    fundo.instanceColor.needsUpdate = true; fundo.count = 0; cena.add(fundo); // cores antes de zerar: o buffer de cor usa o count
-    const aux = new T.Object3D();
-    function assentar(x, n) {
-      for (let k = 0; k < n && fundo.count < MAX_F; k++) {
-        aux.position.set(x + (Math.random() - .5) * 1.8, FUNDO_Y + .12, (Math.random() - .5) * 2.4);
-        aux.rotation.set(Math.random() * 6, Math.random() * 6, 0); aux.scale.setScalar(.7 + Math.random() * .6); aux.updateMatrix();
-        fundo.setMatrixAt(fundo.count++, aux.matrix);
+    // pista: vale de areia com bordas que sobem
+    const chaoGeo = new T.PlaneGeometry(60, 230, 30, 115); chaoGeo.rotateX(-Math.PI / 2);
+    const pc = chaoGeo.attributes.position;
+    for (let i = 0; i < pc.count; i++) { const ax = Math.abs(pc.getX(i)); pc.setY(i, ax > 4 ? (ax - 4) * .38 + Math.sin(pc.getZ(i) * .3 + ax) * .3 : 0); }
+    chaoGeo.computeVertexNormals();
+    const chao = new T.Mesh(chaoGeo, K.mat(0x8C7A57)); chao.position.z = -72; cena.add(chao);
+    // as três faixas: tiras de areia alternadas com bordas escuras
+    [-1, 0, 1].forEach(f => {
+      const tira = new T.Mesh(new T.PlaneGeometry(FAIXA - .12, 230), K.mat(f === 0 ? 0xA8946A : 0x9C8962)); tira.rotation.x = -Math.PI / 2; tira.position.set(f * FAIXA, .01, -72); cena.add(tira);
+    });
+    for (const x of [-1.5 * FAIXA, -FAIXA / 2, FAIXA / 2, 1.5 * FAIXA]) {
+      const l = new T.Mesh(new T.PlaneGeometry(.08, 230), new T.MeshBasicMaterial({ color: 0x5E5038 })); l.rotation.x = -Math.PI / 2; l.position.set(x, .02, -72); cena.add(l);
+    }
+    for (let i = 0; i < 5; i++) {
+      const f = new T.Mesh(new T.PlaneGeometry(3, 40), new T.MeshBasicMaterial({ color: 0xCFF6FF, transparent: true, opacity: .05, blending: T.AdditiveBlending, depthWrite: false, side: T.DoubleSide }));
+      f.position.set(-12 + i * 6, 10, -40 - i * 6); f.rotation.z = .3; cena.add(f);
+    }
+
+    // cenário que rola na direção da câmera
+    const rolantes = [], algasJ = [];
+    const faixaRolagem = PERTO - LONGE;
+    function rolante(g, x, y, z) { g.position.set(x, y, z); cena.add(g); rolantes.push(g); }
+    for (let i = 0; i < 50; i++) {
+      const s = new T.Mesh(G.bola, cm(i % 2 ? 0x7A6A4A : 0x8E7C58)); s.scale.set(.5 + Math.random() * .5, .08, .4 + Math.random() * .3);
+      rolante(s, (Math.random() - .5) * 7, .02, LONGE + Math.random() * faixaRolagem);
+    }
+    for (let i = 0; i < 26; i++) {
+      const lado = i % 2 ? 1 : -1, x = lado * (5 + Math.random() * 4.5), y = (Math.abs(x) - 4) * .38;
+      let g; const tipo = i % 3;
+      if (tipo === 0) { const a = fazerAlga(K, 2.5 + Math.random() * 3, i % 4 ? 0x2EA36B : 0x4CC27E, i); g = a.g; algasJ.push(a); }
+      else if (tipo === 1) {
+        g = new T.Group(); const c = [0xF07CA8, 0xF2A65A, 0xB98AF0][i % 3];
+        for (let k = 0; k < 4; k++) { const b = peca(G.bola, c); b.scale.setScalar(.9 + (k % 2) * .5); b.position.set(Math.cos(k * 1.7) * .5, .3 + (k % 2) * .5, Math.sin(k * 1.7) * .4); g.add(b); }
+      } else { g = peca(G.pedra, 0x3E5A66); g.scale.set(1.8, 1.1, 1.4); }
+      rolante(g, x, y, LONGE + (i / 26) * faixaRolagem);
+    }
+    const nB = 40, bolhas = new T.InstancedMesh(G.bolhinha, new T.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: .45 }), nB);
+    const bd = [...Array(nB)].map(() => ({ x: (Math.random() - .5) * 16, y: Math.random() * 9, z: LONGE + Math.random() * faixaRolagem, s: 1 + Math.random() * 2 }));
+    cena.add(bolhas);
+
+    // jogador: o submarino visto de trás
+    const jog = new T.Group(); cena.add(jog);
+    const sub = new T.Group(); sub.rotation.y = Math.PI / 2; jog.add(sub);
+    const casco = K.malha(new T.SphereGeometry(1, 28, 18), 0xF2C230); casco.scale.set(1.3, .72, .72); sub.add(casco);
+    const torre = K.malha(new T.CylinderGeometry(.28, .34, .42, 18), 0xF2C230); torre.position.set(-.35, .72, 0); sub.add(torre);
+    for (const z of [1, -1]) {
+      const zz = .72 * Math.sqrt(1 - (.1 / 1.3) ** 2) + .02;
+      const vid = new T.Mesh(new T.CircleGeometry(.17, 18), cm(0x9FE6F5)); vid.position.set(-.1, -.02, zz * z); if (z < 0) vid.rotation.y = Math.PI; sub.add(vid);
+      const aro = new T.Mesh(new T.TorusGeometry(.17, .045, 8, 18), cm(0xE3A821)); aro.position.copy(vid.position); sub.add(aro);
+    }
+    const helice = new T.Group(); helice.position.set(-1.36, 0, 0); sub.add(helice);
+    for (let i = 0; i < 2; i++) { const p = peca(new T.BoxGeometry(.06, .55, .14), 0xD9366B); p.rotation.x = i * Math.PI / 2; helice.add(p); }
+    const aroRede = K.malha(new T.TorusGeometry(.62, .06, 10, 28), 0xffffff, { k: 1.15 }); aroRede.position.set(.95, .55, 0); aroRede.rotation.y = Math.PI / 2; sub.add(aroRede);
+    const malhaRede = new T.Mesh(new T.ConeGeometry(.62, .9, 12, 3, true), new T.MeshBasicMaterial({ color: 0xffffff, wireframe: true, transparent: true, opacity: .5 }));
+    malhaRede.rotation.z = Math.PI / 2; malhaRede.position.set(.5, .55, 0); sub.add(malhaRede);
+    const escudoM = new T.Mesh(new T.SphereGeometry(1.45, 24, 16), new T.MeshBasicMaterial({ color: 0x9FE6F5, transparent: true, opacity: .22, depthWrite: false }));
+    escudoM.visible = false; jog.add(escudoM);
+    const rastro = [...Array(26)].map(() => { const m = new T.Mesh(G.bolhinha, new T.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: .6 })); m.visible = false; cena.add(m); return { m, vida: 0 }; });
+
+    // fatos dos itens grandes (aparecem na primeira vez que cada um é recolhido)
+    const GRANDES = {
+      garrafa: { nome: 'Garrafa PET', fato: '<b>Garrafa PET.</b> Com sol, calor e atrito, o plástico se quebra em pedaços cada vez menores.' },
+      sacola: { nome: 'Sacola', fato: '<b>Sacola.</b> É de polietileno, um dos plásticos mais encontrados no sangue humano.' },
+      canudo: { nome: 'Canudo', fato: '<b>Canudo.</b> É de polipropileno, o plástico mais comum nos estudos da USP com pulmão e cérebro.' },
+      rede: { nome: 'Rede de pesca', fato: '<b>Pedaço de rede.</b> Redes abandonadas soltam fibras de náilon que viram microplástico.' },
+    };
+    const TIPOS_G = Object.keys(GRANDES);
+    function fazerItem(tipo) {
+      const g = new T.Group();
+      if (tipo === 'frag') g.add(peca(G.frag, CORES[Math.floor(Math.random() * 5)], { k: 1.2 }));
+      else if (tipo === 'garrafa') { g.add(peca(G.garrafa, 0x7CC8E8, { mat: { side: T.DoubleSide } })); const t = peca(G.tampa, 0x1C9CC0); t.position.y = .63; g.add(t); g.rotation.z = .5; }
+      else if (tipo === 'sacola') { const c = peca(G.sacola, 0xF4F1E6, { mat: { side: T.DoubleSide } }); c.rotation.x = Math.PI; g.add(c); for (const x of [-.16, .16]) { const a = peca(G.alca, 0xF4F1E6); a.position.set(x, .4, 0); g.add(a); } }
+      else if (tipo === 'canudo') { const c = peca(G.canudo, 0xD9366B); c.rotation.z = .9; g.add(c); }
+      else if (tipo === 'rede') g.add(peca(G.rede, 0x2EA36B, { k: 1.12 }));
+      return g;
+    }
+    function fazerPoder(tipo) {
+      const g = new T.Group();
+      g.add(new T.Mesh(G.bolhaP, new T.MeshBasicMaterial({ color: 0x9FE6F5, transparent: true, opacity: .3, depthWrite: false })));
+      if (tipo === 'ima') {
+        const u = peca(G.ima, 0xD9366B); u.rotation.z = Math.PI; g.add(u);
+        for (const x of [-.28, .28]) { const p = peca(G.ponta, 0xE8EFEC); p.position.set(x, .06, 0); g.add(p); }
+      } else {
+        const b = new T.Mesh(G.bolaP || (G.bolaP = new T.SphereGeometry(.3, 16, 12)), cm(0x6FD0EA, { transparent: true, opacity: .8 })); g.add(b);
+        const br = new T.Mesh(G.bolhinha, new T.MeshBasicMaterial({ color: 0xffffff })); br.position.set(.12, .14, .22); br.scale.setScalar(1.3); g.add(br);
       }
-      fundo.instanceMatrix.needsUpdate = true;
+      return g;
+    }
+    function fazerObstaculo(tipo) {
+      const g = new T.Group(); const o = { tipo, g, y0: 0, y1: 9, prof: 1.5, vz: 0 };
+      if (tipo === 'coral') {
+        const c = peca(G.coluna, 0xF07CA8); c.scale.set(1, 3, 1); c.position.y = 1.5; g.add(c);
+        for (let k = 0; k < 3; k++) { const b = peca(G.bola, 0xF07CA8); b.scale.setScalar(.75); b.position.set((k - 1) * .45, 3.1 + (k % 2) * .3, 0); g.add(b); }
+      } else if (tipo === 'pedra') {
+        const p = peca(G.pedra, 0x3E5A66); p.scale.set(1.0, .55, .75); p.position.y = .4; g.add(p); o.y1 = .9;
+      } else if (tipo === 'rede') {
+        for (const x of [-1.05, 1.05]) { const p = peca(G.poste, 0x5B3A1E); p.scale.y = 4; p.position.set(x, 2, 0); g.add(p); }
+        const corda = peca(G.poste, 0xE8EFEC, { k: 1.3 }); corda.scale.y = 2.2; corda.rotation.z = Math.PI / 2; corda.position.y = 3.9; g.add(corda);
+        const malha = new T.Mesh(new T.PlaneGeometry(2.1, 2.6, 9, 10), new T.MeshBasicMaterial({ color: 0x9BE3B5, wireframe: true, transparent: true, opacity: .85 }));
+        malha.position.y = 2.6; g.add(malha);
+        for (let k = 0; k < 4; k++) { const b = peca(G.bola, 0xF2A65A); b.scale.setScalar(.3); b.position.set(-.8 + k * .53, 3.9, 0); g.add(b); }
+        o.y0 = 1.3; o.prof = .7; o.malha = malha;
+      } else if (tipo === 'peixe') {
+        const p = fazerPeixe(K, Math.random() < .5 ? { cor: 0x2F6FD6, cauda: 0xF2C230 } : { cor: 0xF57A1F, cauda: 0xF57A1F, listras: true });
+        p.g.rotation.y = -Math.PI / 2; p.g.scale.setScalar(.72); p.g.position.y = 1.0; g.add(p.g);
+        o.cauda = p.cauda; o.vz = 6; o.prof = 1.2;
+      }
+      return o;
     }
 
     // estado
+    const $ = id => document.getElementById(id);
     const ui = {
-      pontos: document.getElementById('hudPontos'), tempo: document.getElementById('hudTempo'), fundo: document.getElementById('hudFundo'),
-      vidas: [...document.querySelectorAll('#hudVidas svg')], toast: document.getElementById('toast'),
-      inicio: document.getElementById('telaInicio'), fim: document.getElementById('telaFim'),
+      pontos: $('hudPontos'), plastico: $('hudPlastico'), multi: $('hudMulti'), dist: $('hudDist'),
+      poder: $('hudPoder'), poderNome: $('poderNome'), poderBarra: $('poderBarra'),
+      toast: $('toast'), centro: $('avisoCentro'), pausa: $('btnPausa'),
+      inicio: $('telaInicio'), telaPausa: $('telaPausa'), fim: $('telaFim'),
     };
-    let estado = 'inicio', itens = [], animais = [], pontos = 0, vidas = 3, tempo = DUR, recolhidos = 0, noFundo = 0;
-    let proxItem = 0, proxAnimal = 4, invul = 0, vistos = new Set(), meiaLargura = 8, alvoX = 0, dirTecla = 0, toastAte = 0;
-    let recorde = 0; try { recorde = +localStorage.getItem('recorde-micro') || 0; } catch (e) {}
+    const MOTIVOS = {
+      coral: 'Você bateu em um coral. Dica: troque de faixa com ← e →.',
+      pedra: 'Você bateu em uma pedra. Dica: pule com ↑.',
+      rede: 'Você ficou preso numa <b>rede fantasma</b>, uma rede de pesca abandonada que continua no mar e solta fibras de náilon. Dica: mergulhe com ↓.',
+      peixe: 'Você bateu em um peixe. Peixes também engolem plástico por engano. Dica: troque de faixa.',
+    };
+    let estado = 'inicio', obst = [], itens = [], poderes = [];
+    let faixa = 1, px = 0, py = BASE_Y, vy = 0, noChao = true, mergulho = 0, tJogo = 0, vel = 6, dist = 0;
+    let pontosPlast = 0, plastico = 0, escapou = 0, combo = 0, maiorMulti = 1, multi = 1, ima = 0, escudo = false, invul = 0;
+    let acum = 0, batidaT = 0, motivo = '', vistos = new Set(), toastAte = 0, centroAte = 0, tremor = 0, proxRastro = 0;
+    let recorde = 0; try { recorde = +localStorage.getItem('recorde-corrida') || 0; } catch (e) {}
 
-    function aviso(html, seg = 2.8) { ui.toast.innerHTML = html; ui.toast.classList.add('visivel'); toastAte = performance.now() + seg * 1000; }
+    function aviso(html, seg = 2.6) { ui.toast.innerHTML = html; ui.toast.classList.add('visivel'); toastAte = performance.now() + seg * 1000; }
+    function grito(txt, seg = .9) { ui.centro.textContent = txt; ui.centro.classList.add('visivel'); centroAte = performance.now() + seg * 1000; }
     function pular(el) { el.classList.remove('pulo'); void el.offsetWidth; el.classList.add('pulo'); }
+    const pontos = () => Math.floor(dist) + pontosPlast;
+    let ultHud = '';
     function hud() {
-      ui.pontos.textContent = pontos; ui.tempo.textContent = Math.ceil(tempo); ui.fundo.textContent = noFundo;
-      ui.vidas.forEach((v, i) => v.classList.toggle('perdida', i >= vidas));
+      const chave = [pontos(), plastico, multi, Math.floor(dist)].join();
+      if (chave === ultHud) return; ultHud = chave;
+      ui.pontos.textContent = pontos(); ui.plastico.textContent = plastico; ui.dist.textContent = Math.floor(dist);
+      ui.multi.textContent = 'x' + multi; ui.multi.classList.toggle('x1', multi === 1);
     }
     function limpar() {
-      itens.forEach(it => cena.remove(it.g)); animais.forEach(a => cena.remove(a.g));
-      itens = []; animais = []; fundo.count = 0; fundo.instanceMatrix.needsUpdate = true;
+      [...obst, ...itens, ...poderes].forEach(e => cena.remove(e.g));
+      obst = []; itens = []; poderes = [];
     }
     function comecar() {
-      limpar(); pontos = 0; vidas = 3; tempo = DUR; recolhidos = 0; noFundo = 0; proxItem = .3; proxAnimal = 5; invul = 0; vistos = new Set();
-      sub.position.x = 0; alvoX = 0; estado = 'jogando'; hud();
-      ui.inicio.hidden = true; ui.fim.hidden = true; arena.focus({ preventScroll: true });
-      aviso('Pegue o plástico com a rede antes que ele chegue ao fundo.', 3);
+      limpar();
+      faixa = 1; px = 0; py = BASE_Y; vy = 0; noChao = true; mergulho = 0; tJogo = 0; vel = 12; dist = 0;
+      pontosPlast = 0; plastico = 0; escapou = 0; combo = 0; multi = 1; maiorMulti = 1; ima = 0; escudo = false; invul = 0;
+      acum = 0; vistos = new Set(); jog.rotation.set(0, 0, 0); sub.rotation.set(0, Math.PI / 2, 0); escudoM.visible = false; ui.poder.hidden = true;
+      estado = 'jogando'; ultHud = ''; hud();
+      ui.inicio.hidden = true; ui.fim.hidden = true; ui.telaPausa.hidden = true; ui.pausa.hidden = false;
+      arena.focus({ preventScroll: true });
+      grito('Vai!', .8);
     }
+    function pausar() { if (estado !== 'jogando') return; estado = 'pausado'; ui.telaPausa.hidden = false; $('btnContinuar').focus({ preventScroll: true }); }
+    function continuar() { if (estado !== 'pausado') return; estado = 'jogando'; ui.telaPausa.hidden = true; arena.focus({ preventScroll: true }); grito('Vai!', .6); }
     function terminar() {
-      estado = 'fim';
-      if (pontos > recorde) { recorde = pontos; try { localStorage.setItem('recorde-micro', recorde); } catch (e) {} }
-      document.getElementById('fimPontos').textContent = pontos;
-      document.getElementById('fimItens').textContent = recolhidos;
-      document.getElementById('fimFundo').textContent = noFundo;
-      document.getElementById('fimRecorde').textContent = recorde;
-      document.getElementById('fimTitulo').textContent = vidas <= 0 ? 'Missão encerrada: três batidas em animais' : 'Fim da missão';
-      document.getElementById('fimLicao').textContent = noFundo === 0
-        ? 'Perfeito: nenhum pedaço chegou ao fundo. Na vida real, o jeito mais eficaz de fazer isso é evitar que o plástico chegue à água.'
-        : `${noFundo} microplásticos ficaram na areia. Recolher um pedaço grande é fácil; depois que ele se fragmenta, não dá mais. Por isso o melhor caminho é evitar que o plástico chegue à água.`;
-      ui.fim.hidden = false; ui.toast.classList.remove('visivel');
-      document.getElementById('btnDeNovo').focus({ preventScroll: true });
+      estado = 'fim'; ui.pausa.hidden = true; ui.poder.hidden = true; ui.toast.classList.remove('visivel');
+      const p = pontos(), novo = p > recorde;
+      if (novo) { recorde = p; try { localStorage.setItem('recorde-corrida', recorde); } catch (e) {} }
+      $('fimPontos').textContent = p; $('fimDist').textContent = Math.floor(dist); $('fimRecorde').textContent = recorde;
+      $('fimPlastico').textContent = plastico; $('fimEscapou').textContent = escapou; $('fimCombo').textContent = 'x' + maiorMulti;
+      $('fimPontosBox').classList.toggle('novo', novo); $('fimPontosRotulo').textContent = novo ? 'novo recorde!' : 'pontos';
+      $('fimMotivo').innerHTML = MOTIVOS[motivo] || '';
+      $('fimLicao').textContent = escapou === 0
+        ? 'Nenhum pedaço escapou. No mar de verdade, o jeito mais eficaz de chegar nesse resultado é evitar que o plástico chegue à água.'
+        : `${escapou} pedaços de plástico passaram por você. No mar de verdade, eles se quebrariam em microplásticos, e aí não dá mais para recolher. Evitar que o plástico chegue à água é o caminho mais eficaz.`;
+      ui.fim.hidden = false; $('btnDeNovo').focus({ preventScroll: true });
     }
-    document.getElementById('btnJogar').addEventListener('click', comecar);
-    document.getElementById('btnDeNovo').addEventListener('click', comecar);
+    $('btnJogar').addEventListener('click', comecar);
+    $('btnDeNovo').addEventListener('click', comecar);
+    $('btnContinuar').addEventListener('click', continuar);
+    ui.pausa.addEventListener('click', pausar);
 
-    function novoItem() {
-      let r = Math.random(), tipo = 'micro';
-      for (const [k, v] of sorteio) { if ((r -= v.peso) <= 0) { tipo = k; break; } }
-      const def = ITENS[tipo], g = def.fazer();
-      g.position.set((Math.random() * 2 - 1) * meiaLargura, TOPO_Y, 0);
-      g.rotation.set(Math.random() * 6, Math.random() * 6, Math.random() * 6);
-      cena.add(g);
-      const ritmo = 1 + (DUR - tempo) / DUR * .7;
-      itens.push({ g, tipo, def, vy: (1.5 + Math.random() * .7) * def.vel * ritmo, f: Math.random() * 6, x0: g.position.x, pego: 0 });
-    }
-    function novoAnimal() {
-      const lado = Math.random() < .5 ? -1 : 1, tart = Math.random() < .35;
-      const a = tart ? fazerTartaruga(K) : fazerPeixe(K, Math.random() < .5 ? { cor: 0xF57A1F, cauda: 0xF57A1F, listras: true } : { cor: 0x2F6FD6, cauda: 0xF2C230 });
-      a.g.scale.setScalar(tart ? .55 : .6);
-      a.g.position.set(-lado * (meiaLargura + 4), SUB_Y + (Math.random() - .3) * .8, .3);
-      a.g.rotation.y = lado > 0 ? 0 : Math.PI;
-      cena.add(a.g);
-      animais.push({ ...a, tart, vx: lado * (2.2 + Math.random() * 1.2), fuga: 0, f: Math.random() * 6 });
-    }
+    // ações do jogador
+    function mover(d) { if (estado !== 'jogando') return; faixa = Math.max(0, Math.min(2, faixa + d)); }
+    function saltar() { if (estado !== 'jogando' || !noChao) return; vy = 9.6; noChao = false; mergulho = 0; }
+    function mergulhar() { if (estado !== 'jogando') return; mergulho = .7; if (!noChao) vy = -22; }
 
-    // controles
-    const teclas = new Set();
     arena.addEventListener('keydown', e => {
+      const k = e.key.toLowerCase();
+      if (estado === 'pausado' && (k === 'p' || k === 'escape')) { e.preventDefault(); continuar(); return; }
       if (estado !== 'jogando') return;
-      if (['ArrowLeft', 'ArrowRight', 'a', 'd', 'A', 'D'].includes(e.key)) { teclas.add(e.key.toLowerCase()); e.preventDefault(); }
+      const mapa = { arrowleft: () => mover(-1), a: () => mover(-1), arrowright: () => mover(1), d: () => mover(1), arrowup: saltar, w: saltar, ' ': saltar, arrowdown: mergulhar, s: mergulhar, p: pausar, escape: pausar };
+      if (mapa[k]) { e.preventDefault(); if (!e.repeat || k === 'arrowup' || k === 'w' || k === ' ') mapa[k](); }
     });
-    arena.addEventListener('keyup', e => teclas.delete(e.key.toLowerCase()));
-    arena.addEventListener('blur', () => teclas.clear());
-    function ponteiro(e) {
-      if (estado !== 'jogando') return;
-      const r = canvas.getBoundingClientRect();
-      alvoX = ((e.clientX - r.left) / r.width * 2 - 1) * (meiaLargura + 1.2);
+    let toque = null;
+    canvas.addEventListener('pointerdown', e => { toque = { x: e.clientX, y: e.clientY, usado: false }; });
+    canvas.addEventListener('pointermove', e => {
+      if (!toque || toque.usado) return;
+      const dx = e.clientX - toque.x, dy = e.clientY - toque.y;
+      if (Math.max(Math.abs(dx), Math.abs(dy)) < 32) return;
+      toque.usado = true;
+      if (Math.abs(dx) > Math.abs(dy)) mover(dx > 0 ? 1 : -1); else if (dy < 0) saltar(); else mergulhar();
+    });
+    addEventListener('pointerup', () => { toque = null; });
+    if (matchMedia('(hover: none)').matches) $('dicaTeclas').textContent = 'Deslize o dedo: para os lados troca de faixa, para cima pula, para baixo mergulha.';
+
+    // geração de fileiras
+    function novaFileira() {
+      const z = LONGE, livres = [0, 1, 2].sort(() => Math.random() - .5);
+      const dif = Math.min(1, tJogo / 60);
+      const nBloq = Math.random() < .2 - dif * .1 ? 0 : Math.random() < .55 - dif * .2 ? 1 : 2;
+      const bloqueadas = livres.splice(0, nBloq);
+      const tiposOk = ['coral', 'pedra'].concat(tJogo > 8 ? ['rede'] : [], tJogo > 18 ? ['peixe'] : []);
+      const linhas = {};
+      bloqueadas.forEach(f => {
+        const tipo = tiposOk[Math.floor(Math.random() * tiposOk.length)];
+        const o = fazerObstaculo(tipo); o.x = (f - 1) * FAIXA; o.g.position.set(o.x, 0, tipo === 'peixe' ? z - 20 : z); cena.add(o.g); obst.push(o);
+        linhas[f] = tipo;
+      });
+      // plástico: uma fileira em faixa livre, ou em arco por cima de uma pedra
+      const alvo = Object.keys(linhas).find(f => linhas[f] === 'pedra' && Math.random() < .5);
+      const fItens = alvo !== undefined ? +alvo : livres[0];
+      if (fItens !== undefined) {
+        const arco = alvo !== undefined, n = arco ? 7 : 5 + Math.floor(Math.random() * 4);
+        for (let i = 0; i < n; i++) {
+          const grande = !arco && i === n - 1 && Math.random() < .35;
+          const tipo = grande ? TIPOS_G[Math.floor(Math.random() * TIPOS_G.length)] : 'frag';
+          const g = fazerItem(tipo);
+          const iz = arco ? z + (i - 3) * 1.4 : z + 6 - i * 1.8;
+          const iy = arco ? BASE_Y + .2 + Math.sin(Math.PI * i / (n - 1)) * 2.0 : BASE_Y + .1;
+          const it = { tipo, g, x: (fItens - 1) * FAIXA, y: iy, f: Math.random() * 6 };
+          g.position.set(it.x, iy, iz); cena.add(g); itens.push(it);
+        }
+      }
+      if (livres.length && tJogo > 6 && Math.random() < .07 && !ima && !escudo && !poderes.length) {
+        const f = livres[livres.length - 1], tipo = Math.random() < .5 ? 'ima' : 'bolha';
+        const g = fazerPoder(tipo); g.position.set((f - 1) * FAIXA, BASE_Y + .3, z - 4); cena.add(g); poderes.push({ tipo, g, x: (f - 1) * FAIXA });
+      }
     }
-    canvas.addEventListener('pointermove', ponteiro);
-    canvas.addEventListener('pointerdown', ponteiro);
 
     function ajustar() {
       const w = arena.clientWidth, h = arena.clientHeight;
-      renderer.setSize(w, h, false); cam.aspect = w / h; cam.fov = w < 600 ? 62 : 50; cam.updateProjectionMatrix();
-      const altura = 2 * Math.tan(cam.fov * Math.PI / 360) * cam.position.z;
-      meiaLargura = Math.max(3, altura * cam.aspect / 2 - 1.4);
+      renderer.setSize(w, h, false); cam.aspect = w / h; cam.updateProjectionMatrix();
     }
     ajustar(); addEventListener('resize', ajustar);
-    if (matchMedia('(hover: none)').matches) document.getElementById('dicaTeclas').textContent = 'Arraste o dedo pela área do jogo para mover o submarino. São 60 segundos.';
 
     let visivel = false, ultimo = performance.now(), t = 0;
-    new IntersectionObserver(([e]) => { const antes = visivel; visivel = e.isIntersecting; if (visivel && !antes) { ultimo = performance.now(); requestAnimationFrame(quadro); } }).observe(arena);
+    new IntersectionObserver(([e]) => {
+      const antes = visivel; visivel = e.isIntersecting;
+      if (!visivel) pausar();
+      if (visivel && !antes) { ultimo = performance.now(); requestAnimationFrame(quadro); }
+    }).observe(arena);
+    document.addEventListener('visibilitychange', () => { if (document.hidden) pausar(); });
 
+    const aux = new T.Object3D(), mundoHelice = new T.Vector3();
     function quadro(agora) {
       if (!visivel) return;
-      const dt = Math.min(.05, (agora - ultimo) / 1000); ultimo = agora; t += dt;
-      const jogando = estado === 'jogando' && !document.hidden;
-
-      algas.forEach(a => a.segs.forEach((s, i) => { s.rotation.z = Math.sin(t * 1.2 + a.fase + i * .55) * .1; }));
-      helice.rotation.x += dt * (jogando ? 14 : 4);
-      sub.position.y = SUB_Y + Math.sin(t * 2) * .06;
+      const dt = Math.min(.04, (agora - ultimo) / 1000); ultimo = agora; t += dt;
+      const jogando = estado === 'jogando';
+      const rolagem = jogando ? vel : estado === 'inicio' || estado === 'fim' ? 5 : estado === 'batida' ? vel * Math.max(0, 1 - batidaT * 3) : 0;
+      const dz = rolagem * dt;
 
       if (jogando) {
-        tempo -= dt;
-        // movimento do submarino
-        const dir = (teclas.has('arrowright') || teclas.has('d') ? 1 : 0) - (teclas.has('arrowleft') || teclas.has('a') ? 1 : 0);
-        if (dir) alvoX = sub.position.x + dir * 2;
-        alvoX = Math.max(-meiaLargura, Math.min(meiaLargura, alvoX));
-        const antes = sub.position.x;
-        sub.position.x += (alvoX - sub.position.x) * Math.min(1, dt * (dir ? 6 : 9));
-        const vx = (sub.position.x - antes) / Math.max(dt, .001);
-        sub.rotation.z += (-vx * .025 - sub.rotation.z) * Math.min(1, dt * 8);
-        sub.rotation.y = 0;
-        if (invul > 0) { invul -= dt; sub.visible = Math.floor(invul * 10) % 2 === 0; } else sub.visible = true;
-
-        // geração
-        proxItem -= dt; proxAnimal -= dt;
-        if (proxItem <= 0) { novoItem(); proxItem = Math.max(.5, 1.25 - (DUR - tempo) * .012) * (.7 + Math.random() * .6); }
-        if (proxAnimal <= 0) { novoAnimal(); proxAnimal = 4.5 + Math.random() * 3.5; }
-
-        // itens
-        const redeX = sub.position.x + .4, redeY = sub.position.y + 1.5;
-        for (let i = itens.length - 1; i >= 0; i--) {
-          const it = itens[i], g = it.g;
-          if (it.pego) {
-            it.pego += dt * 4; g.position.x += (redeX - g.position.x) * .3; g.position.y += (redeY - .3 - g.position.y) * .3;
-            g.scale.setScalar(Math.max(.01, 1 - it.pego)); if (it.pego >= 1) { cena.remove(g); itens.splice(i, 1); } continue;
-          }
-          g.position.y -= it.vy * dt;
-          g.position.x = it.x0 + Math.sin(t * 1.4 + it.f) * .35 * (it.def.balanco || 1);
-          g.rotation.x += dt * .8; g.rotation.y += dt * .6;
-          if (Math.abs(g.position.x - redeX) < 1.3 && g.position.y < redeY + .5 && g.position.y > redeY - .6) {
-            it.pego = .01; pontos += it.def.pts; recolhidos++; pular(ui.pontos);
-            if (!vistos.has(it.tipo)) { vistos.add(it.tipo); aviso(`+${it.def.pts} · ${it.def.fato}`, 4); }
-            else if (performance.now() > toastAte) aviso(`<b>+${it.def.pts}</b> ${it.def.nome}`, 1.1);
-            continue;
-          }
-          if (g.position.y < FUNDO_Y + .3) {
-            const n = it.def.grande ? 5 : 1;
-            assentar(g.position.x, n); noFundo += n; pular(ui.fundo);
-            if (it.def.grande && !vistos.has('quebrou')) { vistos.add('quebrou'); aviso('<b>Ops!</b> Um pedaço chegou ao fundo e se quebrou em 5 microplásticos.', 3.5); }
-            cena.remove(g); itens.splice(i, 1);
-          }
-        }
-
-        // animais
-        for (let i = animais.length - 1; i >= 0; i--) {
-          const a = animais[i];
-          a.g.position.x += a.vx * dt;
-          if (a.fuga) { a.g.position.y += dt * 4; a.g.rotation.z = Math.sign(a.vx) * .5; }
-          else a.g.position.y += Math.sin(t * 2 + a.f) * dt * .3;
-          if (a.cauda) a.cauda.rotation.y = Math.sin(t * 10 + a.f) * .5;
-          if (a.nad) a.nad.forEach(n => { n.piv.rotation.x = n.z * Math.sin(t * 3 + (n.frente ? 0 : 1)) * .5; });
-          if (!a.fuga && invul <= 0 && Math.abs(a.g.position.x - sub.position.x) < 1.7 && Math.abs(a.g.position.y - sub.position.y) < 1.0) {
-            vidas--; invul = 1.6; a.fuga = 1; hud();
-            aviso(a.tart ? '<b>Cuidado com a tartaruga!</b> Tartarugas marinhas também confundem plástico com comida.' : '<b>Cuidado com o peixe!</b> Peixes também engolem plástico por engano.', 3);
-            if (vidas <= 0) { terminar(); break; }
-          }
-          if (Math.abs(a.g.position.x) > meiaLargura + 6 || a.g.position.y > TOPO_Y) { cena.remove(a.g); animais.splice(i, 1); }
-        }
-        if (estado === 'jogando') { if (tempo <= 0) { tempo = 0; terminar(); } hud(); }
+        tJogo += dt; vel = Math.min(30, 12 + tJogo * .3); dist += dz * .5;
+        acum += dz;
+        const intervalo = Math.max(10, 17 - tJogo * .08);
+        if (acum >= intervalo) { acum = 0; novaFileira(); }
+        if (ima > 0) { ima -= dt; ui.poderBarra.style.transform = `scaleX(${Math.max(0, ima / 8)})`; if (ima <= 0) { ima = 0; ui.poder.hidden = true; } }
+        if (invul > 0) invul -= dt;
       }
-      if (performance.now() > toastAte) ui.toast.classList.remove('visivel');
 
+      // física do jogador
+      if (estado !== 'pausado') {
+        const alvoX = (faixa - 1) * FAIXA;
+        px += (alvoX - px) * Math.min(1, dt * 13);
+        if (!noChao) { vy -= 26 * dt; py += vy * dt; if (py <= BASE_Y) { py = BASE_Y; vy = 0; noChao = true; } }
+        if (mergulho > 0) mergulho -= dt;
+      }
+      const abaixado = mergulho > 0;
+      const yDesenho = py - (abaixado ? .35 : 0) + (noChao && !abaixado ? Math.sin(t * 5) * .05 : 0);
+      jog.position.set(px, yDesenho, 0);
+      if (estado !== 'batida') {
+        jog.scale.y += ((abaixado ? .55 : 1) - jog.scale.y) * Math.min(1, dt * 18);
+        jog.rotation.z = (px - (faixa - 1) * FAIXA) * .18;
+        jog.rotation.x = noChao ? 0 : -vy * .03;
+      }
+      helice.rotation.x += dt * (6 + rolagem * 1.2);
+      escudoM.visible = escudo; if (escudo) escudoM.scale.setScalar(1 + Math.sin(t * 6) * .04);
+      const base = yDesenho - .45, topo = yDesenho + (abaixado ? .3 : 1.05);
+
+      // cenário
+      rolantes.forEach(g => { g.position.z += dz; if (g.position.z > PERTO) g.position.z -= faixaRolagem; });
+      algasJ.forEach(a => a.segs.forEach((s, i) => { s.rotation.z = Math.sin(t * 1.4 + a.fase + i * .55) * .12; }));
+      bd.forEach((b, i) => {
+        b.z += dz; b.y += dt * .8; if (b.z > PERTO) b.z -= faixaRolagem; if (b.y > 10) b.y = 0;
+        aux.position.set(b.x, b.y, b.z); aux.rotation.set(0, 0, 0); aux.scale.setScalar(b.s); aux.updateMatrix(); bolhas.setMatrixAt(i, aux.matrix);
+      });
+      bolhas.instanceMatrix.needsUpdate = true;
+
+      // rastro de bolhas da hélice
+      proxRastro -= dt;
+      if (proxRastro <= 0 && estado !== 'pausado') {
+        proxRastro = .045; const r = rastro.find(b => b.vida <= 0);
+        if (r) { helice.getWorldPosition(mundoHelice); r.m.position.copy(mundoHelice).add(new T.Vector3((Math.random() - .5) * .3, (Math.random() - .5) * .3, .2)); r.vida = .7; r.m.visible = true; }
+      }
+      rastro.forEach(r => {
+        if (r.vida <= 0) return;
+        r.vida -= dt; r.m.position.z += dz * .7 + dt * 1.5; r.m.position.y += dt * .9;
+        r.m.scale.setScalar(Math.max(.01, r.vida * 1.8)); if (r.vida <= 0) r.m.visible = false;
+      });
+
+      // obstáculos
+      for (let i = obst.length - 1; i >= 0; i--) {
+        const o = obst[i];
+        if (estado !== 'pausado') o.g.position.z += dz + (jogando ? o.vz * dt : 0);
+        if (o.cauda) o.cauda.rotation.y = Math.sin(t * 12 + i) * .5;
+        if (o.malha) o.malha.rotation.y = Math.sin(t * 1.5 + i) * .08;
+        if (jogando && invul <= 0 && Math.abs(o.x - px) < 1.05 && Math.abs(o.g.position.z) < o.prof / 2 + .55 && base < o.y1 && topo > o.y0) {
+          if (escudo) { escudo = false; invul = .8; cena.remove(o.g); obst.splice(i, 1); grito('Bolha estourou!', .9); continue; }
+          estado = 'batida'; batidaT = 0; motivo = o.tipo; tremor = .5; ui.pausa.hidden = true;
+        }
+        if (o.g.position.z > PERTO) { cena.remove(o.g); obst.splice(i, 1); }
+      }
+
+      // plástico
+      for (let i = itens.length - 1; i >= 0; i--) {
+        const it = itens[i], g = it.g;
+        if (it.pego) {
+          it.pego += dt * 5; g.position.lerp(jog.position, .35); g.scale.setScalar(Math.max(.01, 1 - it.pego));
+          if (it.pego >= 1) { cena.remove(g); itens.splice(i, 1); } continue;
+        }
+        if (estado !== 'pausado') g.position.z += dz;
+        if (ima > 0 && g.position.z > -12 && g.position.z < 1.5) { it.x += (px - it.x) * Math.min(1, dt * 7); it.y += (yDesenho + .3 - it.y) * Math.min(1, dt * 7); }
+        g.position.x = it.x; g.position.y = it.y + Math.sin(t * 3 + it.f) * .08;
+        g.rotation.y += dt * 2; g.rotation.x += dt * .7;
+        if (jogando && Math.abs(it.x - px) < .95 && Math.abs(g.position.z) < .9 && it.y > base - .45 && it.y < topo + .45) {
+          it.pego = .01; plastico++; combo++;
+          const m = Math.min(5, 1 + Math.floor(combo / 12));
+          if (m > multi) { multi = m; maiorMulti = Math.max(maiorMulti, m); pular(ui.multi); grito('x' + m + ' combo', .8); }
+          pontosPlast += (it.tipo === 'frag' ? 10 : 30) * multi; pular(ui.plastico);
+          if (it.tipo !== 'frag' && !vistos.has(it.tipo)) { vistos.add(it.tipo); aviso(`+${30 * multi} · ${GRANDES[it.tipo].fato}`, 4); }
+          continue;
+        }
+        if (g.position.z > 2.2) {
+          if (jogando) { escapou++; if (combo >= 12) aviso('Um pedaço escapou: o combo voltou para x1.', 1.6); combo = 0; multi = 1; }
+          cena.remove(g); itens.splice(i, 1);
+        }
+      }
+
+      // power-ups
+      for (let i = poderes.length - 1; i >= 0; i--) {
+        const p = poderes[i];
+        if (estado !== 'pausado') p.g.position.z += dz;
+        p.g.position.y = BASE_Y + .4 + Math.sin(t * 3) * .15; p.g.rotation.y += dt * 2;
+        if (jogando && Math.abs(p.x - px) < 1 && Math.abs(p.g.position.z) < 1 && topo > BASE_Y) {
+          cena.remove(p.g); poderes.splice(i, 1);
+          if (p.tipo === 'ima') { ima = 8; ui.poderNome.textContent = 'Ímã de rede'; ui.poder.hidden = false; aviso('<b>Ímã de rede:</b> puxa o plástico de todas as faixas por 8 segundos.', 2.6); }
+          else { escudo = true; aviso('<b>Bolha protetora:</b> aguenta uma batida.', 2.4); }
+          continue;
+        }
+        if (p.g.position.z > PERTO) { cena.remove(p.g); poderes.splice(i, 1); }
+      }
+
+      // batida
+      if (estado === 'batida') {
+        batidaT += dt;
+        jog.rotation.z += dt * 9; jog.position.y += Math.sin(Math.min(1, batidaT * 2) * Math.PI) * .6;
+        if (batidaT > .9) terminar();
+      }
+
+      // câmera
+      tremor = Math.max(0, tremor - dt);
+      const tx = (Math.random() - .5) * tremor * .8, ty = (Math.random() - .5) * tremor * .8;
+      cam.position.x += (px * .55 + tx - cam.position.x) * Math.min(1, dt * 8);
+      cam.position.y = 3.8 + (py - BASE_Y) * .3 + ty; cam.position.z = 8.6;
+      cam.fov += ((jogando ? 54 + (vel - 12) * .35 : 54) - cam.fov) * Math.min(1, dt * 2); cam.updateProjectionMatrix();
+      cam.lookAt(px * .65, 1.3, -9);
+
+      if (jogando) hud();
+      const ag = performance.now();
+      if (ag > toastAte) ui.toast.classList.remove('visivel');
+      if (ag > centroAte) ui.centro.classList.remove('visivel');
       renderer.render(cena, cam);
       requestAnimationFrame(quadro);
     }
-    hud();
     return true;
   }
   if (!iniciarJogo()) document.getElementById('arena').classList.add('sem-webgl');
