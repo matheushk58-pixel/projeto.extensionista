@@ -489,24 +489,21 @@
   .lista-placar li:nth-child(1) .pl-pos { color: #B7860B; }
   .lista-placar li:nth-child(2) .pl-pos { color: #6F8791; }
   .lista-placar li:nth-child(3) .pl-pos { color: #A8612B; }
-  .pl-av { width: 34px; height: 34px; border-radius: 50%; display: block; }
+  .pl-av { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; color: #fff; font-weight: 700; font-size: .95rem; }
   .pl-nome { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .pl-nome small { font-weight: 400; color: var(--tinta-suave); margin-left: 6px; font-size: .85rem; }
   .pl-pts { font-weight: 800; font-variant-numeric: tabular-nums; text-align: right; }
   .pl-m { color: var(--tinta-suave); font-size: .9rem; font-variant-numeric: tabular-nums; text-align: right; }
   .pl-conta { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin: 4px 0 14px; }
-  .btn-google {
-    display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 16px; border-radius: 999px; cursor: pointer;
-    background: #fff; color: #1F1F1F; border: 1px solid #747775; font-family: var(--display); font-weight: 600; font-size: .95rem;
-    transition: background-color .15s, box-shadow .15s;
-  }
-  .btn-google:hover { background: #F8FAFF; box-shadow: 0 1px 3px rgba(60,64,67,.3); }
-  .btn-google[hidden], .pl-eu[hidden] { display: none; }
+  .pl-eu[hidden], .form-apelido[hidden] { display: none; }
   .pl-eu { display: inline-flex; align-items: center; gap: 10px; font-family: var(--display); font-size: .95rem; }
-  .pl-eu img { width: 32px; height: 32px; border-radius: 50%; }
   .link-btn { background: none; border: 0; color: var(--pp-texto); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; font: inherit; min-height: 44px; padding: 0 4px; }
   .fim-acoes { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
-  .fim-acoes .btn-google[hidden] { display: none; }
+  .form-apelido { display: flex; flex-direction: column; gap: 6px; margin: 0 0 14px; font-family: var(--display); }
+  .form-apelido label { font-weight: 600; font-size: .95rem; }
+  .form-apelido-linha { display: flex; gap: 8px; flex-wrap: wrap; }
+  .form-apelido input { flex: 1 1 12rem; min-height: 44px; padding: 0 14px; border-radius: 12px; border: 2px solid var(--linha); background: transparent; color: inherit; font: inherit; font-size: 1rem; }
+  .form-apelido input:focus-visible { outline: 3px solid var(--pp-texto); outline-offset: 2px; border-color: transparent; }
   .fim-placar { font-family: var(--display); font-size: .92rem; color: var(--tinta-suave); margin: -4px 0 12px; min-height: 1.3em; }
   @media (max-width: 560px) {
     .lista-placar li { grid-template-columns: 1.8rem 28px 1fr auto; gap: 10px; }
@@ -873,7 +870,6 @@
             <ol class="lista-placar" data-placar-lista aria-label="Melhores pontuações"></ol>
             <div class="fim-acoes">
               <button class="btn-sec voltar" type="button" data-ir="voltar">Voltar</button>
-              <button class="btn-google" type="button" data-entrar-google hidden><svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>Entrar com Google</button>
             </div>
           </div>
           <div class="painel-menu" data-painel="opcoes" hidden>
@@ -917,10 +913,13 @@
           <p class="motivo" id="fimMotivo"></p>
           <p class="licao" id="fimLicao"></p>
           <p class="fim-placar" id="fimPlacar" aria-live="polite"></p>
+          <form class="form-apelido" id="formApelidoFim" hidden>
+            <label for="apelidoFim">Seu apelido no placar</label>
+            <div class="form-apelido-linha"><input id="apelidoFim" name="apelido" maxlength="20" minlength="2" autocomplete="nickname" spellcheck="false" placeholder="Ex.: Tartaruga Veloz" required><button class="btn-jogo" type="submit">Salvar no placar</button></div>
+          </form>
           <div class="fim-acoes">
             <button class="btn-jogo" type="button" data-acao="jogar">Correr de novo</button>
             <button class="btn-sec" type="button" data-acao="menu">Menu</button>
-            <button class="btn-google" id="btnGoogleFim" type="button" data-entrar-google hidden><svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>Entrar e salvar</button>
           </div>
         </div>
       </div>
@@ -932,8 +931,11 @@
         <p class="sub-nota" data-placar-estado>Carregando o placar…</p>
       </div>
       <div class="pl-conta">
-        <button class="btn-google" type="button" data-entrar-google hidden><svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>Entrar com Google</button>
-        <span class="pl-eu" id="plEu" hidden><img id="plEuFoto" alt="" referrerpolicy="no-referrer"><span>Jogando como <b id="plEuNome"></b></span><button class="link-btn" id="btnSair" type="button">Sair</button></span>
+        <span class="pl-eu" id="plEu" hidden><span>Jogando como <b id="plEuNome"></b></span><button class="link-btn" id="btnTrocarApelido" type="button">Trocar apelido</button></span>
+        <form class="form-apelido" id="formApelidoSecao" hidden>
+          <label for="apelidoSecao">Novo apelido</label>
+          <div class="form-apelido-linha"><input id="apelidoSecao" name="apelido" maxlength="20" minlength="2" autocomplete="nickname" spellcheck="false" required><button class="btn-sec" type="submit">Salvar</button></div>
+        </form>
       </div>
       <ol class="lista-placar" id="placarLista" data-placar-lista aria-label="Melhores pontuações"></ol>
     </div>
@@ -1829,115 +1831,122 @@ addEventListener('DOMContentLoaded', () => {
   iniciarCopo();
 
   /* =========================================================
-     Placar de líderes com login Google (Firebase Auth + Firestore).
-     Preencha FIREBASE_CONFIG com os dados do seu projeto Firebase
-     (veja LEIAME-placar.md). Vazio, o placar fica desativado e o
-     recorde local continua funcionando.
+     Placar de líderes com apelido. As marcas ficam no banco D1 da
+     Cloudflare, atrás da API /api/placar (worker.js na raiz do
+     repositório). Cada navegador ganha um id aleatório; o apelido
+     e a melhor marca ficam salvos neste navegador.
      ========================================================= */
-  const FIREBASE_CONFIG = {
-    apiKey: '',
-    authDomain: '',
-    projectId: '',
-    appId: '',
-  };
   const placar = (() => {
     const $p = id => document.getElementById(id);
+    const API = '/api/placar';
     const listas = [...document.querySelectorAll('[data-placar-lista]')], estados = [...document.querySelectorAll('[data-placar-estado]')];
-    const botoesGoogle = [...document.querySelectorAll('[data-entrar-google]')], eu = $p('plEu');
     const estadoEl = { set textContent(v) { estados.forEach(e => { e.textContent = v; }); } };
-    const configurado = !!(FIREBASE_CONFIG.apiKey && FIREBASE_CONFIG.projectId);
-    let fb = null, usuario = null, meu = null, linhas = [], pendente = null, carregando = null, aoSalvarPendente = null;
+    const eu = $p('plEu'), formFim = $p('formApelidoFim'), formSecao = $p('formApelidoSecao');
+    const ler = (k, padrao) => { try { return localStorage.getItem(k) ?? padrao; } catch (e) { return padrao; } };
+    const gravar = (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} };
+    const novoId = () => (crypto.randomUUID ? crypto.randomUUID() : [...crypto.getRandomValues(new Uint8Array(16))].map(b => b.toString(16).padStart(2, '0')).join(''));
+    let id = ler('placar-id', '');
+    if (!/^[a-f0-9-]{20,40}$/.test(id)) { id = novoId(); gravar('placar-id', id); }
+    let apelido = ler('placar-apelido', '');
+    let melhor = null; try { melhor = JSON.parse(ler('placar-melhor', 'null')); } catch (e) {}
+    let linhas = [], disponivel = null, pendente = null, aoSalvarPendente = null, carregando = null;
 
-    const nomeCurto = u => {
-      const partes = (u.displayName || 'Jogador').trim().split(/\s+/);
-      return (partes[0] + (partes.length > 1 ? ' ' + partes[partes.length - 1][0] + '.' : '')).slice(0, 40);
-    };
+    const corAvatar = nome => { let h = 0; for (const ch of nome) h = (h * 31 + ch.codePointAt(0)) % 360; return `hsl(${h} 55% 42%)`; };
     function render() {
+      if (disponivel === false) { estadoEl.textContent = 'O placar não pôde ser carregado agora. Seu recorde neste navegador continua valendo.'; return; }
       if (!linhas.length) { listas.forEach(l => l.replaceChildren()); estadoEl.textContent = 'Ninguém jogou ainda. Seja o primeiro no placar!'; return; }
-      estadoEl.textContent = 'Top 10, atualizado ao vivo';
+      estadoEl.textContent = 'Top 10 de todos os jogadores';
       listas.forEach(lista => lista.replaceChildren(...linhas.map((l, i) => {
-        const li = document.createElement('li'), meuLugar = usuario && l.id === usuario.uid;
-        if (meuLugar) li.className = 'eu';
+        const li = document.createElement('li');
+        if (l.eu) li.className = 'eu';
         const pos = document.createElement('span'); pos.className = 'pl-pos'; pos.textContent = (i + 1) + 'º';
-        const av = document.createElement('img'); av.className = 'pl-av'; av.alt = ''; av.referrerPolicy = 'no-referrer';
-        if (typeof l.foto === 'string' && /^https:\/\//.test(l.foto)) av.src = l.foto;
-        const nome = document.createElement('span'); nome.className = 'pl-nome'; nome.textContent = typeof l.nome === 'string' && l.nome ? l.nome : 'Jogador';
-        if (meuLugar) { const v = document.createElement('small'); v.textContent = 'você'; nome.appendChild(v); }
+        const nomeTxt = typeof l.nome === 'string' && l.nome ? l.nome : 'Jogador';
+        const av = document.createElement('span'); av.className = 'pl-av'; av.setAttribute('aria-hidden', 'true');
+        av.textContent = [...nomeTxt][0].toUpperCase(); av.style.background = corAvatar(nomeTxt);
+        const nome = document.createElement('span'); nome.className = 'pl-nome'; nome.textContent = nomeTxt;
+        if (l.eu) { const v = document.createElement('small'); v.textContent = 'você'; nome.appendChild(v); }
         const pts = document.createElement('span'); pts.className = 'pl-pts'; pts.textContent = (+l.pontos || 0).toLocaleString('pt-BR');
         const m = document.createElement('span'); m.className = 'pl-m'; m.textContent = (+l.dist || 0) + ' m';
         li.append(pos, av, nome, pts, m); return li;
       })));
     }
     function renderConta() {
-      botoesGoogle.forEach(b => { b.hidden = !fb || !!usuario || (b.id === 'btnGoogleFim' && !pendente); });
-      eu.hidden = !usuario;
-      if (usuario) { $p('plEuNome').textContent = nomeCurto(usuario); const f = $p('plEuFoto'); if (usuario.photoURL) f.src = usuario.photoURL; else f.removeAttribute('src'); }
+      eu.hidden = !apelido || !formSecao.hidden;
+      $p('plEuNome').textContent = apelido;
+      formFim.hidden = !pendente;
     }
 
+    async function atualizar() {
+      try {
+        const r = await fetch(API + '?eu=' + encodeURIComponent(id), { cache: 'no-store' });
+        if (!r.ok) throw new Error(r.status);
+        linhas = (await r.json()).top || []; disponivel = true;
+      } catch (e) { if (disponivel === null) disponivel = false; }
+      render();
+    }
     function carregar() {
-      if (carregando) return carregando;
-      carregando = (async () => {
-        const base = 'https://www.gstatic.com/firebasejs/10.12.2/';
-        try {
-          const [appM, authM, fsM] = await Promise.all([import(base + 'firebase-app.js'), import(base + 'firebase-auth.js'), import(base + 'firebase-firestore.js')]);
-          const app = appM.initializeApp(FIREBASE_CONFIG);
-          fb = { auth: authM.getAuth(app), db: fsM.getFirestore(app), authM, fsM };
-        } catch (e) { estadoEl.textContent = 'Não foi possível conectar ao placar agora.'; return; }
-        const { auth, db, authM, fsM } = fb;
-        authM.getRedirectResult(auth).catch(() => {});
-        authM.onAuthStateChanged(auth, async u => {
-          usuario = u; meu = null; renderConta(); render();
-          if (!u) return;
-          try { const d = await fsM.getDoc(fsM.doc(db, 'placar', u.uid)); meu = d.exists() ? d.data() : null; } catch (e) {}
-          if (pendente) { const r = pendente; pendente = null; renderConta(); const msg = await salvar(r); if (aoSalvarPendente) aoSalvarPendente(msg); }
-        });
-        fsM.onSnapshot(fsM.query(fsM.collection(db, 'placar'), fsM.orderBy('pontos', 'desc'), fsM.limit(10)),
-          snap => { linhas = snap.docs.map(d => ({ id: d.id, ...d.data() })); render(); },
-          () => { estadoEl.textContent = 'O placar não pôde ser carregado agora.'; });
-        renderConta();
-      })();
+      if (!carregando) {
+        carregando = atualizar();
+        setInterval(() => { if (document.visibilityState === 'visible') atualizar(); }, 30000);
+      }
       return carregando;
     }
 
-    async function entrar() {
-      await carregar(); if (!fb) return;
-      const { auth, authM } = fb, prov = new authM.GoogleAuthProvider();
-      try { await authM.signInWithPopup(auth, prov); }
-      catch (e) {
-        const c = e && e.code;
-        if (c === 'auth/popup-blocked' || c === 'auth/operation-not-supported-in-this-environment') { try { await authM.signInWithRedirect(auth, prov); } catch (e2) {} }
-        else if (c === 'auth/unauthorized-domain') estadoEl.textContent = 'Este endereço ainda não foi autorizado no Firebase (Authentication › Settings › Authorized domains).';
-        else if (c !== 'auth/popup-closed-by-user' && c !== 'auth/cancelled-popup-request') estadoEl.textContent = 'Não foi possível entrar com o Google agora.';
-      }
-    }
-    botoesGoogle.forEach(b => b.addEventListener('click', e => { e.stopPropagation(); entrar(); }));
-    $p('btnSair').addEventListener('click', () => fb && fb.authM.signOut(fb.auth));
-
-    async function salvar(r) {
-      const { db, fsM } = fb;
-      if (meu && (+meu.pontos || 0) >= r.pontos) return `Sua melhor marca no placar continua ${(+meu.pontos).toLocaleString('pt-BR')} pontos.`;
-      const corpo = { nome: nomeCurto(usuario), foto: (usuario.photoURL || '').slice(0, 500), pontos: r.pontos, dist: r.dist, plastico: r.plastico, em: fsM.serverTimestamp() };
+    async function salvar(r, nome) {
       try {
-        await fsM.setDoc(fsM.doc(db, 'placar', usuario.uid), corpo); meu = corpo;
-        const pos = linhas.findIndex(l => l.id === usuario.uid);
-        return pos >= 0 ? `Nova melhor marca salva: você está em ${pos + 1}º no placar!` : 'Nova melhor marca salva no placar!';
-      } catch (e) { return 'Não foi possível salvar no placar agora.'; }
+        const resp = await fetch(API, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ id, nome, ...r }) });
+        const d = await resp.json().catch(() => ({}));
+        if (!resp.ok) return { ok: false, msg: d.erro || 'Não foi possível salvar no placar agora.' };
+        apelido = nome; gravar('placar-apelido', nome);
+        if (!melhor || r.pontos > melhor.pontos) { melhor = r; gravar('placar-melhor', JSON.stringify(r)); }
+        atualizar();
+        const lugar = d.posicao <= 10 ? `: você está em ${d.posicao}º no placar!` : ` (${d.posicao}º lugar).`;
+        return { ok: true, msg: d.novo ? 'Nova melhor marca salva' + lugar : `Sua melhor marca no placar continua ${(+d.melhor).toLocaleString('pt-BR')} pontos.` };
+      } catch (e) { return { ok: false, msg: 'Não foi possível salvar no placar agora.' }; }
     }
 
     async function enviar(r, aoSalvar) {
-      if (!configurado) return '';
-      await carregar(); if (!fb) return '';
       r = { pontos: Math.floor(r.pontos), dist: Math.floor(r.dist), plastico: Math.floor(r.plastico) };
-      if (!usuario) {
+      if (r.pontos <= 0) return '';
+      await carregar();
+      if (!disponivel) return '';
+      if (!apelido) {
         if (!pendente || r.pontos > pendente.pontos) pendente = r;
         aoSalvarPendente = aoSalvar; renderConta();
-        return 'Entre com sua conta Google para colocar esta marca no placar.';
+        return 'Escolha um apelido para colocar esta marca no placar.';
       }
-      return salvar(r);
+      if (melhor && r.pontos <= melhor.pontos) return `Sua melhor marca no placar continua ${melhor.pontos.toLocaleString('pt-BR')} pontos.`;
+      return (await salvar(r, apelido)).msg;
     }
 
-    if (!configurado) estadoEl.textContent = 'O placar online ainda não foi configurado. Por enquanto vale o seu recorde neste navegador.';
-    else new IntersectionObserver(([e], o) => { if (e.isIntersecting) { o.disconnect(); carregar(); } }, { rootMargin: '600px' }).observe(document.getElementById('arena'));
+    formFim.addEventListener('submit', async e => {
+      e.preventDefault(); e.stopPropagation();
+      if (!pendente) return;
+      const botao = formFim.querySelector('button'); botao.disabled = true;
+      const res = await salvar(pendente, $p('apelidoFim').value.trim());
+      botao.disabled = false;
+      if (res.ok) { pendente = null; renderConta(); }
+      if (aoSalvarPendente) aoSalvarPendente(res.msg);
+    });
+    // os atalhos do jogo não podem roubar as teclas digitadas no apelido
+    [formFim, formSecao].forEach(f => ['keydown', 'keyup'].forEach(t => f.addEventListener(t, e => e.stopPropagation())));
+
+    $p('btnTrocarApelido').addEventListener('click', () => {
+      formSecao.hidden = false; renderConta();
+      const campo = $p('apelidoSecao'); campo.value = apelido; campo.focus(); campo.select();
+    });
+    formSecao.addEventListener('submit', async e => {
+      e.preventDefault();
+      const nome = $p('apelidoSecao').value.trim();
+      if (melhor) {
+        const res = await salvar(melhor, nome);
+        if (!res.ok) { estadoEl.textContent = res.msg; return; }
+      } else { apelido = nome; gravar('placar-apelido', nome); }
+      formSecao.hidden = true; renderConta(); atualizar();
+    });
+
+    renderConta();
+    new IntersectionObserver(([e], o) => { if (e.isIntersecting) { o.disconnect(); carregar(); } }, { rootMargin: '600px' }).observe(document.getElementById('arena'));
     return { enviar };
   })();
 
