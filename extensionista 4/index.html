@@ -433,6 +433,28 @@
   .placar .novo strong { color: var(--verde); }
   .motivo { font-size: .98rem; margin-bottom: 10px; }
   .licao { font-size: .98rem; padding: 12px 14px; border-left: 4px solid var(--pet); background: var(--filtro-2); border-radius: 0 10px 10px 0; margin-bottom: 16px; }
+  .placar-lideres { margin-top: 32px; max-width: 680px; }
+  .pl-topo { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 4px 16px; margin-bottom: 10px; }
+  .pl-topo .sub { margin: 0; }
+  .pl-topo .sub-nota { font-size: .98rem; }
+  #placarLista { list-style: none; border-top: 3px solid var(--tinta); }
+  #placarLista li { display: grid; grid-template-columns: 2.2rem 34px 1fr auto 4.5rem; gap: 12px; align-items: center; padding: 10px 6px; border-bottom: 1px solid var(--linha); font-family: var(--display); }
+  #placarLista li.eu { background: color-mix(in srgb, var(--pet) 20%, transparent); border-radius: 8px; }
+  .pl-pos { font-weight: 800; color: var(--tinta-suave); font-variant-numeric: tabular-nums; }
+  #placarLista li:nth-child(1) .pl-pos { color: #B7860B; }
+  #placarLista li:nth-child(2) .pl-pos { color: #6F8791; }
+  #placarLista li:nth-child(3) .pl-pos { color: #A8612B; }
+  .pl-av { width: 34px; height: 34px; border-radius: 50%; display: block; }
+  .pl-nome { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .pl-nome small { font-weight: 400; color: var(--tinta-suave); margin-left: 6px; font-size: .85rem; }
+  .pl-pts { font-weight: 800; font-variant-numeric: tabular-nums; text-align: right; }
+  .pl-m { color: var(--tinta-suave); font-size: .9rem; font-variant-numeric: tabular-nums; text-align: right; }
+  .fim-placar { font-family: var(--display); font-size: .92rem; color: var(--tinta-suave); margin: -4px 0 12px; min-height: 1.3em; }
+  @media (max-width: 560px) {
+    #placarLista li { grid-template-columns: 1.8rem 28px 1fr auto; gap: 10px; }
+    .pl-av { width: 28px; height: 28px; }
+    .pl-m { display: none; }
+  }
   @media (max-width: 560px) {
     .arena { height: 620px; }
     .cartao h3 { font-size: 1.3rem; }
@@ -792,9 +814,18 @@
           </div>
           <p class="motivo" id="fimMotivo"></p>
           <p class="licao" id="fimLicao"></p>
+          <p class="fim-placar" id="fimPlacar" aria-live="polite"></p>
           <button class="btn-jogo" id="btnDeNovo" type="button">Correr de novo</button>
         </div>
       </div>
+    </div>
+
+    <div class="placar-lideres">
+      <div class="pl-topo">
+        <h3 class="sub">Placar de líderes</h3>
+        <p class="sub-nota" id="placarEstado">Carregando o placar…</p>
+      </div>
+      <ol id="placarLista" aria-label="Melhores pontuações"></ol>
     </div>
   </div>
 </section>
@@ -1664,6 +1695,67 @@ addEventListener('DOMContentLoaded', () => {
   iniciarCopo();
 
   /* =========================================================
+     Placar de líderes: cada pessoa grava só a própria melhor marca
+     em placar/<id>; todos leem o top 10 ao vivo
+     ========================================================= */
+  const placar = (() => {
+    const lista = document.getElementById('placarLista'), estadoEl = document.getElementById('placarEstado');
+    let db = null, user = null, meuId = null, linhas = [], meu = null, podeSalvar = true, fila = Promise.resolve(), pronto;
+    let geracao = 0;
+    async function render() {
+      const minha = ++geracao;
+      if (!linhas.length) { lista.replaceChildren(); estadoEl.textContent = 'Ninguém jogou ainda. Seja o primeiro no placar!'; return; }
+      const ps = user ? await user.profiles(linhas.map(l => l.id)) : {};
+      if (minha !== geracao) return;
+      estadoEl.textContent = 'Top 10, atualizado ao vivo';
+      lista.replaceChildren(...linhas.map((l, i) => {
+        const li = document.createElement('li'), p = ps[l.id] || {};
+        if (l.id === meuId) li.className = 'eu';
+        const pos = document.createElement('span'); pos.className = 'pl-pos'; pos.textContent = (i + 1) + 'º';
+        const av = document.createElement('img'); av.className = 'pl-av'; av.alt = ''; if (p.avatarUrl) av.src = p.avatarUrl;
+        const nome = document.createElement('span'); nome.className = 'pl-nome'; nome.textContent = p.name || 'Alguém';
+        if (l.id === meuId) { const v = document.createElement('small'); v.textContent = 'você'; nome.appendChild(v); }
+        const pts = document.createElement('span'); pts.className = 'pl-pts'; pts.textContent = (+l.pontos || 0).toLocaleString('pt-BR');
+        const m = document.createElement('span'); m.className = 'pl-m'; m.textContent = (+l.dist || 0) + ' m';
+        li.append(pos, av, nome, pts, m); return li;
+      }));
+    }
+    async function iniciar() {
+      if (!window.claude || typeof window.claude.use !== 'function') { estadoEl.textContent = 'O placar compartilhado funciona quando o site é aberto pelo link do Claude.'; return; }
+      [db, user] = await Promise.all([window.claude.use('db'), window.claude.use('user')]);
+      if (!db) { estadoEl.textContent = 'Entre com sua conta Claude para ver e entrar no placar.'; return; }
+      meuId = user ? await user.id() : null;
+      db.collection('placar').orderBy('pontos', 'desc').limit(10).onSnapshot(
+        snap => { linhas = snap.docs.filter(d => d.exists).map(d => ({ id: d.id, ...d.data() })); render(); },
+        () => { estadoEl.textContent = 'O placar não pôde ser carregado agora. Recarregue a página para tentar de novo.'; }
+      );
+      if (meuId) { try { const d = await db.doc('placar/' + meuId).get(); meu = d.exists ? d.data() : null; } catch (e) {} }
+    }
+    pronto = iniciar();
+    function enviar(r) {
+      fila = fila.then(async () => {
+        await pronto;
+        if (!db) return '';
+        if (!meuId) return 'Entre com sua conta para aparecer no placar.';
+        if (!podeSalvar) return 'Seu acesso permite ver o placar, mas não salvar pontuações.';
+        if (meu && (+meu.pontos || 0) >= r.pontos) return `Sua melhor marca no placar continua ${(+meu.pontos).toLocaleString('pt-BR')} pontos.`;
+        const corpo = { pontos: r.pontos, dist: r.dist, plastico: r.plastico, em: new Date().toISOString() };
+        try {
+          await db.doc('placar/' + meuId).set(corpo); meu = corpo;
+          const pos = linhas.findIndex(l => l.id === meuId);
+          return pos >= 0 ? `Nova melhor marca salva: você está em ${pos + 1}º no placar!` : 'Nova melhor marca salva no placar!';
+        } catch (e) {
+          if (e && e.code === 'invalid_argument') { podeSalvar = false; return 'Seu acesso permite ver o placar, mas não salvar pontuações.'; }
+          if (e && e.code === 'quota_exceeded') return 'O placar está cheio e não aceitou novas marcas.';
+          return 'Não foi possível salvar no placar agora.';
+        }
+      });
+      return fila;
+    }
+    return { enviar };
+  })();
+
+  /* =========================================================
      Minijogo: corrida em 3 faixas pelo fundo do mar
      ========================================================= */
   function iniciarJogo() {
@@ -1878,6 +1970,8 @@ addEventListener('DOMContentLoaded', () => {
         ? 'Nenhum pedaço escapou. No mar de verdade, o jeito mais eficaz de chegar nesse resultado é evitar que o plástico chegue à água.'
         : `${escapou} pedaços de plástico passaram por você. No mar de verdade, eles se quebrariam em microplásticos, e aí não dá mais para recolher. Evitar que o plástico chegue à água é o caminho mais eficaz.`;
       ui.fim.hidden = false; $('btnDeNovo').focus({ preventScroll: true });
+      const fimPlacar = $('fimPlacar'); fimPlacar.textContent = '';
+      placar.enviar({ pontos: p, dist: Math.floor(dist), plastico }).then(msg => { if (estado === 'fim') fimPlacar.textContent = msg; });
     }
     $('btnJogar').addEventListener('click', comecar);
     $('btnDeNovo').addEventListener('click', comecar);
