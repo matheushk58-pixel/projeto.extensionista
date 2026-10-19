@@ -547,6 +547,9 @@
   .referencias .doi { word-break: break-all; }
   .nota-abnt { font-size: 1rem; color: var(--tinta-suave); max-width: 64ch; }
 
+  .equipe { padding-top: clamp(56px, 8vw, 96px); }
+  .equipe-lista { list-style: none; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 0 32px; margin-top: 24px; max-width: 980px; }
+  .equipe-lista li { font-family: var(--display); font-size: 1.05rem; padding: 12px 0; border-bottom: 1px solid var(--linha); }
   footer { padding: 48px 0 56px; font-family: var(--display); font-size: 0.95rem; color: var(--tinta-suave); }
   footer .envoltorio { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px; }
   .tema-botao { background: none; border: 1.5px solid var(--linha); color: var(--tinta); padding: 8px 16px; border-radius: 999px; cursor: pointer; min-height: 44px; }
@@ -618,7 +621,7 @@
   <div class="envoltorio">
     <h2 class="sec-titulo">Pedaços de plástico pequenos demais para ver</h2>
     <div class="prosa">
-      <p>Microplásticos são partículas de plástico com menos de 5 milímetros. Abaixo de 1 micrômetro (um milésimo de milímetro), passam a ser chamados de nanoplásticos. O termo foi popularizado em 2004, quando pesquisadores britânicos mostraram que esses fragmentos já se acumulavam em praias e no plâncton desde a década de 1960.<sup class="ref"><a href="#r-thompson">1</a></sup></p>
+      <p>Microplásticos são partículas de plástico com menos de 5 milímetros.<sup class="ref"><a href="#r-noaa">22</a></sup> Abaixo de 1 micrômetro (um milésimo de milímetro), passam a ser chamados de nanoplásticos. O termo foi popularizado em 2004, quando pesquisadores britânicos mostraram que esses fragmentos já se acumulavam em praias e no plâncton desde a década de 1960.<sup class="ref"><a href="#r-thompson">1</a></sup></p>
       <p>O plástico não desaparece: com sol, calor e atrito ele se quebra em partes cada vez menores. Quanto menor a partícula, mais fácil ela atravessa barreiras biológicas, e mais difícil é medi-la no laboratório.<sup class="ref"><a href="#r-oms2022">2</a></sup></p>
     </div>
 
@@ -662,7 +665,7 @@
   <div class="envoltorio">
     <h2 class="sec-titulo">Nos rios e oceanos, o plástico entra na cadeia alimentar</h2>
     <div class="prosa">
-      <p>Os oceanos recebem plástico de rios, esgotos, ventos e atividades de pesca. Na superfície, uma parte flutua; outra parte afunda e se acumula nos sedimentos, onde vivem organismos que se alimentam filtrando o fundo.</p>
+      <p>Os oceanos recebem plástico de rios, esgotos, ventos e atividades de pesca.<sup class="ref"><a href="#r-pnuma-esgoto">23</a></sup> Na superfície, uma parte flutua; outra parte afunda e se acumula nos sedimentos, onde vivem organismos que se alimentam filtrando o fundo.</p>
     </div>
 
     <div class="numeros">
@@ -692,7 +695,7 @@
     <div class="efeitos">
       <div>
         <h3>Danos físicos</h3>
-        <p>Partículas ingeridas podem bloquear ou ferir o trato digestivo e dar sensação falsa de saciedade, reduzindo a energia disponível para crescer e se reproduzir.<sup class="ref"><a href="#r-wright">8</a></sup></p>
+        <p>Partículas ingeridas podem bloquear ou ferir o trato digestivo e dar sensação falsa de saciedade, reduzindo a energia disponível para crescer e se reproduzir.<sup class="ref"><a href="#r-wright">8</a>,<a href="#r-xu">24</a></sup></p>
       </div>
       <div>
         <h3>Carona para poluentes</h3>
@@ -995,7 +998,31 @@
       <li id="r-efsa">EFSA PANEL ON CONTAMINANTS IN THE FOOD CHAIN (CONTAM). Presence of microplastics and nanoplastics in food, with particular focus on seafood. <i>EFSA Journal</i>, v. 14, n. 6, 4501, 2016. DOI: <a class="doi" href="https://doi.org/10.2903/j.efsa.2016.4501">10.2903/j.efsa.2016.4501</a>.</li>
       <li id="r-napper">NAPPER, I. E.; THOMPSON, R. C. Release of synthetic microplastic plastic fibres from domestic washing machines: effects of fabric type and washing conditions. <i>Marine Pollution Bulletin</i>, v. 112, n. 1-2, p. 39-45, 2016. DOI: <a class="doi" href="https://doi.org/10.1016/j.marpolbul.2016.09.025">10.1016/j.marpolbul.2016.09.025</a>.</li>
       <li id="r-schuyler">SCHUYLER, Q. et al. Global analysis of anthropogenic debris ingestion by sea turtles. <i>Conservation Biology</i>, v. 28, n. 1, p. 129-139, 2014. DOI: <a class="doi" href="https://doi.org/10.1111/cobi.12126">10.1111/cobi.12126</a>.</li>
+      <li id="r-noaa">NOAA, NATIONAL OCEANIC AND ATMOSPHERIC ADMINISTRATION. <i>Microplastics</i>. 2023. Disponível em: <a class="doi" href="https://marinedebris.noaa.gov/what-marine-debris/microplastics">marinedebris.noaa.gov</a>.</li>
+      <li id="r-pnuma-esgoto">PROGRAMA DAS NAÇÕES UNIDAS PARA O MEIO AMBIENTE. <i>Microplastics in wastewater: towards solutions</i>. [s.d.]. Disponível em: <a class="doi" href="https://www.unep.org/news-and-stories/story/microplastics-wastewater-towards-solutions">unep.org</a>.</li>
+      <li id="r-xu">XU, S. et al. Microplastics in aquatic environments: occurrence, accumulation, and biological effects. <i>Science of The Total Environment</i>, v. 703, 134699, 2020. DOI: <a class="doi" href="https://doi.org/10.1016/j.scitotenv.2019.134699">10.1016/j.scitotenv.2019.134699</a>.</li>
     </ol>
+  </div>
+</section>
+
+<section class="equipe" id="equipe">
+  <div class="envoltorio">
+    <h2 class="sec-titulo">Equipe</h2>
+    <p class="nota-abnt">Grupo 4 · Universidade Nove de Julho · São Paulo, 2026</p>
+    <ul class="equipe-lista">
+        <li>Matheus Henrique Quintino Julio</li>
+        <li>Rafael Sobreira Feitoza</li>
+        <li>João Fabrício Sivero</li>
+        <li>Fabiana Bernadino da Costa Rodrigues</li>
+        <li>Sara dos Santos Rocha</li>
+        <li>Maiara Rosa da Silva</li>
+        <li>Eduardo Talhoni Ribeiro</li>
+        <li>Emily Janaína Santos Silva</li>
+        <li>Maria Letícia Lima Madrid</li>
+        <li>Victoria Gabriely Oliveira Santos</li>
+        <li>Ana Clara Silva Dantas</li>
+        <li>Ana Lívia de Freitas Rocha</li>
+    </ul>
   </div>
 </section>
 
@@ -1003,7 +1030,7 @@
 
 <footer>
   <div class="envoltorio">
-    <span>Projeto extensionista · Microplásticos e Saúde · 2026 · <a href="apresentacao.html">Ver a apresentação</a></span>
+    <span>Projeto extensionista · Grupo 4 · Universidade Nove de Julho · 2026 · <a href="apresentacao.html">Ver a apresentação</a></span>
     <button class="tema-botao" id="tema" type="button">Alternar tema</button>
   </div>
 </footer>

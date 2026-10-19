@@ -14,6 +14,7 @@ export const Abertura: React.FC = () => {
         </h1>
         <div style={{ height: 8, width: 360, background: COR.rosa, borderRadius: 4, transformOrigin: "0 50%", scale: `${prog(f, 40, 30)} 1` }} />
         <p style={{ margin: 0, fontSize: T.corpo, color: COR.escuroTexto, maxWidth: 1300, ...surge(f, 50) }}>Impactos no corpo humano e nos ecossistemas aquáticos</p>
+        <p style={{ margin: 0, fontFamily: FONTES.display, fontSize: T.apoio, color: COR.escuroTexto, ...surge(f, 65) }}>Universidade Nove de Julho · Grupo 4 · 2026</p>
       </AbsoluteFill>
     </AbsoluteFill>
   );
