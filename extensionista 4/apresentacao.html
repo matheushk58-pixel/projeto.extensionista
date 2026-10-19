@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Apresentação: Microplásticos e Saúde</title>
+<meta name="description" content="Apresentação do projeto extensionista Microplásticos e Saúde: impactos no corpo humano e nos ecossistemas aquáticos.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400..800&family=Source+Serif+4:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  /* Os slides são os mesmos da versão para baixar: canvas fixo de 1920 × 1080,
+     escalado para caber na tela. */
+  :root { --fundo: #07161D; --barra: rgba(7,22,29,.82); --texto: #E8EFEC; --suave: #9DB0B7; --destaque: #6FD0EA; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: var(--fundo); color: var(--texto); overflow: hidden; font-family: 'Bricolage Grotesque', system-ui, sans-serif; }
+  .palco { position: fixed; inset: 0; }
+  .canvas { position: absolute; left: 50%; top: 50%; width: 1920px; height: 1080px; transform-origin: 0 0; }
+  .canvas section {
+    position: absolute; inset: 0; width: 1920px; height: 1080px; overflow: hidden;
+    opacity: 0; visibility: hidden; transform: translateX(48px);
+    transition: opacity .45s ease, transform .55s cubic-bezier(.2,.7,.2,1), visibility 0s .55s;
+  }
+  .canvas section.antes { transform: translateX(-48px); }
+  .canvas section.ativo { opacity: 1; visibility: visible; transform: none; transition: opacity .45s ease, transform .55s cubic-bezier(.2,.7,.2,1), visibility 0s; }
+  .canvas section aside { display: none; }
+  .canvas h1, .canvas h2, .canvas h3, .canvas p, .canvas ul { margin: 0; }
+  .canvas ul { padding-left: 1.1em; }
+  .canvas table { border-collapse: collapse; width: 100%; overflow: hidden; }
+  .canvas th, .canvas td { padding: 18px 24px; border-bottom: 1px solid #C9D3CE; text-align: left; }
+  .canvas th { font-family: 'Bricolage Grotesque', Arial, sans-serif; font-weight: 700; }
+  .canvas tr:last-child td { border-bottom: 0; }
+
+  .barra {
+    position: fixed; left: 50%; bottom: 16px; transform: translateX(-50%); display: flex; align-items: center; gap: 4px;
+    background: var(--barra); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+    padding: 6px; border-radius: 999px; transition: opacity .3s, transform .3s; z-index: 5;
+  }
+  .barra.oculta { opacity: 0; transform: translate(-50%, 12px); pointer-events: none; }
+  .barra button, .barra a {
+    min-width: 44px; height: 44px; border-radius: 999px; border: 0; background: none; color: var(--texto); cursor: pointer;
+    display: inline-grid; place-items: center; font: 600 15px 'Bricolage Grotesque', system-ui, sans-serif; text-decoration: none; padding: 0 12px;
+  }
+  .barra button:hover, .barra a:hover { background: rgba(255,255,255,.1); }
+  .barra button[aria-pressed="true"] { background: rgba(111,208,234,.2); color: var(--destaque); }
+  .barra .contador { min-width: 72px; text-align: center; font-variant-numeric: tabular-nums; color: var(--suave); font-size: 15px; }
+  .progresso { position: fixed; left: 0; top: 0; height: 4px; background: var(--destaque); transition: width .4s ease; z-index: 5; }
+  :focus-visible { outline: 3px solid var(--destaque); outline-offset: 2px; }
+  .notas {
+    position: fixed; right: 16px; top: 16px; width: min(420px, calc(100% - 32px)); max-height: calc(100% - 110px); overflow-y: auto;
+    background: var(--barra); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); border-radius: 16px; padding: 18px 20px; z-index: 6;
+    font: 400 17px/1.55 'Source Serif 4', Georgia, serif;
+  }
+  .notas[hidden] { display: none; }
+  .notas b { display: block; font: 700 14px 'Bricolage Grotesque', system-ui, sans-serif; color: var(--destaque); margin-bottom: 6px; }
+  @media (prefers-reduced-motion: reduce) { .canvas section, .canvas section.ativo { transition: none; } }
+</style>
+</head>
+<body>
+<div class="progresso" id="progresso" aria-hidden="true"></div>
+<main class="palco" id="palco" aria-roledescription="apresentação" aria-label="Microplásticos e Saúde">
+  <div class="canvas" id="canvas">
+<section data-id="capa" data-transition="fade" style="background:#0F2733;color:#E8EFEC;font-family:'Source Serif 4', Georgia, serif;padding:128px;display:flex;flex-direction:column;justify-content:flex-end;gap:32px">
+<svg aria-label="Fragmentos coloridos de plástico espalhados" width="1920" height="1080" viewBox="0 0 1920 1080" style="position:absolute;left:0;top:0;width:1920px;height:1080px"><g opacity="0.9"><path d="M1380 170 l70 -24 30 64 -66 30z" fill="#D9366B"/><path d="M1600 300 l44 -10 14 40 -46 12z" fill="#1C9CC0"/><circle cx="1500" cy="420" r="16" fill="#E3A821"/><path d="M1720 520 l60 18 -20 54 -52 -20z" fill="#7A55C9"/><circle cx="1330" cy="560" r="10" fill="#2EA36B"/><path d="M1180 260 q40 -60 90 -20 t90 10" stroke="#6FD0EA" stroke-width="6" fill="none" stroke-linecap="round"/><path d="M1560 640 q30 40 80 10 t70 30" stroke="#F07CA8" stroke-width="5" fill="none" stroke-linecap="round"/><circle cx="1790" cy="200" r="8" fill="#E8EFEC"/><path d="M1460 760 l36 -14 18 34 -38 14z" fill="#E3A821"/><circle cx="1660" cy="820" r="12" fill="#1C9CC0"/><circle cx="1250" cy="420" r="6" fill="#D9366B"/><circle cx="1860" cy="420" r="7" fill="#2EA36B"/></g></svg>
+<p style="font-family:'Bricolage Grotesque', Arial, sans-serif;font-size:32px;font-weight:600;color:#6FD0EA">Projeto extensionista</p>
+<h1 style="font-family:'Bricolage Grotesque', Arial, sans-serif;font-size:120px;font-weight:800;line-height:0.98;letter-spacing:-3px;color:#FFFFFF;width:1300px">Microplásticos e Saúde</h1>
+<p style="font-size:44px;line-height:1.3;color:#AFC2C9;width:1300px">Impactos no corpo humano e nos ecossistemas aquáticos</p>
+<p style="font-family:'Bricolage Grotesque', Arial, sans-serif;font-size:28px;color:#AFC2C9">[Nomes do grupo] · [Curso] · [Professor(a)] · 2026</p>
+<aside>Abertura. Apresente o grupo e o objetivo: mostrar, com base em fontes científicas, o que já se sabe sobre microplásticos no ambiente aquático e no corpo humano, o que ainda não se sabe e o que dá para fazer.</aside>
+</section>
+<section data-id="o-que-sao" data-transition="fade" style="background:#F1F4F2;color:#0F2733;font-family:'Source Serif 4', Georgia, serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:56px">
+<h2 style="font-family:'Bricolage Grotesque', Arial, sans-serif;font-size:72px;font-weight:800;line-height:1.05;letter-spacing:-2px;color:#0F2733">O que são microplásticos</h2>
+<div style="display:flex;gap:48px;flex:1">
+<div style="flex:1;display:flex;flex-direction:column;gap:20px;justify-content:center">
+<p style="font-family:'Bricolage Grotesque', Arial, sans-serif;font-size:120px;font-weight:800;line-height:1;letter-spacing:-3px;color:#C42A5C">&lt; 5 mm</p>
+<p style="font-size:32px;line-height:1.45;color:#2B4350">Partículas de plástico menores que um grão de arroz. Abaixo de 1 micrômetro, passam a ser chamadas de <b>nanoplásticos</b>.</p>
+<p style="font-size:32px;line-height:1.45;color:#2B4350">O plástico não desaparece: com sol, calor e atrito, se quebra em pedaços cada vez menores.</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:24px">
+<div style="display:flex;flex-direction:column;gap:12px;background:#FBFCFB;border:1px solid #C9D3CE;border-radius:20px;padding:40px">
+<h3 style="font-family:'Bricolage Grotesque', Arial, sans-serif;font-size:44px;font-weight:700;color:#0E6F8F">Primários</h3>
+<p style="font-size:32px;line-height:1.4;color:#2B4350">Fabricados já pequenos: microesferas de cosméticos, pellets industriais, abrasivos.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px;background:#FBFCFB;border:1px solid #C9D3CE;border-radius:20px;padding:40px">
+<h3 style="font-family:'Bricolage Grotesque', Arial, sans-serif;font-size:44px;font-weight:700;color:#0E6F8F">Secundários</h3>
+<p style="font-size:32px;line-height:1.4;color:#2B4350">Vêm da quebra de objetos maiores: garrafas, sacolas, redes, pneus e fibras de roupas. São a maior parte do que se encontra no ambiente.</p>
+</div>
+</div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#4E626C">Fontes: Thompson et al. (2004), Science; PNUMA (2021).</p>
+<aside>O termo “microplástico” ganhou força em 2004, quando pesquisadores britânicos mostraram que esses fragmentos já se acumulavam em praias e no plâncton desde os anos 1960. Destaque a diferença entre primários e secundários: a maioria vem da quebra de objetos que usamos no dia a dia.</aside>
+</section>
+<section data-id="tamanhos" data-transition="fade" style="background:#E3E9E6;color:#0F2733;font-family:'Source Serif 4', Georgia, serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:56px">
+<h2 style="font-family:'Bricolage Grotesque', Arial, sans-serif;font-size:72px;font-weight:800;line-height:1.05;letter-spacing:-2px;color:#0F2733">Quanto menor, mais longe chega no corpo</h2>
+<div style="display:grid;grid-template-columns:repeat(4, 1fr);gap:32px">
+<div style="display:flex;flex-direction:column;gap:12px;border-top:4px solid #0F2733;padding:24px 0 0 0">
+<p style="font-family:'Bricolage Grotesque', Arial, sans-serif;font-size:72px;font-weight:800;line-height:1;letter-spacing:-2px">5 mm</p>
+<p style="font-size:28px;line-height:1.35;color:#2B4350">Grão de arroz. Limite superior do microplástico.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px;border-top:4px solid #0F2733;padding:24px 0 0 0">
+<p style="font-family:'Bricolage Grotesque', Arial, sans-serif;font-size:72px;font-weight:800;line-height:1;letter-spacing:-2px">150 µm</p>
+<p style="font-size:28px;line-height:1.35;color:#2B4350">Um pouco mais que um fio de cabelo.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px;border-top:4px solid #0F2733;padding:24px 0 0 0">
+<p style="font-family:'Bricolage Grotesque', Arial, sans-serif;font-size:72px;font-weight:800;line-height:1;letter-spacing:-2px">1,5 µm</p>
+<p style="font-size:28px;line-height:1.35;color:#2B4350">Tamanho de uma bactéria.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px;border-top:4px solid #0F2733;padding:24px 0 0 0">
+<p style="font-family:'Bricolage Grotesque', Arial, sans-serif;font-size:72px;font-weight:800;line-height:1;letter-spacing:-2px">100 nm</p>
+<p style="font-size:28px;line-height:1.35;color:#2B4350">Tamanho de um vírus. Nanoplástico.</p>
+</div>
+</div>
+<div style="display:flex;gap:12px">
+<div style="flex:30;background:#D3DCD8;border-radius:16px;padding:28px 32px"><p style="font-family:'Bricolage Grotesque', Arial, sans-serif;font-size:32px;font-weight:700">Fica no intestino</p><p style="font-size:26px;color:#2B4350">acima de 150 µm</p></div>
+<div style="flex:46;background:#EBC765;border-radius:16px;padding:28px 32px"><p style="font-family:'Bricolage Grotesque', Arial, sans-serif;font-size:32px;font-weight:700">Uma pequena fração atravessa o intestino</p><p style="font-size:26px;color:#2B4350">abaixo de 150 µm</p></div>
+<div style="flex:24;background:#E98AA8;border-radius:16px;padding:28px 32px"><p style="font-family:'Bricolage Grotesque', Arial, sans-serif;font-size:32px;font-weight:700">Pode chegar a órgãos</p><p style="font-size:26px;color:#2B4350">abaixo de 1,5 µm</p></div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#4E626C">Fonte: EFSA (2016), com base em estudos em roedores; a absorção é considerada muito baixa.</p>
+<aside>A Autoridade Europeia para a Segurança dos Alimentos avaliou o que acontece com partículas ingeridas. Partículas acima de 150 µm não atravessam a parede do intestino. Abaixo disso, uma fração pequena pode atravessar; abaixo de 1,5 µm, podem penetrar mais fundo e chegar a órgãos. São dados de estudos em animais.</aside>
+</section>
+<section data-id="oceanos" data-transition="fade" style="background:#0F2733;color:#E8EFEC;font-family:'Source Serif 4', Georgia, serif;padding:128px 128px 160px;display:flex;flex-direction:column;justify-content:center;gap:56px">
+<h2 style="font-family:'Bricolage Grotesque', Arial, sans-serif;font-size:72px;font-weight:800;line-height:1.05;letter-spacing:-2px;color:#FFFFFF">Os oceanos em números</h2>
+<div style="display:flex;gap:64px">
+<div style="flex:1;display:flex;flex-direction:column;gap:20px;border-top:2px solid #3C5966;padding:32px 0 0 0">
+<p style="font-family:'Bricolage Grotesque', Arial, sans-serif;font-size:88px;font-weight:800;line-height:1;letter-spacing:-2px;color:#6FD0EA">5,25 trilhões</p>
+<p style="font-size:32px;line-height:1.45;color:#BFD3D9">de partículas de plástico flutuam nos oceanos, numa estimativa mínima.</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:20px;border-top:2px solid #3C5966;padding:32px 0 0 0">
+<p style="font-family:'Bricolage Grotesque', Arial, sans-serif;font-size:88px;font-weight:800;line-height:1;letter-spacing:-2px;color:#F2B84B">até 12,7 mi t</p>
+<p style="font-size:32px;line-height:1.45;color:#BFD3D9">de resíduos plásticos chegaram ao mar vindos de países costeiros em um único ano (entre 4,8 e 12,7 milhões de toneladas em 2010).</p>
+</div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#8FA8B1">Fontes: Eriksen et al. (2014), PLOS ONE; Jambeck et al. (2015), Science.</p>
+<aside>A estimativa de Eriksen é mínima: considera só o que flutua na superfície. Uma parte grande do plástico afunda e se acumula nos sedimentos, onde vivem organismos que se alimentam filtrando o fundo.</aside>
+</section>
+<section data-id="cadeia" data-transition="fade" style="background:#F1F4F2;color:#0F2733;font-family:'Source Serif 4', Georgia, serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:56px">
+<h2 style="font-family:'Bricolage Grotesque', Arial, sans-serif;font-size:72px;font-weight:800;line-height:1.05;letter-spacing:-2px;color:#0F2733">Como o plástico sobe na cadeia alimentar</h2>
+<div style="display:flex;gap:16px;align-items:center;flex:1">
+<div style="flex:1;align-self:stretch;display:flex;flex-direction:column;gap:14px;background:#FBFCFB;border:1px solid #C9D3CE;border-radius:20px;padding:36px">
+<p style="font-family:'Bricolage Grotesque', Arial, sans-serif;font-size:32px;font-weight:800;color:#0E6F8F">1</p>
+<h3 style="font-family:'Bricolage Grotesque', Arial, sans-serif;font-size:40px;font-weight:700">Plâncton</h3>
+<p style="font-size:28px;line-height:1.4;color:#2B4350">O zooplâncton confunde microesferas com alimento e as engole.</p>
+</div>
+<svg aria-hidden="true" width="48" height="24" viewBox="0 0 48 24" style="flex:none"><path d="M0 8h28V0l20 12-20 12v-8H0z" fill="#1C9CC0"/></svg>
+<div style="flex:1;align-self:stretch;display:flex;flex-direction:column;gap:14px;background:#FBFCFB;border:1px solid #C9D3CE;border-radius:20px;padding:36px">
+<p style="font-family:'Bricolage Grotesque', Arial, sans-serif;font-size:32px;font-weight:800;color:#0E6F8F">2</p>
+<h3 style="font-family:'Bricolage Grotesque', Arial, sans-serif;font-size:40px;font-weight:700">Filtradores</h3>
+<p style="font-size:28px;line-height:1.4;color:#2B4350">Mexilhões e ostras filtram grandes volumes de água e retêm as partículas.</p>
+</div>
+<svg aria-hidden="true" width="48" height="24" viewBox="0 0 48 24" style="flex:none"><path d="M0 8h28V0l20 12-20 12v-8H0z" fill="#1C9CC0"/></svg>
+<div style="flex:1;align-self:stretch;display:flex;flex-direction:column;gap:14px;background:#FBFCFB;border:1px solid #C9D3CE;border-radius:20px;padding:36px">
+<p style="font-family:'Bricolage Grotesque', Arial, sans-serif;font-size:32px;font-weight:800;color:#0E6F8F">3</p>
+<h3 style="font-family:'Bricolage Grotesque', Arial, sans-serif;font-size:40px;font-weight:700">Peixes</h3>
+<p style="font-size:28px;line-height:1.4;color:#2B4350">1 em cada 4 peixes vendidos em mercados da Indonésia e dos EUA tinha detritos de origem humana.</p>
+</div>
+<svg aria-hidden="true" width="48" height="24" viewBox="0 0 48 24" style="flex:none"><path d="M0 8h28V0l20 12-20 12v-8H0z" fill="#1C9CC0"/></svg>
+<div style="flex:1;align-self:stretch;display:flex;flex-direction:column;gap:14px;background:#0F2733;border-radius:20px;padding:36px">
+<p style="font-family:'Bricolage Grotesque', Arial, sans-serif;font-size:32px;font-weight:800;color:#6FD0EA">4</p>
+<h3 style="font-family:'Bricolage Grotesque', Arial, sans-serif;font-size:40px;font-weight:700;color:#FFFFFF">Pessoas</h3>
+<p style="font-size:28px;line-height:1.4;color:#BFD3D9">Frutos do mar, sal marinho e água potável estão entre as vias de exposição.</p>
+</div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#4E626C">Fontes: Cole et al. (2013); Wright et al. (2013); Rochman et al. (2015); OMS (2022).</p>
+<aside>Mostre que o plástico entra na base da cadeia e vai passando de um organismo para outro. No caso dos bivalves, como comemos o animal inteiro, o trato digestivo vem junto.</aside>
+</section>
+<section data-id="efeitos" data-transition="fade" style="background:#E3E9E6;color:#0F2733;font-family:'Source Serif 4', Georgia, serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:56px">
+<h2 style="font-family:'Bricolage Grotesque', Arial, sans-serif;font-size:72px;font-weight:800;line-height:1.05;letter-spacing:-2px;color:#0F2733">Efeitos na vida aquática</h2>
+<div style="display:grid;grid-template-columns:repeat(3, 1fr);gap:32px">
+<div style="display:flex;flex-direction:column;gap:16px;background:#FBFCFB;border-radius:20px;padding:40px;border-top:8px solid #D9366B">
+<h3 style="font-family:'Bricolage Grotesque', Arial, sans-serif;font-size:44px;font-weight:700">Danos físicos</h3>
+<p style="font-size:30px;line-height:1.45;color:#2B4350">Partículas podem ferir ou bloquear o trato digestivo e dar falsa sensação de saciedade, tirando energia para crescer e se reproduzir.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:16px;background:#FBFCFB;border-radius:20px;padding:40px;border-top:8px solid #E3A821">
+<h3 style="font-family:'Bricolage Grotesque', Arial, sans-serif;font-size:44px;font-weight:700">Carona para poluentes</h3>
+<p style="font-size:30px;line-height:1.45;color:#2B4350">O plástico atrai poluentes e metais da água e ainda carrega aditivos, como plastificantes e retardantes de chama.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:16px;background:#FBFCFB;border-radius:20px;padding:40px;border-top:8px solid #1C9CC0">
+<h3 style="font-family:'Bricolage Grotesque', Arial, sans-serif;font-size:44px;font-weight:700">Biofilme</h3>
+<p style="font-size:30px;line-height:1.45;color:#2B4350">Bactérias colonizam os fragmentos e podem ser levadas para novos ambientes junto com eles.</p>
+</div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#4E626C">Fontes: Wright, Thompson e Galloway (2013); GESAMP (2015); Schuyler et al. (2014) sobre tartarugas marinhas.</p>
+<aside>Além de peixes e bivalves, tartarugas marinhas ingerem detritos em quase todas as regiões estudadas, e o risco cresceu com o tempo para as tartarugas-verdes e de-couro (Schuyler et al., 2014).</aside>
+</section>
+<section data-id="exposicao" data-transition="fade" style="background:#F1F4F2;color:#0F2733;font-family:'Source Serif 4', Georgia, serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:56px">
+<h2 style="font-family:'Bricolage Grotesque', Arial, sans-serif;font-size:72px;font-weight:800;line-height:1.05;letter-spacing:-2px;color:#0F2733">Quanto plástico chega até nós</h2>
+<div style="display:grid;grid-template-columns:repeat(3, 1fr);gap:48px">
+<div style="display:flex;flex-direction:column;gap:14px;border-top:4px solid #0F2733;padding:28px 0 0 0">
+<p style="font-family:'Bricolage Grotesque', Arial, sans-serif;font-size:72px;font-weight:800;line-height:1;letter-spacing:-2px;color:#C42A5C">39 a 52 mil</p>
+<p style="font-size:30px;line-height:1.4;color:#2B4350">partículas ingeridas por pessoa a cada ano.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:14px;border-top:4px solid #0F2733;padding:28px 0 0 0">
+<p style="font-family:'Bricolage Grotesque', Arial, sans-serif;font-size:72px;font-weight:800;line-height:1;letter-spacing:-2px;color:#C42A5C">+74 mil</p>
+<p style="font-size:30px;line-height:1.4;color:#2B4350">por ano, quando se soma o que é inalado.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:14px;border-top:4px solid #0F2733;padding:28px 0 0 0">
+<p style="font-family:'Bricolage Grotesque', Arial, sans-serif;font-size:72px;font-weight:800;line-height:1;letter-spacing:-2px;color:#C42A5C">240 mil</p>
+<p style="font-size:30px;line-height:1.4;color:#2B4350">partículas por litro de água engarrafada, em média; a maioria nanoplásticos.</p>
+</div>
+</div>
+<div style="display:flex;gap:24px;background:#0F2733;border-radius:20px;padding:36px 40px;align-items:center">
+<p style="font-family:'Bricolage Grotesque', Arial, sans-serif;font-size:32px;font-weight:700;color:#FFFFFF;flex:1">Só água da torneira: cerca de 4 mil partículas por ano.</p>
+<p style="font-family:'Bricolage Grotesque', Arial, sans-serif;font-size:32px;font-weight:700;color:#F2B84B;flex:1">Só água engarrafada: cerca de 90 mil a mais.</p>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#4E626C">Fontes: Cox et al. (2019), Environmental Science &amp; Technology; Qian et al. (2024), PNAS.</p>
+<aside>Os números de Cox são estimativas e os próprios autores consideram que estão subestimados. Os 240 mil por litro vêm de uma técnica nova de microscopia que conta partículas de até 100 nanômetros, testada em três marcas dos EUA.</aside>
+</section>
+<section data-id="orgaos" data-transition="fade" style="background:#E3E9E6;color:#0F2733;font-family:'Source Serif 4', Georgia, serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:48px">
+<h2 style="font-family:'Bricolage Grotesque', Arial, sans-serif;font-size:72px;font-weight:800;line-height:1.05;letter-spacing:-2px;color:#0F2733">Onde já foram encontrados no corpo</h2>
+<table style="font-size:28px;color:#0F2733;font-family:'Source Serif 4', Georgia, serif;background:#FBFCFB;border-radius:16px">
+<tr><th style="width:24%;text-align:left">Tecido</th><th style="width:22%;text-align:left">Estudo</th><th style="width:54%;text-align:left">O que encontraram</th></tr>
+<tr><td>Placenta</td><td>Ragusa, 2021</td><td>Fragmentos em 4 de 6 placentas</td></tr>
+<tr><td>Pulmão</td><td>Amato-Lourenço, 2021</td><td>Partículas em 13 de 20 amostras (USP)</td></tr>
+<tr><td>Sangue</td><td>Leslie, 2022</td><td>Média de 1,6 µg/mL em 22 doadores</td></tr>
+<tr><td>Artérias</td><td>Marfella, 2024</td><td>Polietileno nas placas de 58% dos pacientes</td></tr>
+<tr><td>Bulbo olfatório</td><td>Amato-Lourenço, 2024</td><td>Partículas em 8 de 15 pessoas (USP)</td></tr>
+<tr><td>Cérebro</td><td>Nihart, 2025</td><td>Cerca de 50% a mais em 2024 do que em 2016</td></tr>
+</table>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#4E626C">Fontes completas nas referências ao final.</p>
+<aside>Percorra a tabela em ordem de publicação: a lista de órgãos onde já se encontrou plástico só cresce. Note que muitos estudos têm amostras pequenas, de poucas dezenas de pessoas.</aside>
+</section>
+<section data-id="arterias" data-transition="fade" style="background:#C42A5C;color:#FFF4F6;font-family:'Source Serif 4', Georgia, serif;padding:128px 128px 160px;display:flex;flex-direction:column;justify-content:center;gap:40px">
+<p style="font-family:'Bricolage Grotesque', Arial, sans-serif;font-size:32px;font-weight:600;color:#FFD9E3">Artérias carótidas · NEJM, 2024</p>
+<h2 style="font-family:'Bricolage Grotesque', Arial, sans-serif;font-size:120px;font-weight:800;line-height:1;letter-spacing:-3px;color:#FFFFFF">4,5 vezes mais risco</h2>
+<p style="font-size:44px;line-height:1.3;color:#FFF4F6;width:1400px">de infarto, AVC ou morte em cerca de 34 meses entre pacientes com plástico nas placas de gordura das artérias.</p>
+<p style="font-family:'Bricolage Grotesque', Arial, sans-serif;font-size:32px;font-weight:600;background:#FFF4F6;color:#8E1B40;padding:16px 28px;border-radius:999px">Estudo observacional: mostra associação, não prova causa.</p>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#FFD9E3">Fonte: Marfella et al. (2024), New England Journal of Medicine.</p>
+<aside>É o achado mais citado sobre microplásticos e saúde. Reforce a ressalva dos próprios autores: outros fatores podem explicar parte da diferença, e o resultado precisa ser confirmado em populações maiores.</aside>
+</section>
+<section data-id="brasil" data-transition="fade" style="background:#F1F4F2;color:#0F2733;font-family:'Source Serif 4', Georgia, serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:56px">
+<h2 style="font-family:'Bricolage Grotesque', Arial, sans-serif;font-size:72px;font-weight:800;line-height:1.05;letter-spacing:-2px;color:#0F2733">A pesquisa brasileira</h2>
+<div style="display:flex;gap:48px">
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#FBFCFB;border-radius:20px;padding:44px;border-left:10px solid #1A7A42">
+<p style="font-family:'Bricolage Grotesque', Arial, sans-serif;font-size:32px;font-weight:600;color:#1A7A42">Pulmão · 2021</p>
+<p style="font-family:'Bricolage Grotesque', Arial, sans-serif;font-size:120px;font-weight:800;line-height:1;letter-spacing:-3px">13 de 20</p>
+<p style="font-size:30px;line-height:1.45;color:#2B4350">amostras de pulmão de autópsias em São Paulo tinham partículas de plástico, principalmente polipropileno e polietileno.</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#FBFCFB;border-radius:20px;padding:44px;border-left:10px solid #1A7A42">
+<p style="font-family:'Bricolage Grotesque', Arial, sans-serif;font-size:32px;font-weight:600;color:#1A7A42">Bulbo olfatório · 2024</p>
+<p style="font-family:'Bricolage Grotesque', Arial, sans-serif;font-size:120px;font-weight:800;line-height:1;letter-spacing:-3px">8 de 15</p>
+<p style="font-size:30px;line-height:1.45;color:#2B4350">pessoas tinham plástico no bulbo olfatório. Hipótese: o nariz seria uma porta de entrada para o cérebro.</p>
+</div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#4E626C">Fontes: Amato-Lourenço et al. (2021), Journal of Hazardous Materials; (2024), JAMA Network Open. Equipe da USP e do IPT.</p>
+<aside>Os dois estudos são da Faculdade de Medicina da USP, com financiamento da FAPESP. O estudo de 2024 também recebeu apoio do Plastic Health Council, grupo que defende reduzir o uso de plástico; vale mencionar se perguntarem.</aside>
+</section>
+<section data-id="incertezas" data-transition="fade" style="background:#E3E9E6;color:#0F2733;font-family:'Source Serif 4', Georgia, serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:48px">
+<h2 style="font-family:'Bricolage Grotesque', Arial, sans-serif;font-size:72px;font-weight:800;line-height:1.05;letter-spacing:-2px;color:#0F2733">O que a ciência ainda não sabe</h2>
+<p style="font-size:36px;line-height:1.4;color:#2B4350;width:1500px;border-left:8px solid #E3A821;padding:4px 0 4px 32px">Encontrar plástico em um órgão não é o mesmo que provar que ele causa doença. Para a OMS, os dados ainda não bastam para uma avaliação completa de risco.</p>
+<div style="display:grid;grid-template-columns:repeat(2, 1fr);gap:24px">
+<div style="background:#FBFCFB;border-radius:16px;padding:32px 36px"><h3 style="font-family:'Bricolage Grotesque', Arial, sans-serif;font-size:32px;font-weight:700">Amostras pequenas</h3><p style="font-size:28px;line-height:1.4;color:#2B4350">Muitos estudos analisaram poucas dezenas de pessoas.</p></div>
+<div style="background:#FBFCFB;border-radius:16px;padding:32px 36px"><h3 style="font-family:'Bricolage Grotesque', Arial, sans-serif;font-size:32px;font-weight:700">Métodos sem padrão</h3><p style="font-size:28px;line-height:1.4;color:#2B4350">Principalmente para partículas abaixo de 10 µm.</p></div>
+<div style="background:#FBFCFB;border-radius:16px;padding:32px 36px"><h3 style="font-family:'Bricolage Grotesque', Arial, sans-serif;font-size:32px;font-weight:700">Risco de contaminação</h3><p style="font-size:28px;line-height:1.4;color:#2B4350">O próprio laboratório tem plástico no ar e nos equipamentos.</p></div>
+<div style="background:#FBFCFB;border-radius:16px;padding:32px 36px"><h3 style="font-family:'Bricolage Grotesque', Arial, sans-serif;font-size:32px;font-weight:700">Associação, não causa</h3><p style="font-size:28px;line-height:1.4;color:#2B4350">Testes em células e animais usam doses nem sempre comparáveis às reais.</p></div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#4E626C">Fonte: Organização Mundial da Saúde (2022).</p>
+<aside>Este slide é importante para a honestidade científica do trabalho. Os achados são preocupantes, mas ainda não provam que microplásticos causam doenças em pessoas. A pesquisa avança rápido e os métodos estão melhorando.</aside>
+</section>
+<section data-id="acoes" data-transition="fade" style="background:#F1F4F2;color:#0F2733;font-family:'Source Serif 4', Georgia, serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:48px">
+<h2 style="font-family:'Bricolage Grotesque', Arial, sans-serif;font-size:72px;font-weight:800;line-height:1.05;letter-spacing:-2px;color:#0F2733">O que dá para fazer</h2>
+<div style="display:flex;gap:56px">
+<div style="flex:1;display:flex;flex-direction:column;gap:20px">
+<h3 style="font-family:'Bricolage Grotesque', Arial, sans-serif;font-size:44px;font-weight:700;border-bottom:4px solid #0F2733;padding:0 0 16px 0">No dia a dia</h3>
+<ul style="font-size:30px;line-height:1.45;color:#2B4350;display:flex;flex-direction:column;gap:14px">
+<li>Prefira água filtrada da torneira à engarrafada, quando a água local for segura.</li>
+<li>Não aqueça comida em potes plásticos; use vidro ou cerâmica.</li>
+<li>Limpe a casa com pano úmido e ventile os ambientes.</li>
+<li>Lave roupas sintéticas em ciclos frios e com a máquina cheia.</li>
+</ul>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:20px">
+<h3 style="font-family:'Bricolage Grotesque', Arial, sans-serif;font-size:44px;font-weight:700;border-bottom:4px solid #0F2733;padding:0 0 16px 0">Na comunidade</h3>
+<ul style="font-size:30px;line-height:1.45;color:#2B4350;display:flex;flex-direction:column;gap:14px">
+<li>Separe o lixo reciclável e apoie cooperativas de catadores.</li>
+<li>Participe de mutirões de limpeza de praias e rios.</li>
+<li>Reduza descartáveis: garrafa, sacola e copo reutilizáveis.</li>
+<li>Cobre saneamento: esgoto sem tratamento leva plástico aos rios.</li>
+</ul>
+</div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#4E626C">Uma carga de 6 kg de roupas de acrílico pode soltar cerca de 700 mil fibras (Napper e Thompson, 2016).</p>
+<aside>Não é possível zerar a exposição, mas é possível reduzi-la e, principalmente, reduzir o plástico que chega à água. Convide a turma a escolher uma ação do dia a dia e uma da comunidade.</aside>
+</section>
+<section data-id="projeto" data-transition="fade" style="background:#0F2733;color:#E8EFEC;font-family:'Source Serif 4', Georgia, serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:48px">
+<h2 style="font-family:'Bricolage Grotesque', Arial, sans-serif;font-size:72px;font-weight:800;line-height:1.05;letter-spacing:-2px;color:#FFFFFF">A ação extensionista</h2>
+<p style="font-size:36px;line-height:1.4;color:#BFD3D9;width:1500px">Um site aberto à comunidade que explica o tema com fontes científicas e convida a aprender brincando.</p>
+<div style="display:grid;grid-template-columns:repeat(4, 1fr);gap:24px">
+<div style="background:#16384A;border-radius:18px;padding:32px;display:flex;flex-direction:column;gap:12px"><svg aria-hidden="true" width="48" height="48" viewBox="0 0 48 48" fill="none" stroke="#6FD0EA" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="24" r="19"/><path d="M5 24h38M24 5c6 6 8 12 8 19s-2 13-8 19c-6-6-8-12-8-19s2-13 8-19z"/></svg><h3 style="font-family:'Bricolage Grotesque', Arial, sans-serif;font-size:32px;font-weight:700;color:#FFFFFF">Cenas em 3D</h3><p style="font-size:26px;line-height:1.4;color:#BFD3D9">Partículas e um recife com a cadeia alimentar.</p></div>
+<div style="background:#16384A;border-radius:18px;padding:32px;display:flex;flex-direction:column;gap:12px"><svg aria-hidden="true" width="48" height="48" viewBox="0 0 48 48" fill="none" stroke="#6FD0EA" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="21" cy="21" r="13"/><path d="M31 31l11 11"/></svg><h3 style="font-family:'Bricolage Grotesque', Arial, sans-serif;font-size:32px;font-weight:700;color:#FFFFFF">Mapa do corpo</h3><p style="font-size:26px;line-height:1.4;color:#BFD3D9">Cada órgão com o estudo e o dado principal.</p></div>
+<div style="background:#16384A;border-radius:18px;padding:32px;display:flex;flex-direction:column;gap:12px"><svg aria-hidden="true" width="48" height="48" viewBox="0 0 48 48" fill="none" stroke="#6FD0EA" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 25l10 10 20-22"/></svg><h3 style="font-family:'Bricolage Grotesque', Arial, sans-serif;font-size:32px;font-weight:700;color:#FFFFFF">Quiz</h3><p style="font-size:26px;line-height:1.4;color:#BFD3D9">Verdadeiro ou falso, com a fonte de cada resposta.</p></div>
+<div style="background:#16384A;border-radius:18px;padding:32px;display:flex;flex-direction:column;gap:12px"><svg aria-hidden="true" width="48" height="48" viewBox="0 0 48 48" fill="none" stroke="#6FD0EA" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 9l24 15-24 15z"/></svg><h3 style="font-family:'Bricolage Grotesque', Arial, sans-serif;font-size:32px;font-weight:700;color:#FFFFFF">Minijogo</h3><p style="font-size:26px;line-height:1.4;color:#BFD3D9">Recolha o plástico antes que vire microplástico.</p></div>
+</div>
+<p style="font-family:'Bricolage Grotesque', Arial, sans-serif;font-size:32px;font-weight:600;color:#F2B84B">Acesse: [endereço do site]</p>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#8FA8B1">21 referências científicas no site, no formato ABNT.</p>
+<aside>Se der, abra o site ao vivo e mostre o recife 3D e o minijogo. Convide a turma a jogar e a entrar no placar de líderes.</aside>
+</section>
+<section data-id="referencias-1" data-transition="fade" style="background:#F1F4F2;color:#0F2733;font-family:'Source Serif 4', Georgia, serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<h2 style="font-family:'Bricolage Grotesque', Arial, sans-serif;font-size:72px;font-weight:800;line-height:1.05;letter-spacing:-2px;color:#0F2733">Referências</h2>
+<div style="display:flex;gap:56px;font-size:24px;line-height:1.35;color:#2B4350">
+<div style="flex:1;display:flex;flex-direction:column;gap:14px">
+<p style="font-size:24px"><b>1.</b> THOMPSON, R. C. et al. Lost at sea: where is all the plastic? <i>Science</i>, 2004.</p>
+<p style="font-size:24px"><b>2.</b> OMS. <i>Dietary and inhalation exposure to nano- and microplastic particles and potential implications for human health</i>. Genebra, 2022.</p>
+<p style="font-size:24px"><b>3.</b> PNUMA. <i>From pollution to solution: a global assessment of marine litter and plastic pollution</i>. Nairóbi, 2021.</p>
+<p style="font-size:24px"><b>4.</b> ERIKSEN, M. et al. Plastic pollution in the world’s oceans. <i>PLOS ONE</i>, 2014.</p>
+<p style="font-size:24px"><b>5.</b> JAMBECK, J. R. et al. Plastic waste inputs from land into the ocean. <i>Science</i>, 2015.</p>
+<p style="font-size:24px"><b>6.</b> ROCHMAN, C. M. et al. Anthropogenic debris in seafood. <i>Scientific Reports</i>, 2015.</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:14px">
+<p style="font-size:24px"><b>7.</b> COLE, M. et al. Microplastic ingestion by zooplankton. <i>Environmental Science &amp; Technology</i>, 2013.</p>
+<p style="font-size:24px"><b>8.</b> WRIGHT, S. L.; THOMPSON, R. C.; GALLOWAY, T. S. The physical impacts of microplastics on marine organisms. <i>Environmental Pollution</i>, 2013.</p>
+<p style="font-size:24px"><b>9.</b> GESAMP. <i>Sources, fate and effects of microplastics in the marine environment</i>. Londres: IMO, 2015.</p>
+<p style="font-size:24px"><b>10.</b> OMS. <i>Microplastics in drinking-water</i>. Genebra, 2019.</p>
+<p style="font-size:24px"><b>11.</b> COX, K. D. et al. Human consumption of microplastics. <i>Environmental Science &amp; Technology</i>, 2019.</p>
+</div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#4E626C">Lista completa no formato ABNT, com DOI, na seção Referências do site.</p>
+<aside>Referências resumidas. A versão completa, com volume, páginas e DOI, está no site.</aside>
+</section>
+<section data-id="referencias-2" data-transition="fade" style="background:#F1F4F2;color:#0F2733;font-family:'Source Serif 4', Georgia, serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<h2 style="font-family:'Bricolage Grotesque', Arial, sans-serif;font-size:72px;font-weight:800;line-height:1.05;letter-spacing:-2px;color:#0F2733">Referências</h2>
+<div style="display:flex;gap:56px;font-size:24px;line-height:1.35;color:#2B4350">
+<div style="flex:1;display:flex;flex-direction:column;gap:14px">
+<p style="font-size:24px"><b>12.</b> QIAN, N. et al. Rapid single-particle chemical imaging of nanoplastics by SRS microscopy. <i>PNAS</i>, 2024.</p>
+<p style="font-size:24px"><b>13.</b> RAGUSA, A. et al. Plasticenta: first evidence of microplastics in human placenta. <i>Environment International</i>, 2021.</p>
+<p style="font-size:24px"><b>14.</b> AMATO-LOURENÇO, L. F. et al. Presence of airborne microplastics in human lung tissue. <i>Journal of Hazardous Materials</i>, 2021.</p>
+<p style="font-size:24px"><b>15.</b> LESLIE, H. A. et al. Discovery and quantification of plastic particle pollution in human blood. <i>Environment International</i>, 2022.</p>
+<p style="font-size:24px"><b>16.</b> MARFELLA, R. et al. Microplastics and nanoplastics in atheromas and cardiovascular events. <i>NEJM</i>, 2024.</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:14px">
+<p style="font-size:24px"><b>17.</b> AMATO-LOURENÇO, L. F. et al. Microplastics in the olfactory bulb of the human brain. <i>JAMA Network Open</i>, 2024.</p>
+<p style="font-size:24px"><b>18.</b> NIHART, A. J. et al. Bioaccumulation of microplastics in decedent human brains. <i>Nature Medicine</i>, 2025.</p>
+<p style="font-size:24px"><b>19.</b> EFSA. Presence of microplastics and nanoplastics in food, with particular focus on seafood. <i>EFSA Journal</i>, 2016.</p>
+<p style="font-size:24px"><b>20.</b> NAPPER, I. E.; THOMPSON, R. C. Release of synthetic microplastic plastic fibres from domestic washing machines. <i>Marine Pollution Bulletin</i>, 2016.</p>
+<p style="font-size:24px"><b>21.</b> SCHUYLER, Q. et al. Global analysis of anthropogenic debris ingestion by sea turtles. <i>Conservation Biology</i>, 2014.</p>
+</div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#4E626C">Lista completa no formato ABNT, com DOI, na seção Referências do site.</p>
+</section>
+<section data-id="encerramento" data-transition="fade" style="background:#0F2733;color:#E8EFEC;font-family:'Source Serif 4', Georgia, serif;padding:128px;display:flex;flex-direction:column;justify-content:center;gap:32px">
+<svg aria-label="Fragmentos coloridos de plástico" width="1920" height="1080" viewBox="0 0 1920 1080" style="position:absolute;left:0;top:0;width:1920px;height:1080px"><g opacity="0.85"><path d="M1420 230 l70 -24 30 64 -66 30z" fill="#D9366B"/><circle cx="1600" cy="380" r="16" fill="#E3A821"/><path d="M1700 600 l60 18 -20 54 -52 -20z" fill="#7A55C9"/><path d="M1260 330 q40 -60 90 -20 t90 10" stroke="#6FD0EA" stroke-width="6" fill="none" stroke-linecap="round"/><circle cx="1520" cy="760" r="12" fill="#1C9CC0"/><circle cx="1800" cy="260" r="8" fill="#2EA36B"/></g></svg>
+<h2 style="font-family:'Bricolage Grotesque', Arial, sans-serif;font-size:120px;font-weight:800;line-height:1;letter-spacing:-3px;color:#FFFFFF">Obrigado!</h2>
+<p style="font-size:44px;line-height:1.3;color:#AFC2C9;width:1200px">Perguntas? Teste o que aprendeu no quiz e no minijogo do site.</p>
+<p style="font-family:'Bricolage Grotesque', Arial, sans-serif;font-size:32px;font-weight:600;color:#F2B84B">[endereço do site]</p>
+<p style="font-family:'Bricolage Grotesque', Arial, sans-serif;font-size:28px;color:#AFC2C9">[Nomes do grupo] · [Curso] · [Instituição]</p>
+<aside>Agradeça, abra para perguntas e, se houver tempo, convide alguém da plateia a jogar uma partida ao vivo.</aside>
+</section>
+  </div>
+</main>
+<aside class="notas" id="notas" hidden aria-live="polite"><b>Notas do apresentador</b><span id="notasTexto"></span></aside>
+<nav class="barra" id="barra" aria-label="Controles da apresentação">
+  <a href="./#topo" aria-label="Voltar ao site">Site</a>
+  <button type="button" id="anterior" aria-label="Slide anterior"><svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><path d="M12.5 4 6.5 10l6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+  <span class="contador" id="contador" aria-live="polite">1 / 16</span>
+  <button type="button" id="proximo" aria-label="Próximo slide"><svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><path d="m7.5 4 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+  <button type="button" id="btnNotas" aria-pressed="false">Notas</button>
+  <button type="button" id="btnTela" aria-label="Tela cheia"><svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><path d="M3 7V3h4M13 3h4v4M17 13v4h-4M7 17H3v-4" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></button>
+</nav>
+<script>
+(() => {
+  const canvas = document.getElementById('canvas');
+  const slides = [...canvas.querySelectorAll(':scope > section')];
+  const total = slides.length;
+  const contador = document.getElementById('contador'), progresso = document.getElementById('progresso');
+  const notas = document.getElementById('notas'), notasTexto = document.getElementById('notasTexto'), btnNotas = document.getElementById('btnNotas');
+  const barra = document.getElementById('barra');
+  let atual = 0;
+
+  function encaixar() {
+    const s = Math.min(innerWidth / 1920, innerHeight / 1080);
+    canvas.style.transform = `scale(${s}) translate(-50%, -50%)`;
+  }
+  function ir(n, foco) {
+    atual = Math.max(0, Math.min(total - 1, n));
+    slides.forEach((sl, i) => {
+      sl.classList.toggle('ativo', i === atual); sl.classList.toggle('antes', i < atual);
+      sl.setAttribute('aria-hidden', String(i !== atual));
+    });
+    contador.textContent = `${atual + 1} / ${total}`;
+    progresso.style.width = `${(atual + 1) / total * 100}%`;
+    const aside = slides[atual].querySelector('aside');
+    notasTexto.textContent = aside ? aside.textContent : 'Sem notas para este slide.';
+    try { history.replaceState(null, '', '#' + (atual + 1)); } catch (e) {}
+    document.title = `${atual + 1}/${total} · Apresentação: Microplásticos e Saúde`;
+  }
+  const n0 = parseInt(location.hash.slice(1), 10);
+  encaixar(); ir(Number.isFinite(n0) ? n0 - 1 : 0);
+  addEventListener('resize', encaixar);
+
+  document.getElementById('anterior').addEventListener('click', () => ir(atual - 1));
+  document.getElementById('proximo').addEventListener('click', () => ir(atual + 1));
+  btnNotas.addEventListener('click', () => { notas.hidden = !notas.hidden; btnNotas.setAttribute('aria-pressed', String(!notas.hidden)); });
+  function telaCheia() {
+    if (document.fullscreenElement) document.exitFullscreen && document.exitFullscreen();
+    else document.documentElement.requestFullscreen && document.documentElement.requestFullscreen().catch(() => {});
+  }
+  document.getElementById('btnTela').addEventListener('click', telaCheia);
+  addEventListener('keydown', e => {
+    if (e.target.closest && e.target.closest('a, button') && (e.key === ' ' || e.key === 'Enter')) return;
+    const k = e.key;
+    if (['ArrowRight', 'PageDown', ' '].includes(k)) { e.preventDefault(); ir(atual + 1); }
+    else if (['ArrowLeft', 'PageUp'].includes(k)) { e.preventDefault(); ir(atual - 1); }
+    else if (k === 'Home') ir(0);
+    else if (k === 'End') ir(total - 1);
+    else if (k === 'f' || k === 'F') telaCheia();
+    else if (k === 'n' || k === 'N') btnNotas.click();
+    acordar();
+  });
+  // clique no lado direito avança, no esquerdo volta; deslizar troca de slide
+  let toque = null;
+  document.getElementById('palco').addEventListener('pointerdown', e => { toque = { x: e.clientX, y: e.clientY }; });
+  document.getElementById('palco').addEventListener('pointerup', e => {
+    if (!toque) return;
+    const dx = e.clientX - toque.x, dy = e.clientY - toque.y; toque = null;
+    if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) ir(atual + (dx < 0 ? 1 : -1));
+    else if (Math.abs(dx) < 8 && Math.abs(dy) < 8) ir(atual + (e.clientX > innerWidth / 2 ? 1 : -1));
+  });
+  // a barra some depois de alguns segundos parada
+  let timer;
+  function acordar() { barra.classList.remove('oculta'); clearTimeout(timer); timer = setTimeout(() => { if (!barra.matches(':hover, :focus-within')) barra.classList.add('oculta'); }, 2600); }
+  addEventListener('pointermove', acordar); acordar();
+})();
+</script>
+</body>
+</html>
