@@ -1,0 +1,30 @@
+rules_version = '2';
+
+// Placar do minijogo "Missão: limpar o oceano".
+// Qualquer pessoa lê o placar; cada jogador logado com Google grava
+// apenas o próprio documento (placar/<uid>), só para AUMENTAR a marca,
+// e com campos e limites conferidos aqui no servidor.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function marcaValida(uid) {
+      let d = request.resource.data;
+      return request.auth != null
+        && request.auth.uid == uid
+        && d.keys().hasOnly(['nome', 'foto', 'pontos', 'dist', 'plastico', 'em'])
+        && d.nome is string && d.nome.size() > 0 && d.nome.size() <= 40
+        && d.foto is string && d.foto.size() <= 500
+        && d.pontos is int && d.pontos >= 0 && d.pontos <= 200000
+        && d.dist is int && d.dist >= 0 && d.dist <= 100000
+        && d.plastico is int && d.plastico >= 0 && d.plastico <= 10000
+        && d.em == request.time;
+    }
+
+    match /placar/{uid} {
+      allow read: if true;
+      allow create: if marcaValida(uid);
+      allow update: if marcaValida(uid) && request.resource.data.pontos > resource.data.pontos;
+      allow delete: if false;
+    }
+  }
+}

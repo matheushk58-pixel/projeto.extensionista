@@ -449,6 +449,19 @@
   .pl-nome small { font-weight: 400; color: var(--tinta-suave); margin-left: 6px; font-size: .85rem; }
   .pl-pts { font-weight: 800; font-variant-numeric: tabular-nums; text-align: right; }
   .pl-m { color: var(--tinta-suave); font-size: .9rem; font-variant-numeric: tabular-nums; text-align: right; }
+  .pl-conta { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin: 4px 0 14px; }
+  .btn-google {
+    display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 16px; border-radius: 999px; cursor: pointer;
+    background: #fff; color: #1F1F1F; border: 1px solid #747775; font-family: var(--display); font-weight: 600; font-size: .95rem;
+    transition: background-color .15s, box-shadow .15s;
+  }
+  .btn-google:hover { background: #F8FAFF; box-shadow: 0 1px 3px rgba(60,64,67,.3); }
+  .btn-google[hidden], .pl-eu[hidden] { display: none; }
+  .pl-eu { display: inline-flex; align-items: center; gap: 10px; font-family: var(--display); font-size: .95rem; }
+  .pl-eu img { width: 32px; height: 32px; border-radius: 50%; }
+  .link-btn { background: none; border: 0; color: var(--pp-texto); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; font: inherit; min-height: 44px; padding: 0 4px; }
+  .fim-acoes { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .fim-acoes .btn-google[hidden] { display: none; }
   .fim-placar { font-family: var(--display); font-size: .92rem; color: var(--tinta-suave); margin: -4px 0 12px; min-height: 1.3em; }
   @media (max-width: 560px) {
     #placarLista li { grid-template-columns: 1.8rem 28px 1fr auto; gap: 10px; }
@@ -815,7 +828,10 @@
           <p class="motivo" id="fimMotivo"></p>
           <p class="licao" id="fimLicao"></p>
           <p class="fim-placar" id="fimPlacar" aria-live="polite"></p>
-          <button class="btn-jogo" id="btnDeNovo" type="button">Correr de novo</button>
+          <div class="fim-acoes">
+            <button class="btn-jogo" id="btnDeNovo" type="button">Correr de novo</button>
+            <button class="btn-google" id="btnGoogleFim" type="button" hidden><svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>Entrar e salvar</button>
+          </div>
         </div>
       </div>
     </div>
@@ -824,6 +840,10 @@
       <div class="pl-topo">
         <h3 class="sub">Placar de líderes</h3>
         <p class="sub-nota" id="placarEstado">Carregando o placar…</p>
+      </div>
+      <div class="pl-conta">
+        <button class="btn-google" id="btnGoogle" type="button" hidden><svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>Entrar com Google</button>
+        <span class="pl-eu" id="plEu" hidden><img id="plEuFoto" alt="" referrerpolicy="no-referrer"><span>Jogando como <b id="plEuNome"></b></span><button class="link-btn" id="btnSair" type="button">Sair</button></span>
       </div>
       <ol id="placarLista" aria-label="Melhores pontuações"></ol>
     </div>
@@ -1695,63 +1715,116 @@ addEventListener('DOMContentLoaded', () => {
   iniciarCopo();
 
   /* =========================================================
-     Placar de líderes: cada pessoa grava só a própria melhor marca
-     em placar/<id>; todos leem o top 10 ao vivo
+     Placar de líderes com login Google (Firebase Auth + Firestore).
+     Preencha FIREBASE_CONFIG com os dados do seu projeto Firebase
+     (veja LEIAME-placar.md). Vazio, o placar fica desativado e o
+     recorde local continua funcionando.
      ========================================================= */
+  const FIREBASE_CONFIG = {
+    apiKey: '',
+    authDomain: '',
+    projectId: '',
+    appId: '',
+  };
   const placar = (() => {
-    const lista = document.getElementById('placarLista'), estadoEl = document.getElementById('placarEstado');
-    let db = null, user = null, meuId = null, linhas = [], meu = null, podeSalvar = true, fila = Promise.resolve(), pronto;
-    let geracao = 0;
-    async function render() {
-      const minha = ++geracao;
+    const $p = id => document.getElementById(id);
+    const lista = $p('placarLista'), estadoEl = $p('placarEstado');
+    const btnGoogle = $p('btnGoogle'), btnGoogleFim = $p('btnGoogleFim'), eu = $p('plEu');
+    const configurado = !!(FIREBASE_CONFIG.apiKey && FIREBASE_CONFIG.projectId);
+    let fb = null, usuario = null, meu = null, linhas = [], pendente = null, carregando = null, aoSalvarPendente = null;
+
+    const nomeCurto = u => {
+      const partes = (u.displayName || 'Jogador').trim().split(/\s+/);
+      return (partes[0] + (partes.length > 1 ? ' ' + partes[partes.length - 1][0] + '.' : '')).slice(0, 40);
+    };
+    function render() {
       if (!linhas.length) { lista.replaceChildren(); estadoEl.textContent = 'Ninguém jogou ainda. Seja o primeiro no placar!'; return; }
-      const ps = user ? await user.profiles(linhas.map(l => l.id)) : {};
-      if (minha !== geracao) return;
       estadoEl.textContent = 'Top 10, atualizado ao vivo';
       lista.replaceChildren(...linhas.map((l, i) => {
-        const li = document.createElement('li'), p = ps[l.id] || {};
-        if (l.id === meuId) li.className = 'eu';
+        const li = document.createElement('li'), meuLugar = usuario && l.id === usuario.uid;
+        if (meuLugar) li.className = 'eu';
         const pos = document.createElement('span'); pos.className = 'pl-pos'; pos.textContent = (i + 1) + 'º';
-        const av = document.createElement('img'); av.className = 'pl-av'; av.alt = ''; if (p.avatarUrl) av.src = p.avatarUrl;
-        const nome = document.createElement('span'); nome.className = 'pl-nome'; nome.textContent = p.name || 'Alguém';
-        if (l.id === meuId) { const v = document.createElement('small'); v.textContent = 'você'; nome.appendChild(v); }
+        const av = document.createElement('img'); av.className = 'pl-av'; av.alt = ''; av.referrerPolicy = 'no-referrer';
+        if (typeof l.foto === 'string' && /^https:\/\//.test(l.foto)) av.src = l.foto;
+        const nome = document.createElement('span'); nome.className = 'pl-nome'; nome.textContent = typeof l.nome === 'string' && l.nome ? l.nome : 'Jogador';
+        if (meuLugar) { const v = document.createElement('small'); v.textContent = 'você'; nome.appendChild(v); }
         const pts = document.createElement('span'); pts.className = 'pl-pts'; pts.textContent = (+l.pontos || 0).toLocaleString('pt-BR');
         const m = document.createElement('span'); m.className = 'pl-m'; m.textContent = (+l.dist || 0) + ' m';
         li.append(pos, av, nome, pts, m); return li;
       }));
     }
-    async function iniciar() {
-      if (!window.claude || typeof window.claude.use !== 'function') { estadoEl.textContent = 'O placar compartilhado funciona quando o site é aberto pelo link do Claude.'; return; }
-      [db, user] = await Promise.all([window.claude.use('db'), window.claude.use('user')]);
-      if (!db) { estadoEl.textContent = 'Entre com sua conta Claude para ver e entrar no placar.'; return; }
-      meuId = user ? await user.id() : null;
-      db.collection('placar').orderBy('pontos', 'desc').limit(10).onSnapshot(
-        snap => { linhas = snap.docs.filter(d => d.exists).map(d => ({ id: d.id, ...d.data() })); render(); },
-        () => { estadoEl.textContent = 'O placar não pôde ser carregado agora. Recarregue a página para tentar de novo.'; }
-      );
-      if (meuId) { try { const d = await db.doc('placar/' + meuId).get(); meu = d.exists ? d.data() : null; } catch (e) {} }
+    function renderConta() {
+      btnGoogle.hidden = !fb || !!usuario;
+      eu.hidden = !usuario;
+      btnGoogleFim.hidden = !fb || !!usuario || !pendente;
+      if (usuario) { $p('plEuNome').textContent = nomeCurto(usuario); const f = $p('plEuFoto'); if (usuario.photoURL) f.src = usuario.photoURL; else f.removeAttribute('src'); }
     }
-    pronto = iniciar();
-    function enviar(r) {
-      fila = fila.then(async () => {
-        await pronto;
-        if (!db) return '';
-        if (!meuId) return 'Entre com sua conta para aparecer no placar.';
-        if (!podeSalvar) return 'Seu acesso permite ver o placar, mas não salvar pontuações.';
-        if (meu && (+meu.pontos || 0) >= r.pontos) return `Sua melhor marca no placar continua ${(+meu.pontos).toLocaleString('pt-BR')} pontos.`;
-        const corpo = { pontos: r.pontos, dist: r.dist, plastico: r.plastico, em: new Date().toISOString() };
+
+    function carregar() {
+      if (carregando) return carregando;
+      carregando = (async () => {
+        const base = 'https://www.gstatic.com/firebasejs/10.12.2/';
         try {
-          await db.doc('placar/' + meuId).set(corpo); meu = corpo;
-          const pos = linhas.findIndex(l => l.id === meuId);
-          return pos >= 0 ? `Nova melhor marca salva: você está em ${pos + 1}º no placar!` : 'Nova melhor marca salva no placar!';
-        } catch (e) {
-          if (e && e.code === 'invalid_argument') { podeSalvar = false; return 'Seu acesso permite ver o placar, mas não salvar pontuações.'; }
-          if (e && e.code === 'quota_exceeded') return 'O placar está cheio e não aceitou novas marcas.';
-          return 'Não foi possível salvar no placar agora.';
-        }
-      });
-      return fila;
+          const [appM, authM, fsM] = await Promise.all([import(base + 'firebase-app.js'), import(base + 'firebase-auth.js'), import(base + 'firebase-firestore.js')]);
+          const app = appM.initializeApp(FIREBASE_CONFIG);
+          fb = { auth: authM.getAuth(app), db: fsM.getFirestore(app), authM, fsM };
+        } catch (e) { estadoEl.textContent = 'Não foi possível conectar ao placar agora.'; return; }
+        const { auth, db, authM, fsM } = fb;
+        authM.getRedirectResult(auth).catch(() => {});
+        authM.onAuthStateChanged(auth, async u => {
+          usuario = u; meu = null; renderConta(); render();
+          if (!u) return;
+          try { const d = await fsM.getDoc(fsM.doc(db, 'placar', u.uid)); meu = d.exists() ? d.data() : null; } catch (e) {}
+          if (pendente) { const r = pendente; pendente = null; renderConta(); const msg = await salvar(r); if (aoSalvarPendente) aoSalvarPendente(msg); }
+        });
+        fsM.onSnapshot(fsM.query(fsM.collection(db, 'placar'), fsM.orderBy('pontos', 'desc'), fsM.limit(10)),
+          snap => { linhas = snap.docs.map(d => ({ id: d.id, ...d.data() })); render(); },
+          () => { estadoEl.textContent = 'O placar não pôde ser carregado agora.'; });
+        renderConta();
+      })();
+      return carregando;
     }
+
+    async function entrar() {
+      await carregar(); if (!fb) return;
+      const { auth, authM } = fb, prov = new authM.GoogleAuthProvider();
+      try { await authM.signInWithPopup(auth, prov); }
+      catch (e) {
+        const c = e && e.code;
+        if (c === 'auth/popup-blocked' || c === 'auth/operation-not-supported-in-this-environment') { try { await authM.signInWithRedirect(auth, prov); } catch (e2) {} }
+        else if (c === 'auth/unauthorized-domain') estadoEl.textContent = 'Este endereço ainda não foi autorizado no Firebase (Authentication › Settings › Authorized domains).';
+        else if (c !== 'auth/popup-closed-by-user' && c !== 'auth/cancelled-popup-request') estadoEl.textContent = 'Não foi possível entrar com o Google agora.';
+      }
+    }
+    btnGoogle.addEventListener('click', entrar);
+    btnGoogleFim.addEventListener('click', entrar);
+    $p('btnSair').addEventListener('click', () => fb && fb.authM.signOut(fb.auth));
+
+    async function salvar(r) {
+      const { db, fsM } = fb;
+      if (meu && (+meu.pontos || 0) >= r.pontos) return `Sua melhor marca no placar continua ${(+meu.pontos).toLocaleString('pt-BR')} pontos.`;
+      const corpo = { nome: nomeCurto(usuario), foto: (usuario.photoURL || '').slice(0, 500), pontos: r.pontos, dist: r.dist, plastico: r.plastico, em: fsM.serverTimestamp() };
+      try {
+        await fsM.setDoc(fsM.doc(db, 'placar', usuario.uid), corpo); meu = corpo;
+        const pos = linhas.findIndex(l => l.id === usuario.uid);
+        return pos >= 0 ? `Nova melhor marca salva: você está em ${pos + 1}º no placar!` : 'Nova melhor marca salva no placar!';
+      } catch (e) { return 'Não foi possível salvar no placar agora.'; }
+    }
+
+    async function enviar(r, aoSalvar) {
+      if (!configurado) return '';
+      await carregar(); if (!fb) return '';
+      r = { pontos: Math.floor(r.pontos), dist: Math.floor(r.dist), plastico: Math.floor(r.plastico) };
+      if (!usuario) {
+        if (!pendente || r.pontos > pendente.pontos) pendente = r;
+        aoSalvarPendente = aoSalvar; renderConta();
+        return 'Entre com sua conta Google para colocar esta marca no placar.';
+      }
+      return salvar(r);
+    }
+
+    if (!configurado) estadoEl.textContent = 'O placar online ainda não foi configurado. Por enquanto vale o seu recorde neste navegador.';
+    else new IntersectionObserver(([e], o) => { if (e.isIntersecting) { o.disconnect(); carregar(); } }, { rootMargin: '600px' }).observe(lista);
     return { enviar };
   })();
 
@@ -1971,7 +2044,8 @@ addEventListener('DOMContentLoaded', () => {
         : `${escapou} pedaços de plástico passaram por você. No mar de verdade, eles se quebrariam em microplásticos, e aí não dá mais para recolher. Evitar que o plástico chegue à água é o caminho mais eficaz.`;
       ui.fim.hidden = false; $('btnDeNovo').focus({ preventScroll: true });
       const fimPlacar = $('fimPlacar'); fimPlacar.textContent = '';
-      placar.enviar({ pontos: p, dist: Math.floor(dist), plastico }).then(msg => { if (estado === 'fim') fimPlacar.textContent = msg; });
+      const mostrar = msg => { if (estado === 'fim') fimPlacar.textContent = msg; };
+      placar.enviar({ pontos: p, dist: Math.floor(dist), plastico }, mostrar).then(mostrar);
     }
     $('btnJogar').addEventListener('click', comecar);
     $('btnDeNovo').addEventListener('click', comecar);
