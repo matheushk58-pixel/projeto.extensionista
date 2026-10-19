@@ -1,0 +1,2728 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Microplásticos e Saúde</title>
+<meta name="description" content="Microplásticos e Saúde: impactos no corpo humano e nos ecossistemas aquáticos. Trabalho extensionista com base em fontes científicas revisadas por pares e relatórios da OMS, do PNUMA e da EFSA.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
+<script>
+  document.documentElement.classList.add('js');
+  try { var tm = localStorage.getItem('tema-micro'); if (tm) document.documentElement.dataset.theme = tm; } catch (e) {}
+  // se a cena 3D não carregar a tempo, mostra o conteúdo sem a intro
+  setTimeout(function () { if (!window.__introIniciada) document.documentElement.classList.remove('intro'); }, 3500);
+  try {
+    if (!matchMedia('(prefers-reduced-motion: reduce)').matches && sessionStorage.getItem('intro-micro') !== '1' && !location.hash)
+      document.documentElement.classList.add('intro');
+  } catch (e) {}
+</script>
+<style>
+  /* Conceito: a página é uma amostra de água vista ao microscópio.
+     Fundo = membrana de filtro; cores = os fragmentos de plástico. */
+  :root {
+    --filtro: #F1F4F2;
+    --filtro-2: #E3E9E6;
+    --filtro-3: #D3DCD8;
+    --tinta: #0F2733;
+    --tinta-suave: #4E626C;
+    --pe: #D9366B;
+    --pp: #1C9CC0;
+    --pet: #E3A821;
+    --verde: #1A7A42;
+    --linha: #C9D3CE;
+    --fundo-escuro: #0F2733;
+    --texto-claro: #E8EFEC;
+    --display: 'Bricolage Grotesque', system-ui, sans-serif;
+    --serif: 'Source Serif 4', Georgia, serif;
+    --medida: 66ch;
+    --ease: cubic-bezier(.2,.7,.2,1);
+    --pp-texto: #0E6F8F;   /* versão do ciano com contraste AA para texto e foco */
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --filtro: #0C1F28; --filtro-2: #123039; --filtro-3: #1A3C47; --tinta: #E4ECE8; --tinta-suave: #9DB0B7;
+      --linha: #24434E; --fundo-escuro: #07161D; --texto-claro: #E4ECE8;
+      --pp-texto: #6FD0EA; color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --filtro: #0C1F28; --filtro-2: #123039; --filtro-3: #1A3C47; --tinta: #E4ECE8; --tinta-suave: #9DB0B7;
+    --linha: #24434E; --fundo-escuro: #07161D; --texto-claro: #E4ECE8;
+    --pp-texto: #6FD0EA; color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  body {
+    background: var(--filtro); color: var(--tinta);
+    font-family: var(--serif); font-size: 1.1875rem; line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration-color: var(--pp-texto); text-underline-offset: 3px; text-decoration-thickness: 2px; }
+  a:hover { text-decoration-color: var(--pe); }
+  button { font: inherit; color: inherit; }
+  :focus-visible { outline: 3px solid var(--pp-texto); outline-offset: 3px; border-radius: 2px; }
+  .pular { position: absolute; left: -9999px; top: 8px; background: var(--tinta); color: var(--filtro); padding: 8px 14px; z-index: 60; }
+  .pular:focus { left: 16px; }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .num { font-variant-numeric: tabular-nums; }
+
+  .envoltorio { max-width: 1160px; margin: 0 auto; padding: 0 clamp(16px, 4vw, 40px); }
+
+  /* ---------- navegação ---------- */
+  .nav {
+    position: sticky; top: 0; z-index: 30;
+    background: color-mix(in srgb, var(--filtro) 86%, transparent);
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--linha);
+  }
+  .nav .envoltorio { display: flex; align-items: center; justify-content: space-between; gap: 16px; height: 60px; }
+  .marca { font-family: var(--display); font-weight: 800; font-size: 1.05rem; text-decoration: none; letter-spacing: -0.01em; display: flex; align-items: center; gap: 10px; }
+  .nav ul { display: flex; gap: clamp(12px, 2vw, 26px); list-style: none; font-family: var(--display); font-size: 0.95rem; }
+  .nav ul a { text-decoration: none; color: var(--tinta-suave); padding: 6px 0; border-bottom: 2px solid transparent; transition: color .15s, border-color .15s; }
+  .nav ul a:hover { color: var(--tinta); }
+  .nav ul a[aria-current="true"] { color: var(--tinta); border-bottom-color: var(--pp); }
+  .progresso { position: absolute; left: 0; bottom: -1px; height: 2px; width: 100%; background: var(--pe); transform-origin: 0 50%; transform: scaleX(0); }
+  @media (max-width: 860px) {
+    .nav .envoltorio { height: auto; flex-direction: column; align-items: stretch; gap: 0; padding-top: 10px; }
+    .nav ul { overflow-x: auto; scrollbar-width: none; gap: 20px; padding: 6px 0 4px; margin: 0 calc(-1 * clamp(16px, 4vw, 40px)); padding-inline: clamp(16px, 4vw, 40px); }
+    .nav ul::-webkit-scrollbar { display: none; }
+    .nav ul a { white-space: nowrap; display: inline-block; padding: 10px 0; }
+  }
+
+  /* ---------- hero 3D ---------- */
+  .hero { position: relative; min-height: min(100svh, 900px); display: grid; align-items: end; overflow: hidden; border-bottom: 1px solid var(--linha); }
+  #cena { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: pan-y; }
+  .hero.sem-webgl #cena { display: none; }
+  .hero-texto { position: relative; z-index: 2; padding: 120px 0 clamp(36px, 6vh, 72px); pointer-events: none; }
+  .hero h1 .linha > span, .hero .lead { pointer-events: auto; }
+  .hero h1 {
+    font-family: var(--display); font-weight: 800;
+    font-size: clamp(2.6rem, 8.4vw, 7.4rem);
+    line-height: 0.95; letter-spacing: -0.035em; max-width: 12ch;
+  }
+  .hero h1 .linha { display: block; overflow: hidden; padding-bottom: .04em; }
+  .hero h1 .linha > span { display: block; transition: transform .9s var(--ease); }
+  .hero h1 .t2 { color: var(--tinta-suave); }
+  .hero h1, .hero .lead { text-shadow: 0 0 22px var(--filtro), 0 0 6px var(--filtro); }
+  .hero .lead { margin-top: 26px; max-width: 46ch; font-size: clamp(1.1rem, 1.6vw, 1.3rem); transition: opacity .8s .35s, transform .8s .35s var(--ease); }
+
+  .legenda { margin-top: 26px; pointer-events: auto; transition: opacity .8s .5s; }
+  .legenda p { font-family: var(--display); font-size: 0.9rem; color: var(--tinta-suave); margin-bottom: 10px; }
+  .legenda ul { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; }
+  .legenda button {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: var(--display); font-size: 0.92rem; font-weight: 600;
+    background: color-mix(in srgb, var(--filtro) 80%, transparent);
+    border: 1.5px solid var(--linha); border-radius: 999px; padding: 7px 14px 7px 10px; cursor: pointer;
+    min-height: 44px; transition: border-color .15s, background-color .15s;
+  }
+  .legenda button:hover { border-color: var(--tinta-suave); }
+  .legenda button[aria-pressed="true"] { border-color: var(--tinta); background: var(--tinta); color: var(--filtro); }
+  .legenda svg { flex: none; }
+
+  /* intro: o zoom do microscópio */
+  .js.intro .hero h1 .linha > span { transform: translateY(110%); }
+  .js.intro .hero .lead { opacity: 0; transform: translateY(16px); }
+  .js.intro .legenda { opacity: 0; }
+  .js.intro .hero h1 .linha:nth-child(2) > span { transition-delay: .1s; }
+  .js.intro .hero h1 .linha:nth-child(3) > span { transition-delay: .2s; }
+  .hero h1 .linha:nth-child(2) > span { transition-delay: .1s; }
+  .hero h1 .linha:nth-child(3) > span { transition-delay: .2s; }
+  .ocular {
+    position: absolute; inset: 0; z-index: 5; display: none; place-items: center; pointer-events: none;
+  }
+  .js.intro .ocular { display: grid; }
+  .ocular .anel {
+    width: min(64vmin, 520px); aspect-ratio: 1; border-radius: 50%;
+    border: 2px solid var(--tinta); display: grid; place-items: center; text-align: center;
+    box-shadow: 0 0 0 100vmax color-mix(in srgb, var(--filtro) 92%, transparent);
+    transition: transform 1s var(--ease), opacity .6s;
+  }
+  .ocular.sai .anel { transform: scale(3.2); opacity: 0; }
+  .ocular .zoom { font-family: var(--display); font-weight: 800; font-size: clamp(3.4rem, 11vmin, 7rem); letter-spacing: -0.04em; line-height: 1; }
+  .ocular .rotulo { font-family: var(--display); font-size: 1rem; color: var(--tinta-suave); margin-top: 6px; }
+  .ocular .mira { position: absolute; width: min(64vmin, 520px); aspect-ratio: 1; }
+  .pular-intro {
+    position: absolute; right: clamp(16px, 4vw, 40px); bottom: 24px; z-index: 6; display: none;
+    font-family: var(--display); font-size: .92rem; background: none; border: 1.5px solid var(--linha);
+    border-radius: 999px; padding: 8px 16px; min-height: 44px; cursor: pointer; pointer-events: auto; color: var(--tinta); background: var(--filtro);
+  }
+  .js.intro .pular-intro { display: block; }
+
+  /* etiqueta da partícula sob o cursor */
+  .etiqueta {
+    position: absolute; z-index: 4; pointer-events: none; left: 0; top: 0;
+    font-family: var(--display); font-size: 0.9rem; line-height: 1.35;
+    background: var(--tinta); color: var(--filtro); padding: 9px 12px; border-radius: 8px;
+    max-width: 240px; opacity: 0; transform: translate(-50%, calc(-100% - 22px)) scale(.96);
+    transition: opacity .12s, transform .12s;
+  }
+  .etiqueta.visivel { opacity: 1; transform: translate(-50%, calc(-100% - 22px)) scale(1); }
+  .etiqueta.abaixo, .etiqueta.abaixo.visivel { transform: translate(-50%, 26px); }
+  .etiqueta b { display: block; font-weight: 800; }
+  .etiqueta span { opacity: .8; }
+
+  /* ---------- seções ---------- */
+  section { padding: clamp(72px, 11vw, 140px) 0; }
+  .sec-titulo {
+    font-family: var(--display); font-weight: 800;
+    font-size: clamp(2rem, 4.6vw, 3.4rem); line-height: 1.02; letter-spacing: -0.025em;
+    max-width: 18ch; margin-bottom: 28px;
+  }
+  .prosa { max-width: var(--medida); }
+  .prosa p + p { margin-top: 1em; }
+  sup.ref { font-family: var(--display); font-size: 0.68em; font-weight: 600; line-height: 0; }
+  sup.ref a { text-decoration: none; color: var(--pp-texto); padding: 0 1px; }
+  sup.ref a:hover { color: var(--pe); }
+  .sub { font-family: var(--display); font-weight: 600; font-size: 1.5rem; letter-spacing: -0.01em; margin-bottom: 8px; }
+  .sub-nota { color: var(--tinta-suave); max-width: 60ch; font-size: 1.05rem; }
+
+  /* ---------- régua interativa ---------- */
+  .regua { margin-top: 64px; padding: clamp(24px, 4vw, 44px); background: var(--filtro-2); border-radius: 18px; }
+  .regua-topo { display: grid; grid-template-columns: 1fr 1.2fr; gap: 40px; align-items: end; margin-bottom: 32px; }
+  .regua-leitura .medida { font-family: var(--display); font-weight: 800; font-size: clamp(3rem, 7vw, 5.4rem); letter-spacing: -0.04em; line-height: .95; display: block; }
+  .regua-leitura .compara { font-family: var(--display); font-weight: 600; font-size: 1.15rem; display: block; margin-top: 8px; }
+  .regua-texto { font-size: 1.05rem; min-height: 5.2em; }
+  .regua-texto b { font-family: var(--display); }
+  @media (max-width: 760px) { .regua-topo { grid-template-columns: 1fr; gap: 16px; } }
+
+  .faixas { display: grid; grid-template-columns: 30% 46% 24%; height: 44px; border-radius: 10px; overflow: hidden; font-family: var(--display); font-size: .85rem; font-weight: 600; }
+  .faixas div { display: flex; align-items: center; padding: 0 12px; transition: opacity .25s; opacity: .45; }
+  .faixas div.ativa { opacity: 1; }
+  .faixas .f1 { background: var(--filtro-3); }
+  .faixas .f2 { background: color-mix(in srgb, var(--pet) 55%, var(--filtro-2)); }
+  .faixas .f3 { background: color-mix(in srgb, var(--pe) 55%, var(--filtro-2)); }
+  @media (max-width: 560px) { .faixas { font-size: .72rem; height: auto; min-height: 56px; line-height: 1.2; } .faixas div { padding: 6px; } }
+
+  .controle { position: relative; margin-top: 18px; }
+  .controle input[type="range"] { width: 100%; appearance: none; -webkit-appearance: none; background: transparent; height: 44px; cursor: pointer; }
+  .controle input[type="range"]::-webkit-slider-runnable-track { height: 4px; background: var(--tinta); border-radius: 2px; }
+  .controle input[type="range"]::-moz-range-track { height: 4px; background: var(--tinta); border-radius: 2px; }
+  .controle input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 30px; height: 30px; margin-top: -13px; border-radius: 50%; background: var(--pe); border: 4px solid var(--filtro); box-shadow: 0 0 0 2px var(--tinta); }
+  .controle input[type="range"]::-moz-range-thumb { width: 22px; height: 22px; border-radius: 50%; background: var(--pe); border: 4px solid var(--filtro); box-shadow: 0 0 0 2px var(--tinta); }
+  .marcas { display: grid; grid-template-columns: repeat(7, 1fr); margin: 0 -8.333%; font-family: var(--display); font-size: .85rem; color: var(--tinta-suave); }
+  .marcas button { background: none; border: 0; cursor: pointer; padding: 10px 0; min-height: 44px; color: inherit; text-align: center; white-space: nowrap; }
+  @media (max-width: 560px) { .marcas { font-size: .72rem; } .marcas button:nth-child(even) { visibility: hidden; } }
+  .marcas button[aria-current="true"] { color: var(--tinta); font-weight: 800; }
+
+  .origens { margin-top: 64px; display: grid; grid-template-columns: 1fr 1fr; gap: 48px; max-width: 980px; }
+  .origens h3 { font-family: var(--display); font-weight: 600; font-size: 1.3rem; margin-bottom: 8px; }
+  .origens p { font-size: 1.05rem; }
+  @media (max-width: 760px) { .origens { grid-template-columns: 1fr; gap: 28px; } }
+
+  /* ---------- água (seção escura) ---------- */
+  .agua { background: var(--fundo-escuro); color: var(--texto-claro); }
+  .agua .sec-titulo { color: #fff; }
+  .agua a { text-decoration-color: #5CC6E4; }
+  .agua sup.ref a { color: #6FD0EA; }
+  .agua :focus-visible { outline-color: #6FD0EA; }
+  .numeros { margin: 56px 0 8px; display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid rgba(255,255,255,.18); }
+  .numeros div { padding: 26px 24px 0 0; }
+  .numeros div + div { padding-left: 24px; border-left: 1px solid rgba(255,255,255,.18); }
+  .numeros strong { font-family: var(--display); font-weight: 800; font-size: clamp(2rem, 4.2vw, 3.2rem); letter-spacing: -0.03em; line-height: 1; display: block; color: #fff; }
+  .numeros span { display: block; margin-top: 10px; font-size: 1rem; color: #AFC2C9; max-width: 30ch; }
+  @media (max-width: 760px) {
+    .numeros { grid-template-columns: 1fr; }
+    .numeros div + div { border-left: 0; padding-left: 0; border-top: 1px solid rgba(255,255,255,.18); margin-top: 24px; }
+  }
+
+  .cadeia { margin-top: 80px; }
+  .cadeia h3 { font-family: var(--display); font-weight: 600; font-size: 1.5rem; margin-bottom: 8px; color: #fff; }
+  .cadeia > p { color: #AFC2C9; font-size: 1.02rem; margin-bottom: 28px; }
+  .cadeia ol { list-style: none; display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .elo {
+    width: 100%; text-align: left; cursor: pointer; background: rgba(255,255,255,.04);
+    border: 1.5px solid rgba(255,255,255,.14); border-radius: 14px; padding: 18px 18px 20px; color: inherit;
+    transition: border-color .2s, background-color .2s; display: flex; flex-direction: column; justify-content: flex-start; height: 100%;
+  }
+  .elo:hover { border-color: rgba(111,208,234,.6); }
+  .elo[aria-pressed="true"] { border-color: #6FD0EA; background: rgba(111,208,234,.1); }
+  .elo .passo { font-family: var(--display); font-weight: 800; color: #6FD0EA; font-size: .95rem; }
+  .elo .t { display: block; font-family: var(--display); font-weight: 600; font-size: 1.2rem; color: #fff; margin: 4px 0 6px; }
+  .elo .d { display: block; font-size: .98rem; color: #C2D2D8; line-height: 1.5; }
+  .acumulo { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 14px; min-height: 10px; }
+  .acumulo i { width: 8px; height: 8px; border-radius: 2px; display: block; transform: scale(0); transition: transform .3s var(--ease); }
+  .elo[aria-pressed="true"] .acumulo i, .elo.cheio .acumulo i { transform: scale(1); }
+  @media (max-width: 860px) { .cadeia ol { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 480px) { .cadeia ol { grid-template-columns: 1fr; } }
+
+  /* palco 3D do oceano (cartoon) */
+  .palco {
+    position: relative; margin: 0 0 16px; height: clamp(360px, 52vw, 580px); border-radius: 18px; overflow: hidden;
+    background: linear-gradient(180deg, #1F7891 0%, #145067 42%, #0B2733 100%);
+    border: 1.5px solid rgba(255,255,255,.14);
+  }
+  .palco canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: pan-y; }
+  .palco.sem-webgl { display: none; }
+  .palco-dica { position: absolute; top: 14px; left: 16px; font-family: var(--display); font-size: .88rem; color: #D5EEF4; pointer-events: none; }
+  .palco-legenda {
+    position: absolute; left: 14px; bottom: 14px; right: 14px; max-width: 62ch;
+    font-size: 1rem; line-height: 1.45; color: #fff; background: rgba(7,22,29,.74);
+    -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); padding: 12px 16px; border-radius: 12px;
+  }
+  .palco-legenda b { font-family: var(--display); font-weight: 600; }
+  .palco-rotulo {
+    position: absolute; left: 0; top: 0; pointer-events: none; white-space: nowrap;
+    font-family: var(--display); font-weight: 600; font-size: .9rem; background: #fff; color: #0F2733;
+    padding: 6px 12px; border-radius: 999px; transform: translate(-50%, -160%); opacity: 0; transition: opacity .12s;
+  }
+  .palco-rotulo.visivel { opacity: 1; }
+  .palco-voltar {
+    position: absolute; top: 10px; right: 10px; min-height: 44px; padding: 0 16px; border-radius: 999px; cursor: pointer;
+    font-family: var(--display); font-weight: 600; font-size: .9rem; background: #fff; color: #0F2733; border: 0;
+  }
+  .palco-voltar[hidden] { display: none; }
+  @media (max-width: 560px) { .palco { height: 470px; } .palco-legenda { font-size: .9rem; padding: 10px 12px; } .palco-dica { display: none; } }
+
+  .efeitos { margin-top: 80px; display: grid; grid-template-columns: 1fr 1fr; gap: 40px 56px; max-width: 1000px; }
+  .efeitos h3 { font-family: var(--display); font-weight: 600; font-size: 1.2rem; color: #fff; margin-bottom: 6px; }
+  .efeitos p { font-size: 1.02rem; color: #C2D2D8; }
+  @media (max-width: 760px) { .efeitos { grid-template-columns: 1fr; } }
+
+  /* ---------- corpo ---------- */
+  .corpo-intro { display: grid; grid-template-columns: 1.1fr 1fr; gap: 56px; align-items: start; }
+  @media (max-width: 860px) { .corpo-intro { grid-template-columns: 1fr; gap: 24px; } }
+  .vias { list-style: none; border-top: 3px solid var(--tinta); }
+  .vias li { display: grid; grid-template-columns: 9.5rem 1fr; gap: 16px; padding: 16px 0; border-bottom: 1px solid var(--linha); font-size: 1.02rem; }
+  .vias b { font-family: var(--display); font-weight: 600; }
+  @media (max-width: 480px) { .vias li { grid-template-columns: 1fr; gap: 2px; } }
+
+  /* comparador de água */
+  .comparador { margin-top: 72px; display: grid; grid-template-columns: 1fr 1.25fr; gap: 48px; align-items: center; }
+  @media (max-width: 860px) { .comparador { grid-template-columns: 1fr; gap: 28px; } }
+  .alternador { display: inline-flex; background: var(--filtro-2); border-radius: 999px; padding: 4px; margin-top: 20px; }
+  .alternador button { border: 0; background: none; padding: 10px 18px; border-radius: 999px; cursor: pointer; font-family: var(--display); font-weight: 600; font-size: .95rem; min-height: 44px; transition: background-color .2s, color .2s; }
+  .alternador button[aria-pressed="true"] { background: var(--tinta); color: var(--filtro); }
+  .contagem { font-family: var(--display); }
+  .contagem strong { font-weight: 800; font-size: clamp(2.6rem, 6vw, 4.2rem); letter-spacing: -0.035em; line-height: 1; display: block; }
+  .contagem span { color: var(--tinta-suave); font-size: 1rem; display: block; margin-top: 6px; }
+  .pontos { display: grid; grid-template-columns: repeat(20, 1fr); gap: 5px; margin-top: 20px; max-width: 520px; }
+  .pontos i { aspect-ratio: 1; border-radius: 3px; background: var(--filtro-3); transition: background-color .25s, transform .25s var(--ease); }
+  .pontos i.on { background: var(--pp); }
+  .copo { height: 320px; margin-top: 16px; border-radius: 18px; background: var(--filtro-2); position: relative; overflow: hidden; max-width: 520px; }
+  .copo canvas { width: 100%; height: 100%; display: block; }
+  .comparador:not(.com-3d) .copo { display: none; }
+  .comparador.com-3d .pontos { display: none; }
+  .pontos-nota { font-family: var(--display); font-size: .88rem; color: var(--tinta-suave); margin-top: 10px; }
+
+  /* mapa do corpo */
+  .mapa { margin-top: 88px; }
+  .mapa-grade { display: grid; grid-template-columns: minmax(240px, 340px) 1fr; gap: clamp(28px, 5vw, 72px); align-items: start; margin-top: 32px; }
+  @media (max-width: 760px) { .mapa-grade { grid-template-columns: 1fr; } }
+  .figura { position: relative; width: 100%; max-width: 340px; margin: 0 auto; }
+  .figura svg { width: 100%; height: auto; display: block; }
+  .ponto-orgao {
+    position: absolute; width: 44px; height: 44px; margin: -22px 0 0 -22px; border-radius: 50%;
+    border: 0; background: none; cursor: pointer; display: grid; place-items: center;
+  }
+  .ponto-orgao::before { content: ""; width: 14px; height: 14px; border-radius: 50%; background: var(--pe); box-shadow: 0 0 0 3px var(--filtro); transition: transform .2s var(--ease); }
+  .ponto-orgao::after { content: ""; position: absolute; inset: 4px; border-radius: 50%; border: 2px solid var(--pe); opacity: .5; animation: pulso 2.4s ease-out infinite; }
+  .ponto-orgao.br::before { background: var(--verde); }
+  .ponto-orgao.br::after { border-color: var(--verde); }
+  .ponto-orgao:hover::before { transform: scale(1.25); }
+  .ponto-orgao[aria-pressed="true"]::before { transform: scale(1.35); box-shadow: 0 0 0 3px var(--filtro), 0 0 0 6px var(--tinta); }
+  @keyframes pulso { from { transform: scale(.6); opacity: .7; } to { transform: scale(1.4); opacity: 0; } }
+  @media (prefers-reduced-motion: reduce) { .ponto-orgao::after { animation: none; } }
+
+  .orgaos-lista { list-style: none; display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 24px; }
+  .orgaos-lista button { font-family: var(--display); font-size: .9rem; font-weight: 600; border: 1.5px solid var(--linha); background: none; border-radius: 999px; padding: 6px 12px; cursor: pointer; min-height: 44px; }
+  .orgaos-lista button:hover { border-color: var(--tinta-suave); }
+  .orgaos-lista button[aria-pressed="true"] { background: var(--tinta); color: var(--filtro); border-color: var(--tinta); }
+  .painel { border-top: 3px solid var(--tinta); padding-top: 24px; }
+  .painel h4 { font-family: var(--display); font-weight: 800; font-size: clamp(1.8rem, 3.4vw, 2.5rem); letter-spacing: -0.025em; line-height: 1.05; }
+  .painel .estudo { font-family: var(--display); color: var(--tinta-suave); font-size: .98rem; margin-top: 6px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .selo { font-size: .8rem; font-weight: 600; color: #fff; background: var(--verde); padding: 3px 9px; border-radius: 4px; }
+  .painel .dado { font-family: var(--display); margin: 22px 0 14px; }
+  .painel .dado strong { display: block; font-weight: 800; font-size: clamp(2.4rem, 5vw, 3.6rem); letter-spacing: -0.03em; line-height: 1; color: var(--pe); }
+  .painel .dado span { color: var(--tinta-suave); font-size: 1rem; }
+  .painel p.corpo-texto { max-width: 58ch; font-size: 1.05rem; }
+  .painel-conteudo { transition: opacity .2s, transform .2s var(--ease); }
+  .painel-conteudo.troca { opacity: 0; transform: translateY(6px); }
+
+  .aviso {
+    margin-top: 88px; padding: 32px clamp(20px, 4vw, 44px);
+    background: var(--filtro-2); border-left: 6px solid var(--pet); border-radius: 0 14px 14px 0; max-width: 900px;
+  }
+  .aviso h3 { font-family: var(--display); font-weight: 600; font-size: 1.35rem; margin-bottom: 10px; }
+  .aviso ul { margin: 12px 0 0 1.2em; }
+  .aviso li { margin-top: 8px; font-size: 1.05rem; }
+
+  /* ---------- quiz ---------- */
+  .quiz { background: var(--filtro-2); }
+  .quiz-caixa { max-width: 760px; }
+  .quiz-progresso { display: flex; gap: 6px; margin-bottom: 28px; }
+  .quiz-progresso i { flex: 1; height: 6px; border-radius: 3px; background: var(--filtro-3); transition: background-color .3s; }
+  .quiz-progresso i.certo { background: var(--verde); }
+  .quiz-progresso i.errado { background: var(--pe); }
+  .quiz-progresso i.atual { background: var(--tinta); }
+  .afirmacao:focus { outline: none; }
+  .afirmacao { font-family: var(--display); font-weight: 600; font-size: clamp(1.5rem, 3.2vw, 2.2rem); letter-spacing: -0.02em; line-height: 1.15; min-height: 2.4em; }
+  .quiz-contador { font-family: var(--display); color: var(--tinta-suave); font-size: .95rem; margin-bottom: 10px; }
+  .respostas { display: flex; gap: 12px; margin-top: 28px; flex-wrap: wrap; }
+  .respostas button, .quiz-acao {
+    font-family: var(--display); font-weight: 600; font-size: 1.05rem; min-height: 52px; padding: 0 28px;
+    border-radius: 12px; border: 2px solid var(--tinta); background: var(--filtro); cursor: pointer;
+    transition: background-color .15s, color .15s, transform .1s;
+  }
+  .respostas button:hover:not(:disabled), .quiz-acao:hover { background: var(--tinta); color: var(--filtro); }
+  .respostas button:active:not(:disabled), .quiz-acao:active { transform: scale(.97); }
+  .respostas button:disabled { cursor: default; opacity: .45; }
+  .respostas button.escolhida { opacity: 1; background: var(--tinta); color: var(--filtro); }
+  .retorno { margin-top: 24px; padding: 20px 22px; border-radius: 12px; background: var(--filtro); border-left: 6px solid var(--linha); display: none; }
+  .retorno.visivel { display: block; }
+  .retorno.certo { border-left-color: var(--verde); }
+  .retorno.errado { border-left-color: var(--pe); }
+  .retorno b { font-family: var(--display); font-size: 1.15rem; display: block; margin-bottom: 4px; }
+  .retorno p { font-size: 1.02rem; }
+  .quiz-acao { margin-top: 20px; display: none; }
+  .quiz-acao.visivel { display: inline-block; }
+
+  /* ---------- minijogo (corrida em 3 faixas) ---------- */
+  .arena {
+    position: relative; margin-top: 32px; height: clamp(500px, 58vw, 660px); border-radius: 18px; overflow: hidden;
+    background: linear-gradient(180deg, #2E93AC 0%, #145067 42%, #0B2733 100%); border: 1.5px solid var(--linha);
+    -webkit-user-select: none; user-select: none; isolation: isolate;
+  }
+  .arena:focus-visible { outline-offset: 4px; }
+  .arena canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
+  .arena.sem-webgl { display: none; }
+  .vinheta { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse at 50% 45%, transparent 55%, rgba(4,16,22,.55) 100%); }
+  .flash { position: absolute; inset: 0; pointer-events: none; background: #fff; opacity: 0; }
+  .flash.ativo { animation: flash .5s ease-out; }
+  @keyframes flash { 0% { opacity: .75; } 100% { opacity: 0; } }
+  .pops { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+  .pops span { position: absolute; left: 0; top: 0; font-family: var(--display); font-weight: 800; font-size: 1.15rem; color: #fff; text-shadow: 0 2px 0 #0a1c24, 0 0 10px rgba(0,0,0,.35); opacity: 0; white-space: nowrap; }
+  .pops span.grande { font-size: 1.5rem; color: #FFE08A; }
+  .pops span.ativo { animation: pop .75s var(--ease) forwards; }
+  @keyframes pop { 0% { opacity: 0; transform: translate(-50%, -30%) scale(.6); } 20% { opacity: 1; transform: translate(-50%, -80%) scale(1.15); } 100% { opacity: 0; transform: translate(-50%, -260%) scale(1); } }
+  .hud { position: absolute; top: 12px; left: 12px; right: 60px; display: flex; flex-wrap: wrap; gap: 8px; pointer-events: none; font-family: var(--display); transition: opacity .3s, transform .3s var(--ease); }
+  .hud[hidden] { display: flex; opacity: 0; transform: translateY(-10px); }
+  .hud > span { background: rgba(7,22,29,.72); -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); color: #fff; padding: 6px 12px; border-radius: 999px; font-size: .92rem; display: inline-flex; gap: 6px; align-items: center; }
+  .hud b { font-weight: 800; font-variant-numeric: tabular-nums; display: inline-block; }
+  .hud .multi { background: var(--pet); color: #0F2733; font-weight: 800; transition: background-color .2s; }
+  .hud .multi.x1 { background: rgba(7,22,29,.72); color: #fff; }
+  .combo { width: 46px; height: 5px; border-radius: 3px; background: rgba(255,255,255,.28); overflow: hidden; display: block; }
+  .multi:not(.x1) .combo { background: rgba(15,39,51,.25); }
+  .combo b { display: block; height: 100%; width: 100%; background: currentColor; transform-origin: 0 50%; transform: scaleX(0); transition: transform .15s; }
+  .hud .pulo { animation: pulo .32s var(--ease); }
+  @keyframes pulo { 50% { transform: scale(1.3); } }
+  .poder { position: absolute; top: 56px; left: 12px; display: flex; align-items: center; gap: 8px; background: rgba(7,22,29,.74); color: #fff; padding: 6px 12px; border-radius: 999px; font-family: var(--display); font-size: .88rem; pointer-events: none; }
+  .poder[hidden] { display: none; }
+  .poder i { width: 80px; height: 6px; border-radius: 3px; background: rgba(255,255,255,.25); overflow: hidden; display: block; }
+  .poder i b { display: block; height: 100%; background: #6FD0EA; transform-origin: 0 50%; }
+  .pausa-btn { position: absolute; top: 10px; right: 10px; width: 44px; height: 44px; border-radius: 50%; border: 0; background: rgba(7,22,29,.74); cursor: pointer; display: grid; place-items: center; transition: transform .15s; }
+  .pausa-btn:hover { transform: scale(1.08); }
+  .pausa-btn[hidden] { display: none; }
+  .toast {
+    position: absolute; left: 50%; bottom: 16px; transform: translate(-50%, 8px); width: max-content; max-width: min(560px, calc(100% - 24px));
+    background: #fff; color: #0F2733; font-size: 1rem; line-height: 1.4; padding: 10px 16px; border-radius: 12px;
+    opacity: 0; transition: opacity .2s, transform .25s var(--ease); pointer-events: none; text-align: center; box-shadow: 0 6px 20px rgba(4,16,22,.25);
+  }
+  .toast.visivel { opacity: 1; transform: translate(-50%, 0); }
+  .toast b { font-family: var(--display); }
+  .aviso-centro { position: absolute; left: 50%; top: 36%; transform: translate(-50%, -50%) scale(.6); font-family: var(--display); font-weight: 800; font-size: clamp(2.6rem, 8vw, 5rem); letter-spacing: -.03em; color: #fff; text-shadow: 0 5px 0 #0a1c24, 0 0 24px rgba(0,0,0,.25); opacity: 0; pointer-events: none; white-space: nowrap; }
+  .aviso-centro.visivel { animation: grito .7s var(--ease) forwards; }
+  @keyframes grito { 0% { opacity: 0; transform: translate(-50%, -50%) scale(.5); } 25% { opacity: 1; transform: translate(-50%, -50%) scale(1.12); } 45% { transform: translate(-50%, -50%) scale(1); } 80% { opacity: 1; } 100% { opacity: 0; transform: translate(-50%, -60%) scale(1); } }
+
+  .tela { position: absolute; inset: 0; display: grid; place-items: center; padding: 16px; background: rgba(7,22,29,.38); overflow-y: auto; animation: telaEntra .25s ease-out; }
+  .tela[hidden] { display: none; }
+  @keyframes telaEntra { from { opacity: 0; } }
+  .cartao { background: var(--filtro); color: var(--tinta); border-radius: 18px; padding: clamp(20px, 4vw, 28px); max-width: 470px; width: 100%; box-shadow: 0 20px 50px rgba(4,16,22,.35); animation: cartaoEntra .4s var(--ease); }
+  @keyframes cartaoEntra { from { opacity: 0; transform: translateY(14px) scale(.97); } }
+  .painel-menu { animation: painelEntra .3s var(--ease); }
+  .painel-menu[hidden] { display: none; }
+  @keyframes painelEntra { from { opacity: 0; transform: translateX(12px); } }
+  .cartao h3 { font-family: var(--display); font-weight: 800; font-size: 1.6rem; letter-spacing: -.02em; line-height: 1.1; margin-bottom: 12px; }
+  .cartao > p, .painel-menu > p { font-size: 1rem; margin-bottom: 14px; }
+  .cartao ul { list-style: none; margin: 0 0 16px; }
+  .cartao li { display: grid; grid-template-columns: 70px 1fr; gap: 10px; align-items: center; padding: 7px 0; border-bottom: 1px solid var(--linha); font-size: .98rem; line-height: 1.35; }
+  .cartao li b { font-family: var(--display); font-weight: 600; }
+  .cartao.menu { max-width: 420px; }
+  .menu-titulo { font-size: clamp(2rem, 6vw, 2.6rem) !important; line-height: .98 !important; letter-spacing: -.035em !important; margin-bottom: 8px !important; }
+  .menu-recorde { font-family: var(--display); color: var(--tinta-suave); font-size: .95rem !important; margin-bottom: 18px !important; }
+  .menu-recorde b { color: var(--tinta); }
+  .menu-grade { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
+  .menu-pilha { display: grid; gap: 8px; }
+  kbd { font-family: var(--display); font-weight: 600; font-size: .85rem; display: inline-grid; place-items: center; min-width: 28px; height: 28px; padding: 0 6px; border-radius: 6px; background: var(--filtro-2); border: 1.5px solid var(--linha); border-bottom-width: 3px; margin-right: 3px; }
+  .btn-jogo { font-family: var(--display); font-weight: 600; font-size: 1.05rem; min-height: 52px; padding: 0 28px; border-radius: 12px; border: 0; background: var(--tinta); color: var(--filtro); cursor: pointer; transition: background-color .15s, transform .12s var(--ease); }
+  .btn-jogo.grande { width: 100%; min-height: 60px; font-size: 1.25rem; }
+  .btn-jogo:hover { background: var(--pe); color: #fff; transform: translateY(-1px); }
+  .btn-jogo:active, .btn-sec:active { transform: scale(.96); }
+  .btn-sec { font-family: var(--display); font-weight: 600; font-size: .95rem; min-height: 48px; padding: 0 14px; border-radius: 12px; border: 1.5px solid var(--linha); background: var(--filtro); color: var(--tinta); cursor: pointer; transition: border-color .15s, background-color .15s, transform .12s var(--ease); }
+  .btn-sec:hover { border-color: var(--tinta); background: var(--filtro-2); }
+  .voltar { margin-top: 6px; }
+  .opc-linha { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; min-height: 52px; padding: 0 2px; background: none; border: 0; border-bottom: 1px solid var(--linha); font-family: var(--display); font-size: 1rem; color: var(--tinta); cursor: pointer; text-align: left; }
+  .opc-linha[hidden] { display: none; }
+  .chave { width: 46px; height: 28px; border-radius: 14px; background: var(--filtro-3); position: relative; flex: none; transition: background-color .2s; }
+  .chave::after { content: ""; position: absolute; top: 3px; left: 3px; width: 22px; height: 22px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.25); transition: transform .25s var(--ease); }
+  [aria-checked="true"] > .chave { background: var(--verde); }
+  [aria-checked="true"] > .chave::after { transform: translateX(18px); }
+  .segmento { display: inline-flex; background: var(--filtro-2); border-radius: 999px; padding: 3px; }
+  .segmento button { border: 0; background: none; font-family: var(--display); font-weight: 600; font-size: .9rem; padding: 0 14px; min-height: 38px; border-radius: 999px; cursor: pointer; color: var(--tinta); transition: background-color .2s, color .2s; }
+  .segmento button[aria-pressed="true"] { background: var(--tinta); color: var(--filtro); }
+  .opc-dica { font-size: .88rem !important; color: var(--tinta-suave); margin: 10px 0 14px !important; }
+  .teclas { font-family: var(--display); font-size: .88rem; color: var(--tinta-suave); margin-top: 12px; }
+  .placar { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 4px 0 14px; }
+  .placar strong { display: block; font-family: var(--display); font-weight: 800; font-size: 1.9rem; letter-spacing: -.03em; line-height: 1; font-variant-numeric: tabular-nums; }
+  .placar span { font-family: var(--display); font-size: .84rem; color: var(--tinta-suave); }
+  .placar .destaque strong { color: var(--pe); }
+  .placar .novo strong { color: var(--verde); }
+  .motivo { font-size: .98rem; margin-bottom: 10px; }
+  .licao { font-size: .98rem; padding: 12px 14px; border-left: 4px solid var(--pet); background: var(--filtro-2); border-radius: 0 10px 10px 0; margin-bottom: 16px; }
+  .cartao .lista-placar { max-height: 260px; overflow-y: auto; margin-bottom: 12px; }
+  @media (prefers-reduced-motion: reduce) {
+    .tela, .cartao, .painel-menu, .aviso-centro.visivel, .pops span.ativo, .flash.ativo { animation-duration: .01s; }
+  }
+  .placar-lideres { margin-top: 32px; max-width: 680px; }
+  .pl-topo { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 4px 16px; margin-bottom: 10px; }
+  .pl-topo .sub { margin: 0; }
+  .pl-topo .sub-nota { font-size: .98rem; }
+  .lista-placar { list-style: none; border-top: 3px solid var(--tinta); }
+  .lista-placar li { display: grid; grid-template-columns: 2.2rem 34px 1fr auto 4.5rem; gap: 12px; align-items: center; padding: 10px 6px; border-bottom: 1px solid var(--linha); font-family: var(--display); }
+  .lista-placar li.eu { background: color-mix(in srgb, var(--pet) 20%, transparent); border-radius: 8px; }
+  .pl-pos { font-weight: 800; color: var(--tinta-suave); font-variant-numeric: tabular-nums; }
+  .lista-placar li:nth-child(1) .pl-pos { color: #B7860B; }
+  .lista-placar li:nth-child(2) .pl-pos { color: #6F8791; }
+  .lista-placar li:nth-child(3) .pl-pos { color: #A8612B; }
+  .pl-av { width: 34px; height: 34px; border-radius: 50%; display: block; }
+  .pl-nome { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .pl-nome small { font-weight: 400; color: var(--tinta-suave); margin-left: 6px; font-size: .85rem; }
+  .pl-pts { font-weight: 800; font-variant-numeric: tabular-nums; text-align: right; }
+  .pl-m { color: var(--tinta-suave); font-size: .9rem; font-variant-numeric: tabular-nums; text-align: right; }
+  .pl-conta { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin: 4px 0 14px; }
+  .btn-google {
+    display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 16px; border-radius: 999px; cursor: pointer;
+    background: #fff; color: #1F1F1F; border: 1px solid #747775; font-family: var(--display); font-weight: 600; font-size: .95rem;
+    transition: background-color .15s, box-shadow .15s;
+  }
+  .btn-google:hover { background: #F8FAFF; box-shadow: 0 1px 3px rgba(60,64,67,.3); }
+  .btn-google[hidden], .pl-eu[hidden] { display: none; }
+  .pl-eu { display: inline-flex; align-items: center; gap: 10px; font-family: var(--display); font-size: .95rem; }
+  .pl-eu img { width: 32px; height: 32px; border-radius: 50%; }
+  .link-btn { background: none; border: 0; color: var(--pp-texto); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; font: inherit; min-height: 44px; padding: 0 4px; }
+  .fim-acoes { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .fim-acoes .btn-google[hidden] { display: none; }
+  .fim-placar { font-family: var(--display); font-size: .92rem; color: var(--tinta-suave); margin: -4px 0 12px; min-height: 1.3em; }
+  @media (max-width: 560px) {
+    .lista-placar li { grid-template-columns: 1.8rem 28px 1fr auto; gap: 10px; }
+    .pl-av { width: 28px; height: 28px; }
+    .pl-m { display: none; }
+  }
+  @media (max-width: 560px) {
+    .arena { height: 620px; }
+    .cartao h3 { font-size: 1.3rem; }
+    .cartao li { font-size: .9rem; padding: 6px 0; grid-template-columns: 62px 1fr; }
+    .placar strong { font-size: 1.5rem; }
+    .hud > span { font-size: .82rem; padding: 5px 10px; }
+  }
+
+  /* ---------- o que fazer ---------- */
+  .acoes { display: grid; grid-template-columns: 1fr 1fr; gap: 72px; margin-top: 40px; }
+  @media (max-width: 860px) { .acoes { grid-template-columns: 1fr; gap: 48px; } }
+  .acoes h3 { font-family: var(--display); font-weight: 600; font-size: 1.35rem; padding-bottom: 12px; border-bottom: 3px solid var(--tinta); margin-bottom: 4px; }
+  .acoes ul { list-style: none; }
+  .acoes li { border-bottom: 1px solid var(--linha); }
+  .acoes label { display: grid; grid-template-columns: 28px 1fr; gap: 10px; padding: 16px 0; cursor: pointer; font-size: 1.05rem; align-items: start; }
+  .acoes input { appearance: none; -webkit-appearance: none; width: 22px; height: 22px; margin-top: 4px; border: 2px solid var(--tinta-suave); border-radius: 6px; display: grid; place-items: center; cursor: pointer; transition: background-color .15s, border-color .15s; }
+  .acoes input::after { content: ""; width: 10px; height: 6px; border-left: 2.5px solid var(--filtro); border-bottom: 2.5px solid var(--filtro); transform: rotate(-45deg) translate(1px, -1px) scale(0); transition: transform .15s var(--ease); }
+  .acoes input:checked { background: var(--verde); border-color: var(--verde); }
+  .acoes input:checked::after { transform: rotate(-45deg) translate(1px, -1px) scale(1); }
+  .acoes input:checked + span { color: var(--tinta-suave); }
+  .acoes li b { font-family: var(--display); font-weight: 600; }
+  .compromisso { margin-top: 32px; font-family: var(--display); font-size: 1.05rem; color: var(--tinta-suave); }
+  .compromisso strong { color: var(--tinta); }
+
+  /* ---------- referências ---------- */
+  .referencias { background: var(--filtro-2); }
+  .quiz + .referencias, .referencias { border-top: 1px solid var(--linha); }
+  .referencias ol { max-width: 900px; padding-left: 2.2em; margin-top: 32px; }
+  .referencias li { font-size: 1rem; line-height: 1.55; padding: 10px 0 10px 6px; border-bottom: 1px solid var(--linha); scroll-margin-top: 80px; }
+  .referencias li::marker { font-family: var(--display); font-weight: 800; color: var(--pp-texto); }
+  .referencias li:target { background: color-mix(in srgb, var(--pet) 22%, transparent); }
+  .referencias .doi { word-break: break-all; }
+  .nota-abnt { font-size: 1rem; color: var(--tinta-suave); max-width: 64ch; }
+
+  .equipe { padding-top: clamp(56px, 8vw, 96px); }
+  .equipe-lista { list-style: none; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 0 32px; margin-top: 24px; max-width: 980px; }
+  .equipe-lista li { font-family: var(--display); font-size: 1.05rem; padding: 12px 0; border-bottom: 1px solid var(--linha); }
+  footer { padding: 48px 0 56px; font-family: var(--display); font-size: 0.95rem; color: var(--tinta-suave); }
+  footer .envoltorio { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px; }
+  .tema-botao { background: none; border: 1.5px solid var(--linha); color: var(--tinta); padding: 8px 16px; border-radius: 999px; cursor: pointer; min-height: 44px; }
+  .tema-botao:hover { border-color: var(--tinta-suave); }
+</style>
+</head>
+<body>
+<a class="pular" href="#conteudo">Pular para o conteúdo</a>
+
+<nav class="nav" aria-label="Principal">
+  <div class="envoltorio">
+    <a class="marca" href="#topo">
+      <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><circle cx="9" cy="9" r="7" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M14.2 14.2 20 20" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><path d="M6 7l3-2 2 3-3 2z" fill="#D9366B"/><circle cx="11" cy="11" r="1.4" fill="#1C9CC0"/></svg>
+      Microplásticos e Saúde
+    </a>
+    <ul>
+      <li><a href="#o-que-sao">O que são</a></li>
+      <li><a href="#agua">Ecossistemas aquáticos</a></li>
+      <li><a href="#corpo">Corpo humano</a></li>
+      <li><a href="#quiz">Quiz</a></li>
+      <li><a href="#jogo">Jogo</a></li>
+      <li><a href="#acoes">O que fazer</a></li>
+      <li><a href="#referencias">Referências</a></li>
+      <li><a href="apresentacao.html">Apresentação</a></li>
+    </ul>
+  </div>
+  <div class="progresso" id="progresso" aria-hidden="true"></div>
+</nav>
+
+<header class="hero" id="topo">
+  <canvas id="cena" aria-hidden="true"></canvas>
+
+  <div class="ocular" id="ocular" aria-hidden="true">
+    <div class="anel">
+      <div>
+        <div class="zoom num" id="zoom">1×</div>
+        <div class="rotulo">Ampliando uma gota de água</div>
+      </div>
+    </div>
+  </div>
+  <button class="pular-intro" id="pularIntro" type="button">Pular introdução</button>
+
+  <div class="etiqueta" id="etiqueta" aria-hidden="true"></div>
+
+  <div class="envoltorio hero-texto">
+    <h1>
+      <span class="linha"><span>Está na água.</span></span>
+      <span class="linha"><span class="t2">Está no peixe.</span></span>
+      <span class="linha"><span>Está em nós.</span></span>
+    </h1>
+    <p class="lead">Microplásticos e saúde: o que a ciência já encontrou no corpo humano e nos ecossistemas aquáticos, e o que ainda falta descobrir.</p>
+    <div class="legenda">
+      <p id="legendaDica">Passe o mouse sobre uma partícula para identificá-la, ou destaque um tipo:</p>
+      <ul aria-label="Tipos de partícula">
+        <li><button type="button" data-tipo="fibra" aria-pressed="false"><svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M2 14c3-2 3-7 6-8s4 4 8-2" fill="none" stroke="#7A55C9" stroke-width="2.2" stroke-linecap="round"/></svg>Fibras</button></li>
+        <li><button type="button" data-tipo="fragmento" aria-pressed="false"><svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M2 6 12 2l4 10-9 4z" fill="#D9366B"/></svg>Fragmentos</button></li>
+        <li><button type="button" data-tipo="pellet" aria-pressed="false"><svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><ellipse cx="9" cy="9" rx="7" ry="5" fill="#E3A821"/></svg>Pellets</button></li>
+        <li><button type="button" data-tipo="esfera" aria-pressed="false"><svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><circle cx="9" cy="9" r="5" fill="#1C9CC0"/></svg>Microesferas</button></li>
+        <li><button type="button" data-tipo="espuma" aria-pressed="false"><svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M3 7 8 3l7 3-1 7-7 2-4-4z" fill="#fff" stroke="#9DB0B7" stroke-width="1.4"/></svg>Espuma</button></li>
+      </ul>
+    </div>
+  </div>
+</header>
+
+<main id="conteudo">
+
+<!-- ================= O QUE SÃO ================= -->
+<section id="o-que-sao">
+  <div class="envoltorio">
+    <h2 class="sec-titulo">Pedaços de plástico pequenos demais para ver</h2>
+    <div class="prosa">
+      <p>Microplásticos são partículas de plástico com menos de 5 milímetros.<sup class="ref"><a href="#r-noaa">22</a></sup> Abaixo de 1 micrômetro (um milésimo de milímetro), passam a ser chamados de nanoplásticos. O termo foi popularizado em 2004, quando pesquisadores britânicos mostraram que esses fragmentos já se acumulavam em praias e no plâncton desde a década de 1960.<sup class="ref"><a href="#r-thompson">1</a></sup></p>
+      <p>O plástico não desaparece: com sol, calor e atrito ele se quebra em partes cada vez menores. Quanto menor a partícula, mais fácil ela atravessa barreiras biológicas, e mais difícil é medi-la no laboratório.<sup class="ref"><a href="#r-oms2022">2</a></sup></p>
+    </div>
+
+    <div class="regua" id="regua">
+      <h3 class="sub">Arraste para encolher a partícula</h3>
+      <p class="sub-nota" style="margin-bottom: 28px;">Veja até onde ela consegue chegar no corpo, segundo a avaliação da Autoridade Europeia para a Segurança dos Alimentos.<sup class="ref"><a href="#r-efsa">19</a></sup></p>
+      <div class="regua-topo">
+        <div class="regua-leitura" aria-live="polite">
+          <span class="medida num" id="reguaMedida">5 mm</span>
+          <span class="compara" id="reguaCompara">Um grão de arroz</span>
+        </div>
+        <p class="regua-texto" id="reguaTexto"></p>
+      </div>
+      <div class="faixas" aria-hidden="true">
+        <div class="f1" id="f1">Fica no intestino</div>
+        <div class="f2" id="f2">Pode atravessar o intestino</div>
+        <div class="f3" id="f3">Pode chegar a órgãos</div>
+      </div>
+      <div class="controle">
+        <label class="sr" for="tamanho">Tamanho da partícula</label>
+        <input type="range" id="tamanho" min="0" max="6" step="1" value="0">
+        <div class="marcas" id="marcas"></div>
+      </div>
+    </div>
+
+    <div class="origens">
+      <div>
+        <h3>Primários</h3>
+        <p>Fabricados já pequenos: microesferas de cosméticos e esfoliantes, pellets industriais usados como matéria-prima e partículas de abrasivos.</p>
+      </div>
+      <div>
+        <h3>Secundários</h3>
+        <p>Resultam da quebra de objetos maiores: garrafas, sacolas, redes de pesca, desgaste de pneus e fibras soltas na lavagem de roupas. Uma única carga de 6 kg de roupas de acrílico pode liberar cerca de 700 mil fibras.<sup class="ref"><a href="#r-napper">20</a></sup> São a maior parte do que se encontra no ambiente.<sup class="ref"><a href="#r-pnuma">3</a></sup></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= ÁGUA ================= -->
+<section class="agua" id="agua">
+  <div class="envoltorio">
+    <h2 class="sec-titulo">Nos rios e oceanos, o plástico entra na cadeia alimentar</h2>
+    <div class="prosa">
+      <p>Os oceanos recebem plástico de rios, esgotos, ventos e atividades de pesca.<sup class="ref"><a href="#r-pnuma-esgoto">23</a></sup> Na superfície, uma parte flutua; outra parte afunda e se acumula nos sedimentos, onde vivem organismos que se alimentam filtrando o fundo.</p>
+    </div>
+
+    <div class="numeros">
+      <div><strong>5,25 trilhões</strong><span>de partículas de plástico flutuando nos oceanos, segundo estimativa mínima.<sup class="ref"><a href="#r-eriksen">4</a></sup></span></div>
+      <div><strong>4,8 a 12,7 mi t</strong><span>de resíduos plásticos chegaram ao mar vindos de países costeiros em um único ano (2010).<sup class="ref"><a href="#r-jambeck">5</a></sup></span></div>
+      <div><strong>1 em 4</strong><span>peixes vendidos para consumo em mercados da Indonésia e dos EUA continha detritos de origem humana.<sup class="ref"><a href="#r-rochman">6</a></sup></span></div>
+    </div>
+
+    <div class="cadeia">
+      <h3>Como uma partícula chega até o prato</h3>
+      <p>Clique nos animais da cena ou em cada elo para seguir o plástico subindo na cadeia alimentar.<sup class="ref"><a href="#r-cole">7</a>,<a href="#r-wright">8</a>,<a href="#r-rochman">6</a>,<a href="#r-oms2022">2</a></sup></p>
+      <div class="palco" id="palco">
+        <canvas id="oceano" aria-hidden="true"></canvas>
+        <p class="palco-dica" aria-hidden="true">Arraste o mouse pela cena e clique nos animais</p>
+        <div class="palco-rotulo" id="palcoRotulo" aria-hidden="true"></div>
+        <button class="palco-voltar" id="palcoVoltar" type="button" hidden>Ver o recife inteiro</button>
+        <p class="palco-legenda" id="palcoLegenda" aria-live="polite"></p>
+      </div>
+      <ol>
+        <li><button class="elo" type="button" aria-pressed="false" data-n="1"><span class="passo">1</span><span class="t">Plâncton</span><span class="d">O zooplâncton confunde microesferas com alimento e as ingere, o que reduz sua alimentação.</span><span class="acumulo" aria-hidden="true"></span></button></li>
+        <li><button class="elo" type="button" aria-pressed="false" data-n="2"><span class="passo">2</span><span class="t">Filtradores</span><span class="d">Mexilhões, ostras e outros bivalves filtram grandes volumes de água e retêm as partículas.</span><span class="acumulo" aria-hidden="true"></span></button></li>
+        <li><button class="elo" type="button" aria-pressed="false" data-n="3"><span class="passo">3</span><span class="t">Peixes</span><span class="d">Peixes comem o plâncton e pequenos organismos contaminados, ou ingerem os fragmentos diretamente.</span><span class="acumulo" aria-hidden="true"></span></button></li>
+        <li><button class="elo" type="button" aria-pressed="false" data-n="4"><span class="passo">4</span><span class="t">Pessoas</span><span class="d">Frutos do mar, sal marinho e água potável estão entre as vias de exposição alimentar humana.</span><span class="acumulo" aria-hidden="true"></span></button></li>
+      </ol>
+    </div>
+
+    <div class="efeitos">
+      <div>
+        <h3>Danos físicos</h3>
+        <p>Partículas ingeridas podem bloquear ou ferir o trato digestivo e dar sensação falsa de saciedade, reduzindo a energia disponível para crescer e se reproduzir.<sup class="ref"><a href="#r-wright">8</a>,<a href="#r-xu">24</a></sup></p>
+      </div>
+      <div>
+        <h3>Carona para poluentes</h3>
+        <p>A superfície do plástico atrai poluentes orgânicos persistentes e metais presentes na água, e o próprio plástico carrega aditivos como plastificantes e retardantes de chama.<sup class="ref"><a href="#r-gesamp">9</a></sup></p>
+      </div>
+      <div>
+        <h3>Biofilme e microrganismos</h3>
+        <p>Bactérias colonizam os fragmentos e formam uma comunidade própria, que pode transportar espécies para novos ambientes.<sup class="ref"><a href="#r-gesamp">9</a></sup></p>
+      </div>
+      <div>
+        <h3>Água doce também</h3>
+        <p>Rios, lagos e a água tratada que chega às torneiras também contêm microplásticos; a OMS avaliou essa via em relatório dedicado à água potável.<sup class="ref"><a href="#r-oms2019">10</a></sup></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CORPO ================= -->
+<section id="corpo">
+  <div class="envoltorio">
+    <div class="corpo-intro">
+      <div>
+        <h2 class="sec-titulo">No corpo humano, a lista de órgãos só cresce</h2>
+        <div class="prosa">
+          <p>Uma revisão estimou que uma pessoa ingere entre 39 mil e 52 mil partículas de microplástico por ano, e que esse número passa de 74 mil quando se soma o que é inalado.<sup class="ref"><a href="#r-cox">11</a></sup> Em 2024, uma técnica nova de microscopia contou, em média, cerca de 240 mil partículas por litro de água engarrafada, a maioria delas nanoplásticos.<sup class="ref"><a href="#r-qian">12</a></sup></p>
+        </div>
+      </div>
+      <ul class="vias" aria-label="Vias de entrada no corpo">
+        <li><b>Ingestão</b><span>Alimentos, frutos do mar, sal, água engarrafada e de torneira, contato com embalagens.</span></li>
+        <li><b>Inalação</b><span>Poeira doméstica e ar urbano, com fibras de tecidos sintéticos e partículas de pneus.</span></li>
+        <li><b>Pele</b><span>Via considerada menos relevante para partículas, mas estudada no caso de cosméticos.</span></li>
+      </ul>
+    </div>
+
+    <div class="comparador" id="comparador">
+      <div>
+        <h3 class="sub">De onde vem a sua água?</h3>
+        <p class="sub-nota">Estimativa de microplásticos ingeridos por ano por quem bebe a quantidade recomendada de água só de uma fonte.<sup class="ref"><a href="#r-cox">11</a></sup></p>
+        <div class="alternador" role="group" aria-label="Fonte de água">
+          <button type="button" data-agua="torneira" aria-pressed="true">Só da torneira</button>
+          <button type="button" data-agua="garrafa" aria-pressed="false">Só engarrafada</button>
+        </div>
+      </div>
+      <div>
+        <div class="contagem" aria-live="polite">
+          <strong class="num" id="aguaNumero">≈ 4 mil</strong>
+          <span id="aguaTexto">partículas por ano só pela água da torneira</span>
+        </div>
+        <div class="copo" aria-hidden="true"><canvas id="copo3d"></canvas></div>
+        <div class="pontos" id="pontos" aria-hidden="true"></div>
+        <p class="pontos-nota" id="pontosNota">Cada quadrado representa 1.000 partículas. Os autores consideram os valores subestimados.</p>
+      </div>
+    </div>
+
+    <div class="mapa">
+      <h3 class="sub">Onde já foram encontrados</h3>
+      <p class="sub-nota">Selecione um ponto no corpo para ver o estudo. Pontos verdes são pesquisas brasileiras.</p>
+      <div class="mapa-grade">
+        <div class="figura" id="figura">
+          <svg viewBox="0 0 200 440" role="img" aria-label="Silhueta do corpo humano com os órgãos estudados">
+            <g fill="var(--filtro-2)" stroke="var(--filtro-2)">
+              <ellipse cx="100" cy="46" rx="29" ry="35"/>
+              <rect x="88" y="76" width="24" height="26" rx="6"/>
+              <path d="M58 104 Q100 92 142 104 L150 124 L146 252 Q140 292 100 294 Q60 292 54 252 L50 124 Z"/>
+              <path d="M52 112 L30 282" stroke-width="22" stroke-linecap="round" fill="none"/>
+              <path d="M148 112 L170 282" stroke-width="22" stroke-linecap="round" fill="none"/>
+              <path d="M82 284 L78 424" stroke-width="30" stroke-linecap="round" fill="none"/>
+              <path d="M118 284 L122 424" stroke-width="30" stroke-linecap="round" fill="none"/>
+            </g>
+            <g fill="var(--filtro-3)" stroke="none">
+              <ellipse cx="100" cy="36" rx="21" ry="18"/>
+              <ellipse cx="81" cy="152" rx="15" ry="30"/>
+              <ellipse cx="119" cy="152" rx="15" ry="30"/>
+              <path d="M96 196 Q124 186 136 200 Q130 218 104 216 Z"/>
+              <ellipse cx="100" cy="262" rx="15" ry="12"/>
+            </g>
+            <path d="M92 82 L90 108 M108 82 L110 108" stroke="var(--pe)" stroke-width="2" opacity=".35"/>
+          </svg>
+          <!-- posições em % do viewBox 200 × 440 -->
+          <button class="ponto-orgao" style="left:50%;top:6.8%" data-orgao="cerebro" aria-pressed="false"><span class="sr">Cérebro</span></button>
+          <button class="ponto-orgao br" style="left:50%;top:13.4%" data-orgao="olfato" aria-pressed="false"><span class="sr">Bulbo olfatório</span></button>
+          <button class="ponto-orgao" style="left:45%;top:21.4%" data-orgao="arterias" aria-pressed="false"><span class="sr">Artérias carótidas</span></button>
+          <button class="ponto-orgao br" style="left:40.5%;top:34.5%" data-orgao="pulmao" aria-pressed="true"><span class="sr">Pulmão</span></button>
+          <button class="ponto-orgao" style="left:59%;top:46.5%" data-orgao="figado" aria-pressed="false"><span class="sr">Fígado e rim</span></button>
+          <button class="ponto-orgao" style="left:19%;top:52%" data-orgao="sangue" aria-pressed="false"><span class="sr">Sangue</span></button>
+          <button class="ponto-orgao" style="left:50%;top:59.5%" data-orgao="placenta" aria-pressed="false"><span class="sr">Placenta</span></button>
+        </div>
+        <div>
+          <ul class="orgaos-lista" id="orgaosLista" aria-label="Órgãos"></ul>
+          <div class="painel" aria-live="polite">
+            <div class="painel-conteudo" id="painel"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="aviso">
+      <h3>O que a ciência ainda não sabe</h3>
+      <p>Encontrar plástico em um órgão não é o mesmo que provar que ele causa doença. A OMS concluiu em 2022 que os dados disponíveis ainda não bastam para uma avaliação completa de risco à saúde humana.<sup class="ref"><a href="#r-oms2022">2</a></sup> Os principais limites hoje são:</p>
+      <ul>
+        <li>Amostras pequenas: muitos estudos analisaram poucas dezenas de pessoas.</li>
+        <li>Falta de métodos padronizados, principalmente para partículas abaixo de 10 µm.</li>
+        <li>Risco de contaminação das amostras pelo próprio ambiente do laboratório.</li>
+        <li>Estudos observacionais mostram associação; experimentos em células e animais sugerem inflamação e estresse oxidativo, mas em doses nem sempre comparáveis à exposição real.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ================= QUIZ ================= -->
+<section class="quiz" id="quiz">
+  <div class="envoltorio">
+    <h2 class="sec-titulo">Verdadeiro ou falso?</h2>
+    <div class="quiz-caixa">
+      <div class="quiz-progresso" id="quizProgresso" aria-hidden="true"></div>
+      <p class="quiz-contador" id="quizContador"></p>
+      <p class="afirmacao" id="afirmacao" tabindex="-1"></p>
+      <div class="respostas" id="respostas" role="group" aria-labelledby="afirmacao">
+        <button type="button" data-r="true">Verdadeiro</button>
+        <button type="button" data-r="false">Falso</button>
+      </div>
+      <div class="retorno" id="retorno" role="status" aria-live="polite"></div>
+      <button type="button" class="quiz-acao" id="quizAcao">Próxima afirmação</button>
+    </div>
+  </div>
+</section>
+
+<!-- ================= JOGO ================= -->
+<section id="jogo">
+  <div class="envoltorio">
+    <h2 class="sec-titulo">Missão: limpar o oceano</h2>
+    <div class="prosa"><p>Corra pelo fundo do mar recolhendo plástico antes que ele se quebre em microplásticos. Desvie dos corais, pule as pedras, mergulhe sob as redes fantasma e não bata nos peixes.</p></div>
+    <div class="arena" id="arena" tabindex="0" aria-label="Minijogo de corrida. Setas para trocar de faixa, pular e mergulhar. Esc para pausar.">
+      <canvas id="jogo3d" aria-hidden="true"></canvas>
+      <div class="vinheta" aria-hidden="true"></div>
+      <div class="pops" id="pops" aria-hidden="true"></div>
+      <div class="flash" id="flash" aria-hidden="true"></div>
+      <div class="hud" id="hud" aria-hidden="true" hidden>
+        <span>Pontos <b id="hudPontos">0</b></span>
+        <span>Plástico <b id="hudPlastico">0</b></span>
+        <span class="multi x1" id="hudMulti"><b id="hudMultiN">x1</b><i class="combo"><b id="hudCombo"></b></i></span>
+        <span><b id="hudDist">0</b> m</span>
+      </div>
+      <div class="poder" id="hudPoder" hidden aria-hidden="true"><span id="poderNome">Ímã</span><i><b id="poderBarra"></b></i></div>
+      <button class="pausa-btn" id="btnPausa" type="button" aria-label="Pausar" hidden><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><rect x="3" y="2" width="3.5" height="12" rx="1" fill="#fff"/><rect x="9.5" y="2" width="3.5" height="12" rx="1" fill="#fff"/></svg></button>
+      <div class="aviso-centro" id="avisoCentro" aria-hidden="true"></div>
+      <p class="toast" id="toast" role="status" aria-live="polite"></p>
+
+      <div class="tela" id="telaMenu">
+        <div class="cartao menu">
+          <div class="painel-menu" data-painel="principal">
+            <h3 class="menu-titulo">Missão:<br>limpar o oceano</h3>
+            <p class="menu-recorde">Seu recorde: <b id="menuRecorde">0</b> pontos</p>
+            <button class="btn-jogo grande" type="button" data-acao="jogar">Jogar</button>
+            <div class="menu-grade">
+              <button class="btn-sec" type="button" data-ir="como">Como jogar</button>
+              <button class="btn-sec" type="button" data-ir="placar">Placar</button>
+              <button class="btn-sec" type="button" data-ir="opcoes">Opções</button>
+            </div>
+          </div>
+          <div class="painel-menu" data-painel="como" hidden>
+            <h3>Como jogar</h3>
+            <ul>
+              <li><span><kbd>←</kbd><kbd>→</kbd></span><span><b>Trocar de faixa</b> para desviar de corais e peixes</span></li>
+              <li><span><kbd>↑</kbd></span><span><b>Pular</b> pedras</span></li>
+              <li><span><kbd>↓</kbd></span><span><b>Mergulhar</b> sob redes fantasma</span></li>
+              <li><span><svg width="44" height="22" viewBox="0 0 44 22" aria-hidden="true"><path d="M4 9l5-4 4 5-5 4z" fill="#D9366B"/><path d="M18 7h4v3l2 2v8h-8v-8l2-2z" fill="#7CC8E8" stroke="#0F2733" stroke-width="1.2"/><circle cx="36" cy="11" r="6" fill="#9FE6F5" stroke="#0F2733" stroke-width="1.2"/></svg></span><span><b>Fragmentos</b> valem 10, <b>itens grandes</b> 30. Pegue <b>ímãs e bolhas</b> para ajudar.</span></li>
+            </ul>
+            <p class="teclas" id="dicaTeclas">Também funciona com W, A, S, D e barra de espaço. Esc pausa.</p>
+            <button class="btn-sec voltar" type="button" data-ir="voltar">Voltar</button>
+          </div>
+          <div class="painel-menu" data-painel="placar" hidden>
+            <h3>Placar de líderes</h3>
+            <p class="opc-dica" data-placar-estado>Carregando o placar…</p>
+            <ol class="lista-placar" data-placar-lista aria-label="Melhores pontuações"></ol>
+            <div class="fim-acoes">
+              <button class="btn-sec voltar" type="button" data-ir="voltar">Voltar</button>
+              <button class="btn-google" type="button" data-entrar-google hidden><svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>Entrar com Google</button>
+            </div>
+          </div>
+          <div class="painel-menu" data-painel="opcoes" hidden>
+            <h3>Opções</h3>
+            <button class="opc-linha" type="button" role="switch" aria-checked="true" data-opc="som"><span>Efeitos sonoros</span><i class="chave"></i></button>
+            <button class="opc-linha" type="button" role="switch" aria-checked="true" data-opc="dicas"><span>Curiosidades durante a corrida</span><i class="chave"></i></button>
+            <button class="opc-linha" type="button" role="switch" aria-checked="true" data-opc="tremor"><span>Tremor e inclinação da câmera</span><i class="chave"></i></button>
+            <button class="opc-linha" type="button" role="switch" aria-checked="true" data-opc="vibrar" id="opcVibrar" hidden><span>Vibração</span><i class="chave"></i></button>
+            <div class="opc-linha" role="group" aria-labelledby="rotQualidade"><span id="rotQualidade">Gráficos</span>
+              <span class="segmento"><button type="button" data-qualidade="alta" aria-pressed="true">Alta</button><button type="button" data-qualidade="leve" aria-pressed="false">Leve</button></span>
+            </div>
+            <p class="opc-dica">Use “Leve” se o jogo ficar lento no celular.</p>
+            <button class="btn-sec voltar" type="button" data-ir="voltar">Voltar</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="tela" id="telaPausa" hidden>
+        <div class="cartao menu">
+          <h3>Pausado</h3>
+          <div class="menu-pilha">
+            <button class="btn-jogo" type="button" data-acao="continuar">Continuar</button>
+            <button class="btn-sec" type="button" data-acao="jogar">Reiniciar</button>
+            <button class="btn-sec" type="button" data-acao="opcoes-pausa">Opções</button>
+            <button class="btn-sec" type="button" data-acao="menu">Menu principal</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="tela" id="telaFim" hidden>
+        <div class="cartao" role="dialog" aria-labelledby="fimTitulo">
+          <h3 id="fimTitulo">Fim da corrida</h3>
+          <div class="placar">
+            <div id="fimPontosBox"><strong id="fimPontos">0</strong><span id="fimPontosRotulo">pontos</span></div>
+            <div><strong id="fimDist">0</strong><span>metros</span></div>
+            <div><strong id="fimRecorde">0</strong><span>recorde</span></div>
+            <div><strong id="fimPlastico">0</strong><span>recolhidos</span></div>
+            <div class="destaque"><strong id="fimEscapou">0</strong><span>escaparam</span></div>
+            <div><strong id="fimCombo">x1</strong><span>maior combo</span></div>
+          </div>
+          <p class="motivo" id="fimMotivo"></p>
+          <p class="licao" id="fimLicao"></p>
+          <p class="fim-placar" id="fimPlacar" aria-live="polite"></p>
+          <div class="fim-acoes">
+            <button class="btn-jogo" type="button" data-acao="jogar">Correr de novo</button>
+            <button class="btn-sec" type="button" data-acao="menu">Menu</button>
+            <button class="btn-google" id="btnGoogleFim" type="button" data-entrar-google hidden><svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>Entrar e salvar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="placar-lideres">
+      <div class="pl-topo">
+        <h3 class="sub">Placar de líderes</h3>
+        <p class="sub-nota" data-placar-estado>Carregando o placar…</p>
+      </div>
+      <div class="pl-conta">
+        <button class="btn-google" type="button" data-entrar-google hidden><svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>Entrar com Google</button>
+        <span class="pl-eu" id="plEu" hidden><img id="plEuFoto" alt="" referrerpolicy="no-referrer"><span>Jogando como <b id="plEuNome"></b></span><button class="link-btn" id="btnSair" type="button">Sair</button></span>
+      </div>
+      <ol class="lista-placar" id="placarLista" data-placar-lista aria-label="Melhores pontuações"></ol>
+    </div>
+  </div>
+</section>
+
+<!-- ================= AÇÕES ================= -->
+<section id="acoes">
+  <div class="envoltorio">
+    <h2 class="sec-titulo">O que dá para fazer</h2>
+    <div class="prosa"><p>Não é possível zerar a exposição, mas é possível reduzi-la e, principalmente, reduzir a quantidade de plástico que chega à água. Marque o que você já faz ou quer começar a fazer.</p></div>
+    <div class="acoes" id="listaAcoes">
+      <div>
+        <h3>No dia a dia</h3>
+        <ul>
+          <li><label><input type="checkbox"><span><b>Prefira água filtrada da torneira</b> à engarrafada, quando a água local for tratada e segura.</span></label></li>
+          <li><label><input type="checkbox"><span><b>Não aqueça comida em potes plásticos</b> no micro-ondas; use vidro ou cerâmica.</span></label></li>
+          <li><label><input type="checkbox"><span><b>Limpe a casa com pano úmido</b> e ventile os ambientes: a poeira doméstica concentra fibras sintéticas.</span></label></li>
+          <li><label><input type="checkbox"><span><b>Lave roupas sintéticas com menos frequência</b>, em ciclos frios e com a máquina cheia, para soltar menos fibras.</span></label></li>
+          <li><label><input type="checkbox"><span><b>Evite cosméticos com microesferas</b> (procure por polietileno ou "polyethylene" no rótulo).</span></label></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Na comunidade</h3>
+        <ul>
+          <li><label><input type="checkbox"><span><b>Separe o lixo reciclável</b> e apoie cooperativas de catadores da sua cidade.</span></label></li>
+          <li><label><input type="checkbox"><span><b>Participe de mutirões de limpeza</b> de praias, rios e córregos.</span></label></li>
+          <li><label><input type="checkbox"><span><b>Reduza descartáveis</b>: garrafa, sacola e copo reutilizáveis.</span></label></li>
+          <li><label><input type="checkbox"><span><b>Cobre políticas públicas</b> de saneamento: o esgoto sem tratamento é uma das portas de entrada do plástico nos rios.</span></label></li>
+          <li><label><input type="checkbox"><span><b>Compartilhe informação confiável</b>, sempre com a fonte, e desconfie de números sem origem.</span></label></li>
+        </ul>
+      </div>
+    </div>
+    <p class="compromisso" id="compromisso" aria-live="polite">Nenhuma ação marcada ainda.</p>
+  </div>
+</section>
+
+<!-- ================= REFERÊNCIAS ================= -->
+<section class="referencias" id="referencias">
+  <div class="envoltorio">
+    <h2 class="sec-titulo">Referências</h2>
+    <p class="nota-abnt">Todas as informações deste site vêm de artigos revisados por pares ou de relatórios de organismos internacionais. Formatadas segundo a ABNT NBR 6023.</p>
+    <ol>
+      <li id="r-thompson">THOMPSON, R. C. et al. Lost at sea: where is all the plastic? <i>Science</i>, v. 304, n. 5672, p. 838, 2004. DOI: <a class="doi" href="https://doi.org/10.1126/science.1094559">10.1126/science.1094559</a>.</li>
+      <li id="r-oms2022">WORLD HEALTH ORGANIZATION. <i>Dietary and inhalation exposure to nano- and microplastic particles and potential implications for human health</i>. Genebra: WHO, 2022. Disponível em: <a class="doi" href="https://www.who.int/publications/i/item/9789240054608">who.int/publications/i/item/9789240054608</a>.</li>
+      <li id="r-pnuma">UNITED NATIONS ENVIRONMENT PROGRAMME. <i>From pollution to solution: a global assessment of marine litter and plastic pollution</i>. Nairóbi: UNEP, 2021. Disponível em: <a class="doi" href="https://www.unep.org/resources/pollution-solution-global-assessment-marine-litter-and-plastic-pollution">unep.org</a>.</li>
+      <li id="r-eriksen">ERIKSEN, M. et al. Plastic pollution in the world's oceans: more than 5 trillion plastic pieces weighing over 250,000 tons afloat at sea. <i>PLOS ONE</i>, v. 9, n. 12, e111913, 2014. DOI: <a class="doi" href="https://doi.org/10.1371/journal.pone.0111913">10.1371/journal.pone.0111913</a>.</li>
+      <li id="r-jambeck">JAMBECK, J. R. et al. Plastic waste inputs from land into the ocean. <i>Science</i>, v. 347, n. 6223, p. 768-771, 2015. DOI: <a class="doi" href="https://doi.org/10.1126/science.1260352">10.1126/science.1260352</a>.</li>
+      <li id="r-rochman">ROCHMAN, C. M. et al. Anthropogenic debris in seafood: plastic debris and fibers from textiles in fish and bivalves sold for human consumption. <i>Scientific Reports</i>, v. 5, 14340, 2015. DOI: <a class="doi" href="https://doi.org/10.1038/srep14340">10.1038/srep14340</a>.</li>
+      <li id="r-cole">COLE, M. et al. Microplastic ingestion by zooplankton. <i>Environmental Science &amp; Technology</i>, v. 47, n. 12, p. 6646-6655, 2013. DOI: <a class="doi" href="https://doi.org/10.1021/es400663f">10.1021/es400663f</a>.</li>
+      <li id="r-wright">WRIGHT, S. L.; THOMPSON, R. C.; GALLOWAY, T. S. The physical impacts of microplastics on marine organisms: a review. <i>Environmental Pollution</i>, v. 178, p. 483-492, 2013. DOI: <a class="doi" href="https://doi.org/10.1016/j.envpol.2013.02.031">10.1016/j.envpol.2013.02.031</a>.</li>
+      <li id="r-gesamp">GESAMP. <i>Sources, fate and effects of microplastics in the marine environment: a global assessment</i>. Reports and Studies GESAMP n. 90. Londres: IMO, 2015. Disponível em: <a class="doi" href="http://www.gesamp.org/publications/reports-and-studies-no-90">gesamp.org</a>.</li>
+      <li id="r-oms2019">WORLD HEALTH ORGANIZATION. <i>Microplastics in drinking-water</i>. Genebra: WHO, 2019. Disponível em: <a class="doi" href="https://www.who.int/publications/i/item/9789241516198">who.int/publications/i/item/9789241516198</a>.</li>
+      <li id="r-cox">COX, K. D. et al. Human consumption of microplastics. <i>Environmental Science &amp; Technology</i>, v. 53, n. 12, p. 7068-7074, 2019. DOI: <a class="doi" href="https://doi.org/10.1021/acs.est.9b01517">10.1021/acs.est.9b01517</a>.</li>
+      <li id="r-qian">QIAN, N. et al. Rapid single-particle chemical imaging of nanoplastics by SRS microscopy. <i>Proceedings of the National Academy of Sciences</i>, v. 121, n. 3, e2300582121, 2024. DOI: <a class="doi" href="https://doi.org/10.1073/pnas.2300582121">10.1073/pnas.2300582121</a>.</li>
+      <li id="r-ragusa">RAGUSA, A. et al. Plasticenta: first evidence of microplastics in human placenta. <i>Environment International</i>, v. 146, 106274, 2021. DOI: <a class="doi" href="https://doi.org/10.1016/j.envint.2020.106274">10.1016/j.envint.2020.106274</a>.</li>
+      <li id="r-amato2021">AMATO-LOURENÇO, L. F. et al. Presence of airborne microplastics in human lung tissue. <i>Journal of Hazardous Materials</i>, v. 416, 126124, 2021. DOI: <a class="doi" href="https://doi.org/10.1016/j.jhazmat.2021.126124">10.1016/j.jhazmat.2021.126124</a>.</li>
+      <li id="r-leslie">LESLIE, H. A. et al. Discovery and quantification of plastic particle pollution in human blood. <i>Environment International</i>, v. 163, 107199, 2022. DOI: <a class="doi" href="https://doi.org/10.1016/j.envint.2022.107199">10.1016/j.envint.2022.107199</a>.</li>
+      <li id="r-marfella">MARFELLA, R. et al. Microplastics and nanoplastics in atheromas and cardiovascular events. <i>New England Journal of Medicine</i>, v. 390, n. 10, p. 900-910, 2024. DOI: <a class="doi" href="https://doi.org/10.1056/NEJMoa2309822">10.1056/NEJMoa2309822</a>.</li>
+      <li id="r-amato2024">AMATO-LOURENÇO, L. F. et al. Microplastics in the olfactory bulb of the human brain. <i>JAMA Network Open</i>, v. 7, n. 9, e2440018, 2024. DOI: <a class="doi" href="https://doi.org/10.1001/jamanetworkopen.2024.40018">10.1001/jamanetworkopen.2024.40018</a>.</li>
+      <li id="r-nihart">NIHART, A. J. et al. Bioaccumulation of microplastics in decedent human brains. <i>Nature Medicine</i>, v. 31, p. 1114-1119, 2025. DOI: <a class="doi" href="https://doi.org/10.1038/s41591-024-03453-1">10.1038/s41591-024-03453-1</a>.</li>
+      <li id="r-efsa">EFSA PANEL ON CONTAMINANTS IN THE FOOD CHAIN (CONTAM). Presence of microplastics and nanoplastics in food, with particular focus on seafood. <i>EFSA Journal</i>, v. 14, n. 6, 4501, 2016. DOI: <a class="doi" href="https://doi.org/10.2903/j.efsa.2016.4501">10.2903/j.efsa.2016.4501</a>.</li>
+      <li id="r-napper">NAPPER, I. E.; THOMPSON, R. C. Release of synthetic microplastic plastic fibres from domestic washing machines: effects of fabric type and washing conditions. <i>Marine Pollution Bulletin</i>, v. 112, n. 1-2, p. 39-45, 2016. DOI: <a class="doi" href="https://doi.org/10.1016/j.marpolbul.2016.09.025">10.1016/j.marpolbul.2016.09.025</a>.</li>
+      <li id="r-schuyler">SCHUYLER, Q. et al. Global analysis of anthropogenic debris ingestion by sea turtles. <i>Conservation Biology</i>, v. 28, n. 1, p. 129-139, 2014. DOI: <a class="doi" href="https://doi.org/10.1111/cobi.12126">10.1111/cobi.12126</a>.</li>
+      <li id="r-noaa">NOAA, NATIONAL OCEANIC AND ATMOSPHERIC ADMINISTRATION. <i>Microplastics</i>. 2023. Disponível em: <a class="doi" href="https://marinedebris.noaa.gov/what-marine-debris/microplastics">marinedebris.noaa.gov</a>.</li>
+      <li id="r-pnuma-esgoto">PROGRAMA DAS NAÇÕES UNIDAS PARA O MEIO AMBIENTE. <i>Microplastics in wastewater: towards solutions</i>. [s.d.]. Disponível em: <a class="doi" href="https://www.unep.org/news-and-stories/story/microplastics-wastewater-towards-solutions">unep.org</a>.</li>
+      <li id="r-xu">XU, S. et al. Microplastics in aquatic environments: occurrence, accumulation, and biological effects. <i>Science of The Total Environment</i>, v. 703, 134699, 2020. DOI: <a class="doi" href="https://doi.org/10.1016/j.scitotenv.2019.134699">10.1016/j.scitotenv.2019.134699</a>.</li>
+    </ol>
+  </div>
+</section>
+
+<section class="equipe" id="equipe">
+  <div class="envoltorio">
+    <h2 class="sec-titulo">Equipe</h2>
+    <p class="nota-abnt">Grupo 4 · Universidade Nove de Julho · São Paulo, 2026</p>
+    <ul class="equipe-lista">
+        <li>Matheus Henrique Quintino Julio</li>
+        <li>Rafael Sobreira Feitoza</li>
+        <li>João Fabrício Sivero</li>
+        <li>Fabiana Bernadino da Costa Rodrigues</li>
+        <li>Sara dos Santos Rocha</li>
+        <li>Maiara Rosa da Silva</li>
+        <li>Eduardo Talhoni Ribeiro</li>
+        <li>Emily Janaína Santos Silva</li>
+        <li>Maria Letícia Lima Madrid</li>
+        <li>Victoria Gabriely Oliveira Santos</li>
+        <li>Ana Clara Silva Dantas</li>
+        <li>Ana Lívia de Freitas Rocha</li>
+    </ul>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="envoltorio">
+    <span>Projeto extensionista · Grupo 4 · Universidade Nove de Julho · 2026 · <a href="apresentacao.html">Ver a apresentação</a></span>
+    <button class="tema-botao" id="tema" type="button">Alternar tema</button>
+  </div>
+</footer>
+
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" integrity="sha512-dLxUelApnYxpLt6K2iomGngnHO83iUvZytA3YjDUCjT0HDOHKXnVYdf3hU4JjM8uEhxf9nD1/ey98U3t2vZ0qQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+addEventListener('DOMContentLoaded', () => {
+  const raiz = document.documentElement;
+  const reduz = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const toque = matchMedia('(hover: none)').matches;
+  const css = n => getComputedStyle(raiz).getPropertyValue(n).trim();
+  const fmt = n => n.toLocaleString('pt-BR');
+
+  /* =========================================================
+     Tema
+     ========================================================= */
+  const aoMudarTema = [];
+  document.getElementById('tema').addEventListener('click', () => {
+    const escuro = raiz.dataset.theme ? raiz.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+    raiz.dataset.theme = escuro ? 'light' : 'dark';
+    try { localStorage.setItem('tema-micro', raiz.dataset.theme); } catch (e) {}
+    aoMudarTema.forEach(f => f());
+  });
+
+  /* =========================================================
+     Cena 3D: partículas de plástico suspensas na água
+     ========================================================= */
+  const hero = document.querySelector('.hero');
+  const canvas = document.getElementById('cena');
+  const etiqueta = document.getElementById('etiqueta');
+  const cena3d = { pronto: false, destacar() {}, camZ: 32 };
+
+  const TIPOS = {
+    fibra:     { nome: 'Fibra',       polimeros: ['poliéster (PET)', 'náilon (PA)', 'acrílico'], origem: 'roupas sintéticas e redes de pesca', min: .3, max: 5 },
+    fragmento: { nome: 'Fragmento',   polimeros: ['polietileno (PE)', 'polipropileno (PP)'],    origem: 'embalagens, garrafas e sacolas', min: .1, max: 4 },
+    pellet:    { nome: 'Pellet',      polimeros: ['polietileno (PE)', 'polipropileno (PP)'],    origem: 'matéria-prima da indústria do plástico', min: 2, max: 5 },
+    esfera:    { nome: 'Microesfera', polimeros: ['polietileno (PE)'],                          origem: 'esfoliantes e cosméticos', min: .05, max: 1 },
+    espuma:    { nome: 'Espuma',      polimeros: ['poliestireno (PS)'],                         origem: 'isopor e embalagens descartáveis', min: .5, max: 5 },
+  };
+  const tamanhoTexto = mm => mm < 1 ? `${Math.round(mm * 1000)} µm` : `${mm.toFixed(1).replace('.', ',')} mm`;
+
+  function iniciar3D() {
+    if (!window.THREE) return false;
+    let renderer;
+    try { renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true }); } catch (e) { return false; }
+    const T = THREE;
+    const largura = () => hero.clientWidth, altura = () => hero.clientHeight;
+    const pequeno = largura() < 760;
+    renderer.setPixelRatio(Math.min(devicePixelRatio || 1, pequeno ? 1.5 : 2));
+    renderer.setClearColor(0x000000, 0);
+
+    const cena = new T.Scene();
+    cena.fog = new T.Fog(new T.Color(css('--filtro')), 26, 92);
+    const camera = new T.PerspectiveCamera(50, 1, .1, 200);
+    camera.position.set(0, 0, reduz ? 32 : 110);
+
+    cena.add(new T.HemisphereLight(0xffffff, 0x7f97a3, .95));
+    const sol = new T.DirectionalLight(0xffffff, .85); sol.position.set(12, 22, 18); cena.add(sol);
+    const contra = new T.DirectionalLight(0x9fdcf0, .35); contra.position.set(-14, -8, -10); cena.add(contra);
+
+    // geometrias irregulares: costura vértices duplicados para o tremor não abrir as faces
+    function tremer(geo, f) {
+      const p = geo.attributes.position, mapa = {};
+      for (let i = 0; i < p.count; i++) {
+        const k = [p.getX(i), p.getY(i), p.getZ(i)].map(v => v.toFixed(3)).join();
+        if (!mapa[k]) mapa[k] = [1 + (Math.random() - .5) * f, 1 + (Math.random() - .5) * f, 1 + (Math.random() - .5) * f];
+        const m = mapa[k]; p.setXYZ(i, p.getX(i) * m[0], p.getY(i) * m[1], p.getZ(i) * m[2]);
+      }
+      geo.computeVertexNormals(); return geo;
+    }
+    function curvaFibra() {
+      const pts = []; let x = 0, y = 0, z = 0;
+      for (let i = 0; i < 6; i++) { pts.push(new T.Vector3(x, y, z)); x += .5 + Math.random() * .4; y += (Math.random() - .5) * .9; z += (Math.random() - .5) * .9; }
+      const c = new T.CatmullRomCurve3(pts); const g = new T.TubeGeometry(c, 22, .055, 5, false); g.center(); return g;
+    }
+
+    const mats = {
+      plastico: () => new T.MeshStandardMaterial({ color: 0xffffff, roughness: .38, metalness: 0, transparent: true, opacity: 1 }),
+      fosco: () => new T.MeshStandardMaterial({ color: 0xffffff, roughness: .95, metalness: 0, transparent: true, opacity: 1, flatShading: true }),
+    };
+    const CORES = { pe: '#D9366B', pp: '#1C9CC0', pet: '#E3A821', vi: '#7A55C9', ve: '#2EA36B', az: '#2B3A8C', br: '#F4F1E6', cr: '#E9D9A6' };
+
+    const escalaQtd = pequeno ? .4 : .75;
+    const grupos = [
+      { tipo: 'fibra',     geo: curvaFibra(), mat: mats.plastico(), n: 70,  cores: ['vi', 'pp', 'az', 'pe'], esc: [1.1, 1.8] },
+      { tipo: 'fibra',     geo: curvaFibra(), mat: mats.plastico(), n: 70,  cores: ['vi', 'pp', 'az', 've'], esc: [1.1, 1.8] },
+      { tipo: 'fibra',     geo: curvaFibra(), mat: mats.plastico(), n: 60,  cores: ['pe', 'az', 'pet'],      esc: [1.1, 1.8] },
+      { tipo: 'fragmento', geo: tremer(new T.IcosahedronGeometry(1, 0), .7), mat: mats.plastico(), n: 300, cores: ['pe', 'pp', 'pet', 'vi', 've'], esc: [.25, .7], achatar: true },
+      { tipo: 'pellet',    geo: new T.SphereGeometry(.5, 18, 12), mat: mats.plastico(), n: 90,  cores: ['br', 'cr', 'pet', 'br'], esc: [.6, .95], lente: true },
+      { tipo: 'esfera',    geo: new T.SphereGeometry(.5, 16, 12), mat: mats.plastico(), n: 160, cores: ['pp', 'pe', 've'],        esc: [.18, .4] },
+      { tipo: 'espuma',    geo: tremer(new T.DodecahedronGeometry(.6, 0), .45), mat: mats.fosco(), n: 70, cores: ['br', 'br', 'cr'], esc: [.6, 1.3] },
+    ];
+
+    const particulas = [], malhas = [], cor = new T.Color(), aux = new T.Object3D();
+    const A = { x: 46, y: 26, zMin: -70, zMax: 8 };
+    for (const g of grupos) {
+      const n = Math.round(g.n * escalaQtd);
+      const malha = new T.InstancedMesh(g.geo, g.mat, n);
+      malha.instanceMatrix.setUsage(T.DynamicDrawUsage);
+      malha.userData = { tipo: g.tipo, inicio: particulas.length };
+      for (let i = 0; i < n; i++) {
+        const s = g.esc[0] + Math.random() * (g.esc[1] - g.esc[0]);
+        const escala = g.achatar ? new T.Vector3(s, s * (.35 + Math.random() * .5), s * (.6 + Math.random() * .6))
+                     : g.lente ? new T.Vector3(s, s * .62, s) : new T.Vector3(s, s, s);
+        const info = TIPOS[g.tipo];
+        const mm = info.min + Math.pow(Math.random(), 1.6) * (info.max - info.min);
+        particulas.push({
+          malha, i, tipo: g.tipo, escala,
+          pos: new T.Vector3((Math.random() - .5) * 2 * A.x, (Math.random() - .5) * 2 * A.y, A.zMin + Math.random() * (A.zMax - A.zMin)),
+          rot: new T.Euler(Math.random() * 6.3, Math.random() * 6.3, Math.random() * 6.3),
+          vr: new T.Vector3((Math.random() - .5) * .006, (Math.random() - .5) * .006, (Math.random() - .5) * .006),
+          vel: new T.Vector3((Math.random() - .5) * .012, .006 + Math.random() * .018, 0),
+          fase: Math.random() * 6.3, foco: 1,
+          rotulo: { titulo: `${info.nome} de ${info.polimeros[Math.floor(Math.random() * info.polimeros.length)]}`, tamanho: tamanhoTexto(mm), origem: info.origem },
+        });
+        malha.setColorAt(i, cor.set(CORES[g.cores[i % g.cores.length]]));
+      }
+      malha.instanceColor.needsUpdate = true;
+      cena.add(malha); malhas.push(malha);
+    }
+
+    function ajustar() {
+      const w = largura(), h = altura();
+      renderer.setSize(w, h, false); camera.aspect = w / h;
+      camera.fov = w < 700 ? 62 : 50; camera.updateProjectionMatrix();
+    }
+    ajustar(); addEventListener('resize', ajustar);
+    aoMudarTema.push(() => cena.fog.color.set(css('--filtro')));
+
+    // interação
+    const ray = new T.Raycaster(), ponteiro = new T.Vector2(9, 9), alvoCam = new T.Vector2();
+    let sobre = null, tocadoAte = 0, precisaRaio = false, filtro = null;
+    function lerPonteiro(e) {
+      const r = canvas.getBoundingClientRect();
+      ponteiro.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
+      alvoCam.set(ponteiro.x, ponteiro.y);
+      precisaRaio = true;
+      return r;
+    }
+    canvas.addEventListener('pointermove', e => { if (e.pointerType !== 'touch') lerPonteiro(e); });
+    canvas.addEventListener('pointerleave', () => { ponteiro.set(9, 9); alvoCam.set(0, 0); precisaRaio = true; });
+    canvas.addEventListener('pointerdown', e => { if (e.pointerType === 'touch') { lerPonteiro(e); tocadoAte = performance.now() + 3200; } });
+
+    function mostrarEtiqueta(p) {
+      if (!p) { etiqueta.classList.remove('visivel'); return; }
+      const v = p.pos.clone().project(camera);
+      const x = (v.x + 1) / 2 * largura(), y = (1 - v.y) / 2 * altura();
+      etiqueta.style.left = Math.max(130, Math.min(largura() - 130, x)) + 'px';
+      etiqueta.style.top = y + 'px';
+      etiqueta.classList.toggle('abaixo', y < 190);
+      if (etiqueta.dataset.id !== String(particulas.indexOf(p))) {
+        etiqueta.dataset.id = particulas.indexOf(p);
+        etiqueta.innerHTML = `<b>${p.rotulo.titulo}</b>${p.rotulo.tamanho} · vem de ${p.rotulo.origem}`;
+      }
+      etiqueta.classList.add('visivel');
+    }
+
+    cena3d.destacar = tipo => {
+      filtro = tipo;
+      for (const m of malhas) m.material.opacity = !tipo || m.userData.tipo === tipo ? 1 : .1;
+      for (const m of malhas) m.material.depthWrite = !tipo || m.userData.tipo === tipo;
+    };
+
+    let visivel = true;
+    new IntersectionObserver(([e]) => { visivel = e.isIntersecting; if (visivel) requestAnimationFrame(quadro); }).observe(hero);
+
+    let ultimo = performance.now(), quadros = 0;
+    function quadro(agora) {
+      if (!visivel) return;
+      const dt = Math.min(3, (agora - ultimo) / 16.67); ultimo = agora; quadros++;
+      // câmera: zoom da intro + paralaxe suave
+      camera.position.z += (cena3d.camZ - camera.position.z) * (reduz ? 1 : .045 * dt);
+      camera.position.x += (alvoCam.x * 3.2 - camera.position.x) * .04 * dt;
+      camera.position.y += (alvoCam.y * 2 - camera.position.y) * .04 * dt;
+      camera.lookAt(0, 0, -12);
+
+      if (precisaRaio && quadros % 2 === 0) {
+        precisaRaio = false;
+        ray.setFromCamera(ponteiro, camera);
+        const alvo = filtro ? malhas.filter(m => m.userData.tipo === filtro) : malhas;
+        const hit = ray.intersectObjects(alvo, false)[0];
+        sobre = hit ? particulas[hit.object.userData.inicio + hit.instanceId] : null;
+        canvas.style.cursor = sobre ? 'pointer' : 'default';
+      }
+      if (toque && sobre && agora > tocadoAte) sobre = null;
+
+      for (const p of particulas) {
+        if (!reduz) {
+          p.pos.x += (p.vel.x + Math.sin(agora / 2400 + p.fase) * .006) * dt;
+          p.pos.y += p.vel.y * dt;
+          p.rot.x += p.vr.x * dt; p.rot.y += p.vr.y * dt; p.rot.z += p.vr.z * dt;
+          if (p.pos.y > A.y + 4) { p.pos.y = -A.y - 4; p.pos.x = (Math.random() - .5) * 2 * A.x; }
+          if (p.pos.x > A.x + 4) p.pos.x = -A.x - 4; else if (p.pos.x < -A.x - 4) p.pos.x = A.x + 4;
+        }
+        const alvoFoco = p === sobre ? 1.9 : 1;
+        p.foco += (alvoFoco - p.foco) * .2;
+        aux.position.copy(p.pos); aux.rotation.copy(p.rot); aux.scale.copy(p.escala).multiplyScalar(p.foco);
+        aux.updateMatrix(); p.malha.setMatrixAt(p.i, aux.matrix);
+      }
+      for (const m of malhas) m.instanceMatrix.needsUpdate = true;
+      mostrarEtiqueta(sobre);
+      renderer.render(cena, camera);
+      requestAnimationFrame(quadro);
+    }
+    requestAnimationFrame(quadro);
+    cena3d.pronto = true;
+    return true;
+  }
+
+  if (!iniciar3D()) hero.classList.add('sem-webgl');
+  if (toque) document.getElementById('legendaDica').textContent = 'Toque em uma partícula para identificá-la, ou destaque um tipo:';
+
+  document.querySelectorAll('.legenda button').forEach(b => b.addEventListener('click', () => {
+    const ativo = b.getAttribute('aria-pressed') === 'true';
+    document.querySelectorAll('.legenda button').forEach(o => o.setAttribute('aria-pressed', 'false'));
+    b.setAttribute('aria-pressed', String(!ativo));
+    cena3d.destacar(ativo ? null : b.dataset.tipo);
+  }));
+
+  /* =========================================================
+     Intro: zoom de 1× a 400×, uma vez por sessão
+     ========================================================= */
+  (function intro() {
+    let visto = false;
+    try { visto = sessionStorage.getItem('intro-micro') === '1'; } catch (e) {}
+    if (reduz || visto || !cena3d.pronto || !raiz.classList.contains('intro')) { raiz.classList.remove('intro'); return; }
+    window.__introIniciada = true;
+    const ocular = document.getElementById('ocular'), zoom = document.getElementById('zoom');
+    const DUR = 2300, t0 = performance.now();
+    let acabou = false;
+    cena3d.camZ = 110;
+    function passo(t) {
+      if (acabou) return;
+      const k = Math.min(1, (t - t0) / DUR), e = 1 - Math.pow(1 - k, 3);
+      zoom.textContent = `${fmt(Math.round(1 + e * 399))}×`;
+      cena3d.camZ = 110 - e * 78;
+      if (k < 1) requestAnimationFrame(passo); else terminar();
+    }
+    function terminar() {
+      if (acabou) return; acabou = true;
+      zoom.textContent = '400×'; cena3d.camZ = 32;
+      ocular.classList.add('sai');
+      raiz.classList.remove('intro');
+      const pi = document.getElementById('pularIntro');
+      if (document.activeElement === pi) document.querySelector('.hero h1').setAttribute('tabindex', '-1'), document.querySelector('.hero h1').focus({ preventScroll: true });
+      pi.style.display = 'none';
+      setTimeout(() => { ocular.style.display = 'none'; }, 1000);
+      try { sessionStorage.setItem('intro-micro', '1'); } catch (e) {}
+      removeEventListener('keydown', terminar); removeEventListener('wheel', terminar);
+    }
+    document.getElementById('pularIntro').addEventListener('click', terminar);
+    addEventListener('keydown', terminar); addEventListener('wheel', terminar, { passive: true });
+    requestAnimationFrame(passo);
+  })();
+
+  /* =========================================================
+     Barra de progresso e seção atual no menu
+     ========================================================= */
+  const barra = document.getElementById('progresso');
+  const linksNav = [...document.querySelectorAll('.nav ul a')];
+  addEventListener('scroll', () => {
+    const max = document.documentElement.scrollHeight - innerHeight;
+    barra.style.transform = `scaleX(${max > 0 ? scrollY / max : 0})`;
+  }, { passive: true });
+  const obsSecao = new IntersectionObserver(es => es.forEach(e => {
+    if (!e.isIntersecting) return;
+    linksNav.forEach(a => a.setAttribute('aria-current', String(a.getAttribute('href') === '#' + e.target.id)));
+  }), { rootMargin: '-45% 0px -50% 0px' });
+  linksNav.forEach(a => { const s = document.querySelector(a.getAttribute('href')); if (s) obsSecao.observe(s); });
+
+  /* =========================================================
+     Régua de tamanhos (limites: EFSA, 2016)
+     ========================================================= */
+  const PARADAS = [
+    { rotulo: '5 mm',   compara: 'Um grão de arroz',            faixa: 1, texto: '<b>Limite superior do microplástico.</b> Partículas acima de 150 µm não atravessam a parede do intestino e são eliminadas.' },
+    { rotulo: '1 mm',   compara: 'Um grão de areia',            faixa: 1, texto: '<b>Ainda grande demais para ser absorvida.</b> Visível a olho nu, mas já pequena o bastante para ser engolida por peixes e bivalves.' },
+    { rotulo: '150 µm', compara: 'Pouco mais que um fio de cabelo', faixa: 2, texto: '<b>Primeiro limite.</b> Abaixo deste tamanho, uma pequena fração pode atravessar a parede do intestino. A absorção é muito baixa e os dados vêm de estudos em roedores.' },
+    { rotulo: '10 µm',  compara: 'Uma célula do sangue',        faixa: 2, texto: '<b>Do tamanho de uma célula.</b> Partículas desta ordem já foram encontradas na placenta e no pulmão humanos.' },
+    { rotulo: '1,5 µm', compara: 'Uma bactéria',                faixa: 3, texto: '<b>Segundo limite.</b> Abaixo deste tamanho, as partículas podem penetrar mais fundo no corpo e chegar a órgãos.' },
+    { rotulo: '1 µm',   compara: 'Fronteira do nanoplástico',   faixa: 3, texto: '<b>Começa o nanoplástico.</b> Invisível ao microscópio comum, exige técnicas como a microscopia Raman para ser identificado.' },
+    { rotulo: '100 nm', compara: 'Um vírus',                    faixa: 3, texto: '<b>Nanoplástico.</b> Neste tamanho, partículas podem entrar nas células. A maioria das partículas contadas na água engarrafada estava nessa escala.' },
+  ];
+  const faixa = document.getElementById('tamanho');
+  const marcas = document.getElementById('marcas');
+  PARADAS.forEach((p, i) => {
+    const b = document.createElement('button'); b.type = 'button'; b.textContent = p.rotulo; b.tabIndex = -1;
+    b.addEventListener('click', () => { faixa.value = i; atualizarRegua(); });
+    marcas.appendChild(b);
+  });
+  function atualizarRegua() {
+    const p = PARADAS[+faixa.value];
+    document.getElementById('reguaMedida').textContent = p.rotulo;
+    document.getElementById('reguaCompara').textContent = p.compara;
+    document.getElementById('reguaTexto').innerHTML = p.texto;
+    faixa.setAttribute('aria-valuetext', `${p.rotulo}, ${p.compara}`);
+    [1, 2, 3].forEach(n => document.getElementById('f' + n).classList.toggle('ativa', n === p.faixa));
+    [...marcas.children].forEach((b, i) => b.setAttribute('aria-current', String(i === +faixa.value)));
+  }
+  faixa.addEventListener('input', atualizarRegua);
+  atualizarRegua();
+
+  /* =========================================================
+     Cadeia alimentar: o plástico se acumula a cada elo
+     ========================================================= */
+  const elos = [...document.querySelectorAll('.elo')];
+  const coresAc = ['var(--pe)', 'var(--pp)', 'var(--pet)', '#7A55C9'];
+  elos.forEach((el, k) => {
+    const ac = el.querySelector('.acumulo');
+    for (let i = 0; i < (k + 1) * 6; i++) {
+      const q = document.createElement('i'); q.style.background = coresAc[i % 4]; q.style.transitionDelay = `${i * 18}ms`; ac.appendChild(q);
+    }
+    el.addEventListener('click', () => selecionarElo(k));
+  });
+  const oceano = { focar() {} };
+  function selecionarElo(k) {
+    elos.forEach((o, j) => { o.setAttribute('aria-pressed', String(j === k)); o.classList.toggle('cheio', k >= 0 && j < k); });
+    oceano.focar(k < 0 ? 'geral' : k);
+  }
+
+  /* =========================================================
+     Comparador de água (Cox et al., 2019)
+     ========================================================= */
+  const copo3d = { mostrar() {} };
+  const pontos = document.getElementById('pontos');
+  for (let i = 0; i < 100; i++) pontos.appendChild(document.createElement('i'));
+  const AGUA = {
+    torneira: { n: 4, numero: '≈ 4 mil', texto: 'partículas por ano só pela água da torneira' },
+    garrafa:  { n: 94, numero: '≈ 94 mil', texto: 'partículas por ano só pela água engarrafada: cerca de 90 mil a mais' },
+  };
+  function aguaDe(fonte) {
+    const d = AGUA[fonte];
+    document.querySelectorAll('[data-agua]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.agua === fonte)));
+    document.getElementById('aguaNumero').textContent = d.numero;
+    document.getElementById('aguaTexto').textContent = d.texto;
+    copo3d.mostrar(fonte);
+    [...pontos.children].forEach((q, i) => {
+      q.classList.toggle('on', i < d.n);
+      q.style.transitionDelay = reduz ? '0ms' : `${(fonte === 'garrafa' ? i : 99 - i) * 6}ms`;
+    });
+  }
+  document.querySelectorAll('[data-agua]').forEach(b => b.addEventListener('click', () => aguaDe(b.dataset.agua)));
+  aguaDe('torneira');
+
+
+  /* =========================================================
+     Kit cartoon: material toon de 3 tons + contorno invertido
+     ========================================================= */
+  function kitToon(T) {
+    const grad = new T.DataTexture(new Uint8Array([105,105,105,255, 180,180,180,255, 255,255,255,255]), 3, 1, T.RGBAFormat);
+    grad.minFilter = grad.magFilter = T.NearestFilter; grad.generateMipmaps = false; grad.needsUpdate = true;
+    const contorno = new T.MeshBasicMaterial({ color: 0x0a1c24, side: T.BackSide });
+    const mat = (cor, extra) => new T.MeshToonMaterial(Object.assign({ color: cor, gradientMap: grad }, extra || {}));
+    function malha(geo, cor, o = {}) {
+      const m = new T.Mesh(geo, o.material || mat(cor, o.mat));
+      if (o.contorno !== false) { const c = new T.Mesh(geo, contorno); c.scale.setScalar(o.k || 1.07); m.add(c); }
+      return m;
+    }
+    function olho(r) {
+      const g = new T.Group();
+      g.add(malha(new T.SphereGeometry(r, 16, 12), 0xffffff, { k: 1.14 }));
+      const pupila = new T.Mesh(new T.SphereGeometry(r * .56, 12, 10), new T.MeshBasicMaterial({ color: 0x0a1c24 }));
+      pupila.position.set(r * .3, 0, r * .55); g.add(pupila);
+      const brilho = new T.Mesh(new T.SphereGeometry(r * .18, 8, 6), new T.MeshBasicMaterial({ color: 0xffffff }));
+      brilho.position.set(r * .5, r * .28, r * .9); g.add(brilho);
+      return g;
+    }
+    function sorriso(r) {
+      return new T.Mesh(new T.TorusGeometry(r, r * .22, 6, 14, Math.PI), new T.MeshBasicMaterial({ color: 0x0a1c24 }));
+    }
+    return { T, mat, malha, olho, sorriso };
+  }
+
+  /* ---------- animais ---------- */
+  function fazerPeixe(K, cfg) {
+    const T = K.T, g = new T.Group();
+    const corpo = K.malha(new T.SphereGeometry(1, 28, 18), cfg.cor); corpo.scale.set(1.5, 1, .72); g.add(corpo);
+    if (cfg.listras) {
+      const capa = new T.Group(); capa.scale.set(1, 1, .72); g.add(capa);
+      for (const x0 of [.6, -.5]) {
+        const rr = Math.sqrt(1 - (x0 / 1.5) ** 2) * 1.03;
+        const l = K.malha(new T.CylinderGeometry(rr, rr, .32, 28, 1, true), 0xffffff, { contorno: false, mat: { side: T.DoubleSide } });
+        l.rotation.z = Math.PI / 2; l.position.x = x0; capa.add(l);
+      }
+    }
+    const cauda = new T.Group(); cauda.position.x = -1.35; g.add(cauda);
+    const nad = K.malha(new T.ConeGeometry(.8, 1.2, 3), cfg.cauda || cfg.cor); nad.rotation.z = -Math.PI / 2; nad.scale.set(1, 1, .3); nad.position.x = -.45; cauda.add(nad);
+    const dorsal = K.malha(new T.ConeGeometry(.4, .85, 3), cfg.cauda || cfg.cor); dorsal.position.set(-.1, .95, 0); dorsal.rotation.z = .45; dorsal.scale.set(1, 1, .3); g.add(dorsal);
+    for (const z of [1, -1]) { const o = K.olho(.25); o.position.set(.95, .28, .48 * z); if (z < 0) o.scale.z = -1; g.add(o); }
+    const boca = K.sorriso(.14); boca.position.set(1.44, -.18, 0); boca.rotation.set(0, Math.PI / 2, Math.PI); g.add(boca);
+    return { g, cauda };
+  }
+  function fazerCopepode(K, corPlastico) {
+    const T = K.T, g = new T.Group();
+    const corpo = K.malha(new T.SphereGeometry(.5, 18, 12), 0xBFE9F2, { mat: { transparent: true, opacity: .62 }, k: 1.1 }); corpo.scale.set(1, .62, .62); g.add(corpo);
+    const conta = new T.Mesh(new T.IcosahedronGeometry(.13, 0), K.mat(corPlastico)); g.add(conta);
+    const cauda = K.malha(new T.CylinderGeometry(.05, .02, .7, 6), 0xBFE9F2); cauda.rotation.z = Math.PI / 2; cauda.position.x = -.75; g.add(cauda);
+    const antenas = [];
+    for (const z of [1, -1]) {
+      const a = new T.Group(); a.position.set(.38, .12, .08 * z);
+      const haste = K.malha(new T.CylinderGeometry(.03, .014, 1.5, 5), 0xE6F7FB, { contorno: false }); haste.position.y = .75; a.add(haste);
+      a.rotation.set(1.05 * z, 0, -.5); g.add(a); antenas.push(a);
+    }
+    const olho = new T.Mesh(new T.SphereGeometry(.08, 8, 6), new T.MeshBasicMaterial({ color: 0xD9366B })); olho.position.set(.45, .08, 0); g.add(olho);
+    return { g, antenas };
+  }
+  function fazerMexilhao(K) {
+    const T = K.T, g = new T.Group();
+    const geo = new T.SphereGeometry(1, 22, 12, 0, Math.PI * 2, 0, Math.PI / 2);
+    const baixo = K.malha(geo, 0x27346B, { mat: { side: T.DoubleSide } }); baixo.rotation.x = Math.PI; baixo.scale.set(1.3, .42, .75); g.add(baixo);
+    const carne = K.malha(new T.SphereGeometry(1, 18, 10), 0xF08A4B, { contorno: false }); carne.scale.set(1.1, .14, .6); carne.position.y = .02; g.add(carne);
+    const tampa = new T.Group(); tampa.position.x = -1.25; g.add(tampa);
+    const topo = K.malha(geo, 0x2E3F80, { mat: { side: T.DoubleSide } }); topo.scale.set(1.3, .42, .75); topo.position.x = 1.25; tampa.add(topo);
+    const boca = new T.Object3D(); boca.position.set(1.15, .08, 0); g.add(boca);
+    return { g, tampa, boca };
+  }
+  function fazerTartaruga(K) {
+    const T = K.T, g = new T.Group();
+    const casco = K.malha(new T.SphereGeometry(1, 26, 14, 0, Math.PI * 2, 0, Math.PI / 2), 0x2F8F4E, { mat: { side: T.DoubleSide } }); casco.scale.set(1.5, .8, 1.2); g.add(casco);
+    const ventre = K.malha(new T.SphereGeometry(1, 22, 10), 0xE8D27A); ventre.scale.set(1.42, .18, 1.12); g.add(ventre);
+    const up = new T.Vector3(0, 1, 0);
+    [[0, 0, 1], [.95, 0, .7], [.95, Math.PI / 2, .7], [.95, Math.PI, .7], [.95, -Math.PI / 2, .7]].forEach(([fi, te, sc]) => {
+      const d = new T.Vector3(Math.sin(fi) * Math.cos(te), Math.cos(fi), Math.sin(fi) * Math.sin(te));
+      const pos = new T.Vector3(d.x * 1.5, d.y * .8, d.z * 1.2).multiplyScalar(.995);
+      const n = new T.Vector3(d.x / 1.5, d.y / .8, d.z / 1.2).normalize();
+      const hex = K.malha(new T.CylinderGeometry(.34, .34, .06, 6), 0x1F6B3A, { contorno: false });
+      hex.position.copy(pos); hex.quaternion.setFromUnitVectors(up, n); hex.scale.setScalar(sc); g.add(hex);
+    });
+    const cabeca = K.malha(new T.SphereGeometry(.44, 18, 12), 0x8BCB6A); cabeca.position.set(1.78, .12, 0); g.add(cabeca);
+    for (const z of [1, -1]) { const o = K.olho(.14); o.position.set(2.02, .3, .22 * z); if (z < 0) o.scale.z = -1; g.add(o); }
+    const boca = K.sorriso(.12); boca.position.set(2.2, 0, 0); boca.rotation.set(0, Math.PI / 2, Math.PI); g.add(boca);
+    const nad = [];
+    [[.7, 1, .5, 1.0, 1], [.7, -1, .5, 1.0, 1], [-1.0, 1, .3, .55, 0], [-1.0, -1, .3, .55, 0]].forEach(([x, z, sx, sz, frente]) => {
+      const piv = new T.Group(); piv.position.set(x, -.05, .95 * z);
+      const m = K.malha(new T.SphereGeometry(1, 16, 10), 0x8BCB6A); m.scale.set(sx, .09, sz); m.position.z = sz * .8 * z; m.rotation.y = -.35 * z;
+      piv.add(m); g.add(piv); nad.push({ piv, z, frente });
+    });
+    return { g, nad };
+  }
+  function fazerBarco(K) {
+    const T = K.T, g = new T.Group();
+    const casco = K.malha(new T.CylinderGeometry(1, 1, 4.4, 22, 1, false, 0, Math.PI), 0xD9366B, { mat: { side: T.DoubleSide } }); casco.rotation.z = -Math.PI / 2; casco.scale.set(1, 1, .9); g.add(casco);
+    const conves = K.malha(new T.BoxGeometry(4.4, .12, 1.8), 0xF4F1E6); g.add(conves);
+    const cabine = K.malha(new T.BoxGeometry(1.3, 1.1, 1.2), 0xffffff); cabine.position.set(-.6, .6, 0); g.add(cabine);
+    const teto = K.malha(new T.BoxGeometry(1.5, .16, 1.4), 0x1C9CC0); teto.position.set(-.6, 1.22, 0); g.add(teto);
+    const vara = K.malha(new T.CylinderGeometry(.04, .04, 3, 6), 0x5B3A1E); vara.position.set(1.6, 1.2, .3); vara.rotation.z = -.7; g.add(vara);
+    const linha = new T.Mesh(new T.CylinderGeometry(.012, .012, 9, 4), new T.MeshBasicMaterial({ color: 0xE8EFEC })); linha.position.set(2.75, -2.9, .3); g.add(linha);
+    const anzol = new T.Mesh(new T.TorusGeometry(.12, .025, 6, 12, Math.PI * 1.4), new T.MeshBasicMaterial({ color: 0xE8EFEC })); anzol.position.set(2.75, -7.4, .3); g.add(anzol);
+    return { g };
+  }
+  function fazerAlga(K, altura, cor, fase) {
+    const T = K.T, raiz = new T.Group(), segs = [];
+    const n = Math.round(altura / .55); let pai = raiz;
+    for (let i = 0; i < n; i++) {
+      const s = new T.Group(); s.position.y = i ? .55 : 0; pai.add(s);
+      const r0 = .14 * (1 - i / n) + .04;
+      const c = K.malha(new T.CylinderGeometry(r0 * .8, r0, .58, 6), cor, { k: 1.12 }); c.position.y = .27; s.add(c);
+      if (i % 2) { const f = K.malha(new T.SphereGeometry(1, 10, 6), cor, { k: 1.12 }); f.scale.set(.32, .06, .14); f.position.set(.26 * (i % 4 === 1 ? 1 : -1), .3, 0); f.rotation.z = .5 * (i % 4 === 1 ? 1 : -1); s.add(f); }
+      segs.push(s); pai = s;
+    }
+    return { g: raiz, segs, fase };
+  }
+
+  /* =========================================================
+     Cena 3D: recife cartoon ligado à cadeia alimentar
+     ========================================================= */
+  function iniciarOceano() {
+    const canvas = document.getElementById('oceano'), palco = document.getElementById('palco');
+    if (!window.THREE) return false;
+    let renderer;
+    try { renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true }); } catch (e) { return false; }
+    const T = THREE, K = kitToon(T);
+    const pequeno = palco.clientWidth < 700;
+    renderer.setPixelRatio(Math.min(devicePixelRatio || 1, pequeno ? 1.5 : 2));
+    renderer.setClearColor(0x000000, 0);
+
+    const cena = new T.Scene();
+    cena.fog = new T.Fog(0x145067, 16, 54);
+    const cam = new T.PerspectiveCamera(45, 1, .1, 200);
+    cam.position.set(0, 2.5, 24);
+    const olhar = new T.Vector3(0, 0, 0), alvoPos = new T.Vector3(0, 2.5, 24), alvoOlhar = new T.Vector3();
+    cena.add(new T.HemisphereLight(0xD6F6FF, 0x173540, .95));
+    const sol = new T.DirectionalLight(0xffffff, .85); sol.position.set(6, 22, 10); cena.add(sol);
+
+    // fundo de areia ondulado
+    const chao = new T.PlaneGeometry(150, 90, 60, 36); chao.rotateX(-Math.PI / 2);
+    const pc = chao.attributes.position;
+    for (let i = 0; i < pc.count; i++) { const x = pc.getX(i), z = pc.getZ(i); pc.setY(i, Math.sin(x * .28) * .35 + Math.cos(z * .22 + x * .05) * .45); }
+    chao.computeVertexNormals();
+    const areia = new T.Mesh(chao, K.mat(0x9E8C66)); areia.position.y = -6; cena.add(areia);
+
+    // pedras, corais e algas
+    [[4.5, -5.6, 4.6, 1.1], [8.8, -5.5, 1.6, .9], [-3, -5.6, 3.5, .8], [-12, -5.4, -2, 1.6], [13, -5.3, -5, 1.8], [-6, -5.5, -8, 1.3]].forEach(([x, y, z, s]) => {
+      const pd = K.malha(new T.DodecahedronGeometry(1, 0), 0x3E5A66); pd.position.set(x, y, z); pd.scale.set(s * 1.3, s * .7, s); pd.rotation.y = x; cena.add(pd);
+    });
+    const corais = [[-10.5, -5.2, 3, 0xF07CA8], [10.5, -5.2, -1.5, 0xF2A65A], [-1.5, -5.4, -6, 0xB98AF0], [-14, -5.2, -6, 0xF2A65A]];
+    corais.forEach(([x, y, z, c], j) => {
+      const grupo = new T.Group(); grupo.position.set(x, y, z); cena.add(grupo);
+      for (let i = 0; i < 6; i++) {
+        const b = K.malha(new T.SphereGeometry(.45 + (i % 3) * .12, 14, 10), c);
+        b.position.set(Math.cos(i * 1.7 + j) * .8, .3 + (i % 3) * .55, Math.sin(i * 1.7 + j) * .6); grupo.add(b);
+      }
+    });
+    const algas = [];
+    [[-7, 4], [-6.2, 5.2], [-12.8, 2.4], [3, -2.5], [2.2, -1], [11.5, 2.8], [12.4, 3.6], [-4.5, -4], [7.5, -6]].forEach(([x, z], i) => {
+      const a = fazerAlga(K, 3.5 + (i % 3) * 1.5, i % 2 ? 0x2EA36B : 0x4CC27E, i * 1.3);
+      a.g.position.set(x, -5.8, z); cena.add(a.g); algas.push(a);
+    });
+
+    // superfície da água
+    const sup = new T.PlaneGeometry(90, 50, 36, 20); sup.rotateX(-Math.PI / 2);
+    const supBase = Float32Array.from(sup.attributes.position.array);
+    const superficie = new T.Mesh(sup, new T.MeshBasicMaterial({ color: 0x9FE6F5, transparent: true, opacity: .22, side: T.DoubleSide, depthWrite: false }));
+    superficie.position.y = 10; cena.add(superficie);
+
+    // feixes de luz
+    const feixes = [];
+    for (let i = 0; i < 6; i++) {
+      const f = new T.Mesh(new T.PlaneGeometry(2.4 + i % 3, 32), new T.MeshBasicMaterial({ color: 0xCFF6FF, transparent: true, opacity: .05, blending: T.AdditiveBlending, depthWrite: false, side: T.DoubleSide }));
+      f.position.set(-14 + i * 5.5, 0, -10 + (i % 2) * 4); f.rotation.z = .25; cena.add(f); feixes.push(f);
+    }
+
+    // bolhas
+    const nB = 50, bolhas = new T.InstancedMesh(new T.SphereGeometry(.12, 10, 8), new T.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: .45 }), nB);
+    const bd = [...Array(nB)].map(() => ({ x: (Math.random() - .5) * 30, y: -6 + Math.random() * 16, z: (Math.random() - .5) * 14, v: .6 + Math.random() * .9, s: .4 + Math.random() * .9, f: Math.random() * 6 }));
+    cena.add(bolhas);
+
+    // microplásticos à deriva
+    const CORES = [0xD9366B, 0x1C9CC0, 0xE3A821, 0x7A55C9, 0x2EA36B, 0xF4F1E6];
+    const nP = pequeno ? 70 : 130;
+    const plas = new T.InstancedMesh(new T.IcosahedronGeometry(1, 0), K.mat(0xffffff), nP);
+    const pd = [...Array(nP)].map((_, i) => { plas.setColorAt(i, new T.Color(CORES[i % CORES.length])); return { x: (Math.random() - .5) * 40, y: -5 + Math.random() * 14, z: (Math.random() - .5) * 20, s: .07 + Math.random() * .14, f: Math.random() * 6, r: Math.random() * 6 }; });
+    plas.instanceColor.needsUpdate = true; cena.add(plas);
+
+    // animais
+    const registro = [];
+    const registrar = (g, reg) => { g.userData.reg = reg; registro.push(reg); reg.g = g; return g; };
+
+    const copepodes = [];
+    for (let i = 0; i < 7; i++) {
+      const c = fazerCopepode(K, CORES[i % 5]);
+      c.base = new T.Vector3(-8 + Math.cos(i * .9) * 2.4, 2 + Math.sin(i * 1.7) * 1.4, 1.5 + Math.sin(i * .9) * 2); c.f = i * 1.1;
+      c.g.scale.setScalar(1.1); cena.add(registrar(c.g, { nome: 'Copépode (zooplâncton)', elo: 0 })); copepodes.push(c);
+    }
+    const mexilhoes = [];
+    [[5, -5.3, 2.6, .4], [6.9, -5.4, 1.1, -.6], [7.5, -5.3, 3.5, 2.2], [5.5, -5.45, .4, 1.4]].forEach(([x, y, z, ry], i) => {
+      const m = fazerMexilhao(K); m.g.position.set(x, y, z); m.g.rotation.y = ry; m.f = i * 1.6;
+      m.particulas = [...Array(5)].map((_, j) => {
+        const q = new T.Mesh(new T.IcosahedronGeometry(.09, 0), K.mat(CORES[(i + j) % 5])); cena.add(q);
+        return { q, u: j / 5, ini: new T.Vector3() };
+      });
+      m.particulas.forEach(p => { p.ini.set(x + (Math.random() - .5) * 5, y + 1 + Math.random() * 3, z + (Math.random() - .5) * 4); });
+      cena.add(registrar(m.g, { nome: 'Mexilhão', elo: 1 })); mexilhoes.push(m);
+    });
+    const palhaco = fazerPeixe(K, { cor: 0xF57A1F, cauda: 0xF57A1F, listras: true });
+    palhaco.g.scale.setScalar(.85); palhaco.rota = { c: new T.Vector3(-1, 1, 1), a: 6.5, b: 4, w: .32, f: 0, y: .6 };
+    cena.add(registrar(palhaco.g, { nome: 'Peixe-palhaço', elo: 2 }));
+    const cardume = [];
+    for (let i = 0; i < 5; i++) {
+      const p = fazerPeixe(K, { cor: 0x2F6FD6, cauda: 0xF2C230 });
+      p.g.scale.setScalar(.55 + (i % 2) * .1); p.rota = { c: new T.Vector3(3, -1.5 + (i % 3) * .9, -4), a: 10, b: 5, w: -.22, f: i * .22, y: .4 };
+      cena.add(registrar(p.g, { nome: 'Peixe-cirurgião', elo: 2 })); cardume.push(p);
+    }
+    const tart = fazerTartaruga(K); tart.g.scale.setScalar(.9);
+    cena.add(registrar(tart.g, { nome: 'Tartaruga-verde', foco: 'tartaruga' }));
+    const barco = fazerBarco(K); barco.g.position.set(0, 10.35, -3); barco.g.rotation.y = .3;
+    cena.add(registrar(barco.g, { nome: 'Barco de pesca', elo: 3 }));
+
+    // textos da legenda
+    const ref = (id, n) => `<sup class="ref"><a href="#${id}">${n}</a></sup>`;
+    const LEGENDAS = {
+      geral: '<b>Um recife cheio de vida e de plástico.</b> As partículas coloridas são microplásticos. Clique em um animal ou em um elo da cadeia.',
+      0: `<b>Plâncton.</b> Copépodes, um tipo de zooplâncton, confundem microesferas com alimento. A bolinha colorida dentro de cada um é plástico.${ref('r-cole', 7)}`,
+      1: `<b>Filtradores.</b> Cada vez que o mexilhão se abre, ele filtra a água e retém as partículas que passam por ali.${ref('r-wright', 8)}`,
+      2: `<b>Peixes.</b> O peixe-palhaço e o cardume comem plâncton e pequenos organismos contaminados, ou engolem os fragmentos diretamente.${ref('r-rochman', 6)}`,
+      3: `<b>Pessoas.</b> A pesca leva peixes e frutos do mar até o prato, e com eles parte do plástico que acumularam.${ref('r-oms2022', 2)}`,
+      tartaruga: `<b>Tartaruga-verde.</b> Tartarugas marinhas ingerem detritos em quase todas as regiões estudadas, e o risco aumentou com o tempo para as tartarugas-verdes e de-couro.${ref('r-schuyler', 21)}`,
+    };
+    const legenda = document.getElementById('palcoLegenda'), voltar = document.getElementById('palcoVoltar');
+    const FOCOS = {
+      geral: () => [new T.Vector3(0, 2.5, 24), new T.Vector3(0, -.5, 0)],
+      0: () => [new T.Vector3(-4.8, 3.4, 9.5), new T.Vector3(-8, 2, 1.5)],
+      1: () => [new T.Vector3(9, -2.4, 10), new T.Vector3(6.2, -4.9, 2)],
+      2: () => { const p = palhaco.g.position; return [p.clone().add(new T.Vector3(2.5, 1.4, 7)), p.clone()]; },
+      3: () => [new T.Vector3(6, 13.2, 9), new T.Vector3(0, 10.4, -3)],
+      tartaruga: () => { const p = tart.g.position; return [p.clone().add(new T.Vector3(3, 2, 8.5)), p.clone()]; },
+    };
+    let foco = 'geral';
+    oceano.focar = f => {
+      foco = f;
+      legenda.innerHTML = LEGENDAS[f];
+      voltar.hidden = f === 'geral';
+      for (const reg of registro) {
+        const ativo = f !== 'geral' && (reg.elo === f || reg.foco === f);
+        reg.g.traverse(o => { if (o.material && o.material.emissive) o.material.emissive.setHex(ativo ? 0x0d3038 : 0x000000); });
+      }
+    };
+    oceano.focar('geral');
+    voltar.addEventListener('click', () => selecionarElo(-1));
+
+    // tamanho
+    function ajustar() {
+      const w = palco.clientWidth, h = palco.clientHeight;
+      renderer.setSize(w, h, false); cam.aspect = w / h; cam.fov = w < 600 ? 58 : 45; cam.updateProjectionMatrix();
+    }
+    ajustar(); addEventListener('resize', ajustar);
+
+    // ponteiro e seleção
+    const ray = new T.Raycaster(), ptr = new T.Vector2(9, 9), par = new T.Vector2();
+    const rotulo = document.getElementById('palcoRotulo');
+    let sobre = null, raio = false, px = 0, py = 0;
+    const grupos = registro.map(r => r.g);
+    function achar() {
+      ray.setFromCamera(ptr, cam);
+      const hit = ray.intersectObjects(grupos, true)[0];
+      if (!hit) return null;
+      let o = hit.object; while (o && !o.userData.reg) o = o.parent;
+      return o ? o.userData.reg : null;
+    }
+    function ler(e) {
+      const r = canvas.getBoundingClientRect();
+      px = e.clientX - r.left; py = e.clientY - r.top;
+      ptr.set(px / r.width * 2 - 1, -(py / r.height) * 2 + 1); par.copy(ptr); raio = true;
+    }
+    function escolher(reg) {
+      if (!reg) return;
+      if (reg.elo !== undefined) selecionarElo(reg.elo); else oceano.focar(reg.foco);
+    }
+    canvas.addEventListener('pointermove', e => { if (e.pointerType !== 'touch') ler(e); });
+    canvas.addEventListener('pointerleave', () => { ptr.set(9, 9); par.set(0, 0); sobre = null; rotulo.classList.remove('visivel'); });
+    canvas.addEventListener('click', e => { ler(e); escolher(achar()); });
+
+    let visivel = false, t = 0, ultimo = performance.now(), quadros = 0;
+    new IntersectionObserver(([e]) => { const antes = visivel; visivel = e.isIntersecting; if (visivel && !antes) { ultimo = performance.now(); requestAnimationFrame(quadro); } }).observe(palco);
+
+    const aux = new T.Object3D(), tmp = new T.Vector3(), bocaMundo = new T.Vector3();
+    function nadar(p, tt) {
+      const R = p.rota, th = R.w * tt + R.f;
+      p.g.position.set(R.c.x + R.a * Math.cos(th), R.c.y + Math.sin(th * 2) * R.y, R.c.z + R.b * Math.sin(th));
+      const vx = -R.a * Math.sin(th) * R.w, vz = R.b * Math.cos(th) * R.w;
+      p.g.rotation.y = Math.atan2(-vz, vx);
+      p.cauda.rotation.y = Math.sin(tt * 9 + R.f * 5) * .45;
+    }
+    function quadro(agora) {
+      if (!visivel) return;
+      const dt = Math.min(.05, (agora - ultimo) / 1000); ultimo = agora; quadros++;
+      if (!reduz) t += dt;
+
+      algas.forEach(a => a.segs.forEach((s, i) => { s.rotation.z = Math.sin(t * 1.2 + a.fase + i * .55) * .11; s.rotation.x = Math.cos(t * .9 + a.fase + i * .4) * .05; }));
+      copepodes.forEach(c => {
+        const salto = Math.pow(Math.abs(Math.sin(t * 2.2 + c.f)), 6) * .5;
+        c.g.position.set(c.base.x + Math.sin(t * .5 + c.f) * .9, c.base.y + Math.sin(t * .8 + c.f) * .5 + salto, c.base.z + Math.cos(t * .45 + c.f) * .9);
+        c.g.rotation.y = Math.sin(t * .3 + c.f) * 1.4; c.g.rotation.z = salto * .6;
+        c.antenas.forEach((a, k) => { a.rotation.z = -.5 - salto * 1.2 + Math.sin(t * 6 + k) * .04; });
+      });
+      mexilhoes.forEach(m => {
+        const ab = .06 + .32 * (.5 + .5 * Math.sin(t * 1.1 + m.f));
+        m.tampa.rotation.z = ab;
+        m.boca.getWorldPosition(bocaMundo);
+        m.particulas.forEach(p => {
+          if (!reduz) p.u += dt * .28 * (ab > .2 ? 1.4 : .6);
+          if (p.u >= 1) { p.u = 0; p.ini.set(m.g.position.x + (Math.random() - .5) * 5, m.g.position.y + 1 + Math.random() * 3, m.g.position.z + (Math.random() - .5) * 4); }
+          const k = p.u * p.u;
+          p.q.position.lerpVectors(p.ini, bocaMundo, k);
+          p.q.scale.setScalar(1 - Math.pow(p.u, 4));
+          p.q.rotation.set(t + p.u * 4, t * .7, 0);
+        });
+      });
+      nadar(palhaco, t);
+      cardume.forEach(p => nadar(p, t));
+      {
+        const th = .1 * t + 2, c = { x: 0, y: 4.2, z: -7 };
+        tart.g.position.set(c.x + 15 * Math.cos(th), c.y + Math.sin(t * .6) * .6, c.z + 6 * Math.sin(th));
+        tart.g.rotation.y = Math.atan2(-6 * Math.cos(th), -15 * Math.sin(th)); tart.g.rotation.z = Math.sin(t * .6) * .08;
+        tart.nad.forEach(n => { n.piv.rotation.x = n.z * Math.sin(t * 2.2 + (n.frente ? 0 : 1.2)) * (n.frente ? .55 : .3); });
+      }
+      barco.g.position.y = 10.35 + Math.sin(t * 1.3) * .12; barco.g.rotation.z = Math.sin(t * 1.1) * .05; barco.g.rotation.x = Math.cos(t * .9) * .04;
+
+      const sp = sup.attributes.position;
+      for (let i = 0; i < sp.count; i++) { const x = supBase[i * 3], z = supBase[i * 3 + 2]; sp.setY(i, Math.sin(x * .35 + t * 1.4) * .18 + Math.cos(z * .4 + t) * .14); }
+      sp.needsUpdate = true;
+      feixes.forEach((f, i) => { f.material.opacity = .035 + .03 * (.5 + .5 * Math.sin(t * .5 + i * 1.7)); });
+
+      bd.forEach((b, i) => {
+        if (!reduz) { b.y += b.v * dt; if (b.y > 10) b.y = -6; }
+        aux.position.set(b.x + Math.sin(t * 2 + b.f) * .15, b.y, b.z); aux.rotation.set(0, 0, 0); aux.scale.setScalar(b.s);
+        aux.updateMatrix(); bolhas.setMatrixAt(i, aux.matrix);
+      });
+      bolhas.instanceMatrix.needsUpdate = true;
+      pd.forEach((p, i) => {
+        aux.position.set(p.x + Math.sin(t * .3 + p.f) * .8, p.y + Math.sin(t * .5 + p.f) * .5, p.z); aux.rotation.set(t * .4 + p.r, t * .3 + p.f, 0); aux.scale.setScalar(p.s);
+        aux.updateMatrix(); plas.setMatrixAt(i, aux.matrix);
+      });
+      plas.instanceMatrix.needsUpdate = true;
+
+      // câmera: foco + leve paralaxe
+      const [pos, alvo] = FOCOS[foco]();
+      alvoPos.copy(pos).add(tmp.set(par.x * (foco === 'geral' ? 2.5 : .8), par.y * (foco === 'geral' ? 1.2 : .4), 0));
+      alvoOlhar.copy(alvo);
+      const k = reduz ? 1 : 1 - Math.pow(.03, dt);
+      cam.position.lerp(alvoPos, k); olhar.lerp(alvoOlhar, k); cam.lookAt(olhar);
+
+      if (raio && quadros % 3 === 0) {
+        raio = false; sobre = achar();
+        canvas.style.cursor = sobre ? 'pointer' : 'default';
+        if (sobre) { rotulo.textContent = sobre.nome; rotulo.style.left = px + 'px'; rotulo.style.top = py + 'px'; rotulo.classList.add('visivel'); }
+        else rotulo.classList.remove('visivel');
+      }
+      renderer.render(cena, cam);
+      requestAnimationFrame(quadro);
+    }
+    return true;
+  }
+  if (!iniciarOceano()) document.getElementById('palco').classList.add('sem-webgl');
+
+  /* =========================================================
+     Copo x garrafa em 3D (cada partícula = 1.000)
+     ========================================================= */
+  function iniciarCopo() {
+    const canvas = document.getElementById('copo3d');
+    if (!window.THREE) return false;
+    let renderer;
+    try { renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true }); } catch (e) { return false; }
+    const T = THREE, K = kitToon(T);
+    renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2)); renderer.setClearColor(0, 0);
+    const cena = new T.Scene();
+    const cam = new T.PerspectiveCamera(36, 1, .1, 50); cam.position.set(0, 2.8, 8.2); cam.lookAt(0, .1, 0);
+    cena.add(new T.HemisphereLight(0xffffff, 0x8aa3ad, 1));
+    const sol = new T.DirectionalLight(0xffffff, .7); sol.position.set(4, 6, 6); cena.add(sol);
+    const CORES = [0xD9366B, 0x1C9CC0, 0xE3A821, 0x7A55C9, 0x2EA36B];
+    const vidro = { transparent: true, opacity: .3, side: T.DoubleSide, depthWrite: false };
+
+    function particulas(n, raio, y0, y1, tam) {
+      const m = new T.InstancedMesh(new T.IcosahedronGeometry(tam, 0), K.mat(0xffffff), n);
+      const d = [...Array(n)].map((_, i) => { m.setColorAt(i, new T.Color(CORES[i % 5])); return { a: Math.random() * 6.3, r: Math.sqrt(Math.random()) * raio, y: y0 + Math.random() * (y1 - y0), w: .3 + Math.random() * .6, f: Math.random() * 6 }; });
+      m.instanceColor.needsUpdate = true;
+      m.material.transparent = true; m.renderOrder = 10; // desenha depois da água para as cores não desbotarem
+      return { m, d };
+    }
+
+    // copo de água da torneira
+    const copo = new T.Group();
+    copo.add(K.malha(new T.CylinderGeometry(1.05, .85, 2.6, 40, 1, true), 0xBFE9F2, { mat: vidro, contorno: false }));
+    const aguaC = K.malha(new T.CylinderGeometry(.99, .84, 2.0, 40), 0x5CC6E4, { mat: { transparent: true, opacity: .42, depthWrite: false }, contorno: false }); aguaC.position.y = -.28; copo.add(aguaC);
+    const borda = K.malha(new T.TorusGeometry(1.05, .045, 8, 40), 0xBFE9F2, { k: 1.12 }); borda.rotation.x = Math.PI / 2; borda.position.y = 1.3; copo.add(borda);
+    const fundo = K.malha(new T.CylinderGeometry(.86, .86, .14, 40), 0xBFE9F2); fundo.position.y = -1.3; copo.add(fundo);
+    const pc = particulas(4, .55, -1.1, .5, .19); copo.add(pc.m);
+    copo.position.y = -.1;
+
+    // garrafa plástica
+    const garrafa = new T.Group();
+    const perfil = [[0, -1.7], [.78, -1.7], [.9, -1.58], [.92, -1.25], [.85, -1.05], [.92, -.85], [.92, .7], [.84, 1.0], [.52, 1.5], [.35, 1.78], [.35, 2.1]].map(([x, y]) => new T.Vector2(x, y));
+    garrafa.add(K.malha(new T.LatheGeometry(perfil, 44), 0xA8E1F0, { mat: vidro, contorno: false }));
+    const perfilAgua = perfil.slice(0, 8).map(v => new T.Vector2(v.x * .94, v.y)); perfilAgua.push(new T.Vector2(0, 1.0));
+    garrafa.add(K.malha(new T.LatheGeometry(perfilAgua, 44), 0x5CC6E4, { mat: { transparent: true, opacity: .38, depthWrite: false, side: T.DoubleSide }, contorno: false }));
+    const rotuloG = K.malha(new T.CylinderGeometry(.935, .935, .62, 44, 1, true), 0xE3A821, { mat: { side: T.DoubleSide }, k: 1.02 }); rotuloG.position.y = -.1; garrafa.add(rotuloG);
+    const tampa = K.malha(new T.CylinderGeometry(.4, .4, .34, 28), 0x1C9CC0); tampa.position.y = 2.25; garrafa.add(tampa);
+    const pg = particulas(94, .68, -1.5, .9, .075); garrafa.add(pg.m);
+
+    const objs = { torneira: { g: copo, p: pc, e: 1 }, garrafa: { g: garrafa, p: pg, e: 0 } };
+    garrafa.scale.setScalar(.001);
+    let ativo = 'torneira';
+    copo3d.mostrar = f => { ativo = f; if (reduz) for (const k in objs) objs[k].g.scale.setScalar(k === f ? 1 : .001); };
+    document.getElementById('comparador').classList.add('com-3d');
+    document.getElementById('pontosNota').textContent = 'Cada partícula colorida representa 1.000 partículas reais. Os autores consideram os valores subestimados.';
+    for (const k in objs) cena.add(objs[k].g);
+
+    const caixa = canvas.parentElement;
+    function ajustar() { const w = caixa.clientWidth, h = caixa.clientHeight; renderer.setSize(w, h, false); cam.aspect = w / h; cam.updateProjectionMatrix(); }
+    ajustar(); addEventListener('resize', ajustar);
+
+    let visivel = false, t = 0, ultimo = performance.now();
+    new IntersectionObserver(([e]) => { const antes = visivel; visivel = e.isIntersecting; if (visivel && !antes) { ultimo = performance.now(); requestAnimationFrame(quadro); } }).observe(caixa);
+    const aux = new T.Object3D();
+    function quadro(agora) {
+      if (!visivel) return;
+      const dt = Math.min(.05, (agora - ultimo) / 1000); ultimo = agora; if (!reduz) t += dt;
+      for (const k in objs) {
+        const o = objs[k], alvo = k === ativo ? 1 : 0;
+        if (!reduz) {
+          o.e += (alvo - o.e) * (1 - Math.pow(.004, dt));
+          const s = Math.max(.001, o.e * (1 + Math.sin(o.e * Math.PI) * .12));
+          o.g.scale.setScalar(s); o.g.rotation.y = t * .35 + (1 - o.e) * 2.5;
+        }
+        o.p.d.forEach((q, i) => {
+          const a = q.a + t * q.w;
+          aux.position.set(Math.cos(a) * q.r, q.y + Math.sin(t * 1.3 + q.f) * .08, Math.sin(a) * q.r);
+          aux.rotation.set(t + q.f, t * .7, 0); aux.scale.setScalar(1); aux.updateMatrix(); o.p.m.setMatrixAt(i, aux.matrix);
+        });
+        o.p.m.instanceMatrix.needsUpdate = true;
+      }
+      renderer.render(cena, cam);
+      requestAnimationFrame(quadro);
+    }
+    return true;
+  }
+  iniciarCopo();
+
+  /* =========================================================
+     Placar de líderes com login Google (Firebase Auth + Firestore).
+     Preencha FIREBASE_CONFIG com os dados do seu projeto Firebase
+     (veja LEIAME-placar.md). Vazio, o placar fica desativado e o
+     recorde local continua funcionando.
+     ========================================================= */
+  const FIREBASE_CONFIG = {
+    apiKey: '',
+    authDomain: '',
+    projectId: '',
+    appId: '',
+  };
+  const placar = (() => {
+    const $p = id => document.getElementById(id);
+    const listas = [...document.querySelectorAll('[data-placar-lista]')], estados = [...document.querySelectorAll('[data-placar-estado]')];
+    const botoesGoogle = [...document.querySelectorAll('[data-entrar-google]')], eu = $p('plEu');
+    const estadoEl = { set textContent(v) { estados.forEach(e => { e.textContent = v; }); } };
+    const configurado = !!(FIREBASE_CONFIG.apiKey && FIREBASE_CONFIG.projectId);
+    let fb = null, usuario = null, meu = null, linhas = [], pendente = null, carregando = null, aoSalvarPendente = null;
+
+    const nomeCurto = u => {
+      const partes = (u.displayName || 'Jogador').trim().split(/\s+/);
+      return (partes[0] + (partes.length > 1 ? ' ' + partes[partes.length - 1][0] + '.' : '')).slice(0, 40);
+    };
+    function render() {
+      if (!linhas.length) { listas.forEach(l => l.replaceChildren()); estadoEl.textContent = 'Ninguém jogou ainda. Seja o primeiro no placar!'; return; }
+      estadoEl.textContent = 'Top 10, atualizado ao vivo';
+      listas.forEach(lista => lista.replaceChildren(...linhas.map((l, i) => {
+        const li = document.createElement('li'), meuLugar = usuario && l.id === usuario.uid;
+        if (meuLugar) li.className = 'eu';
+        const pos = document.createElement('span'); pos.className = 'pl-pos'; pos.textContent = (i + 1) + 'º';
+        const av = document.createElement('img'); av.className = 'pl-av'; av.alt = ''; av.referrerPolicy = 'no-referrer';
+        if (typeof l.foto === 'string' && /^https:\/\//.test(l.foto)) av.src = l.foto;
+        const nome = document.createElement('span'); nome.className = 'pl-nome'; nome.textContent = typeof l.nome === 'string' && l.nome ? l.nome : 'Jogador';
+        if (meuLugar) { const v = document.createElement('small'); v.textContent = 'você'; nome.appendChild(v); }
+        const pts = document.createElement('span'); pts.className = 'pl-pts'; pts.textContent = (+l.pontos || 0).toLocaleString('pt-BR');
+        const m = document.createElement('span'); m.className = 'pl-m'; m.textContent = (+l.dist || 0) + ' m';
+        li.append(pos, av, nome, pts, m); return li;
+      })));
+    }
+    function renderConta() {
+      botoesGoogle.forEach(b => { b.hidden = !fb || !!usuario || (b.id === 'btnGoogleFim' && !pendente); });
+      eu.hidden = !usuario;
+      if (usuario) { $p('plEuNome').textContent = nomeCurto(usuario); const f = $p('plEuFoto'); if (usuario.photoURL) f.src = usuario.photoURL; else f.removeAttribute('src'); }
+    }
+
+    function carregar() {
+      if (carregando) return carregando;
+      carregando = (async () => {
+        const base = 'https://www.gstatic.com/firebasejs/10.12.2/';
+        try {
+          const [appM, authM, fsM] = await Promise.all([import(base + 'firebase-app.js'), import(base + 'firebase-auth.js'), import(base + 'firebase-firestore.js')]);
+          const app = appM.initializeApp(FIREBASE_CONFIG);
+          fb = { auth: authM.getAuth(app), db: fsM.getFirestore(app), authM, fsM };
+        } catch (e) { estadoEl.textContent = 'Não foi possível conectar ao placar agora.'; return; }
+        const { auth, db, authM, fsM } = fb;
+        authM.getRedirectResult(auth).catch(() => {});
+        authM.onAuthStateChanged(auth, async u => {
+          usuario = u; meu = null; renderConta(); render();
+          if (!u) return;
+          try { const d = await fsM.getDoc(fsM.doc(db, 'placar', u.uid)); meu = d.exists() ? d.data() : null; } catch (e) {}
+          if (pendente) { const r = pendente; pendente = null; renderConta(); const msg = await salvar(r); if (aoSalvarPendente) aoSalvarPendente(msg); }
+        });
+        fsM.onSnapshot(fsM.query(fsM.collection(db, 'placar'), fsM.orderBy('pontos', 'desc'), fsM.limit(10)),
+          snap => { linhas = snap.docs.map(d => ({ id: d.id, ...d.data() })); render(); },
+          () => { estadoEl.textContent = 'O placar não pôde ser carregado agora.'; });
+        renderConta();
+      })();
+      return carregando;
+    }
+
+    async function entrar() {
+      await carregar(); if (!fb) return;
+      const { auth, authM } = fb, prov = new authM.GoogleAuthProvider();
+      try { await authM.signInWithPopup(auth, prov); }
+      catch (e) {
+        const c = e && e.code;
+        if (c === 'auth/popup-blocked' || c === 'auth/operation-not-supported-in-this-environment') { try { await authM.signInWithRedirect(auth, prov); } catch (e2) {} }
+        else if (c === 'auth/unauthorized-domain') estadoEl.textContent = 'Este endereço ainda não foi autorizado no Firebase (Authentication › Settings › Authorized domains).';
+        else if (c !== 'auth/popup-closed-by-user' && c !== 'auth/cancelled-popup-request') estadoEl.textContent = 'Não foi possível entrar com o Google agora.';
+      }
+    }
+    botoesGoogle.forEach(b => b.addEventListener('click', e => { e.stopPropagation(); entrar(); }));
+    $p('btnSair').addEventListener('click', () => fb && fb.authM.signOut(fb.auth));
+
+    async function salvar(r) {
+      const { db, fsM } = fb;
+      if (meu && (+meu.pontos || 0) >= r.pontos) return `Sua melhor marca no placar continua ${(+meu.pontos).toLocaleString('pt-BR')} pontos.`;
+      const corpo = { nome: nomeCurto(usuario), foto: (usuario.photoURL || '').slice(0, 500), pontos: r.pontos, dist: r.dist, plastico: r.plastico, em: fsM.serverTimestamp() };
+      try {
+        await fsM.setDoc(fsM.doc(db, 'placar', usuario.uid), corpo); meu = corpo;
+        const pos = linhas.findIndex(l => l.id === usuario.uid);
+        return pos >= 0 ? `Nova melhor marca salva: você está em ${pos + 1}º no placar!` : 'Nova melhor marca salva no placar!';
+      } catch (e) { return 'Não foi possível salvar no placar agora.'; }
+    }
+
+    async function enviar(r, aoSalvar) {
+      if (!configurado) return '';
+      await carregar(); if (!fb) return '';
+      r = { pontos: Math.floor(r.pontos), dist: Math.floor(r.dist), plastico: Math.floor(r.plastico) };
+      if (!usuario) {
+        if (!pendente || r.pontos > pendente.pontos) pendente = r;
+        aoSalvarPendente = aoSalvar; renderConta();
+        return 'Entre com sua conta Google para colocar esta marca no placar.';
+      }
+      return salvar(r);
+    }
+
+    if (!configurado) estadoEl.textContent = 'O placar online ainda não foi configurado. Por enquanto vale o seu recorde neste navegador.';
+    else new IntersectionObserver(([e], o) => { if (e.isIntersecting) { o.disconnect(); carregar(); } }, { rootMargin: '600px' }).observe(document.getElementById('arena'));
+    return { enviar };
+  })();
+
+  /* =========================================================
+     Minijogo: corrida em 3 faixas pelo fundo do mar
+     ========================================================= */
+  function iniciarJogo() {
+    const arena = document.getElementById('arena'), canvas = document.getElementById('jogo3d');
+    if (!window.THREE) return false;
+    let renderer;
+    try { renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance' }); } catch (e) { return false; }
+    const T = THREE, K = kitToon(T), $ = id => document.getElementById(id);
+    renderer.setClearColor(0, 0);
+    const toqueTela = matchMedia('(hover: none)').matches;
+
+    /* ---------- opções do jogador ---------- */
+    const opc = { som: true, vibrar: true, dicas: true, tremor: !reduz, qualidade: toqueTela ? 'leve' : 'alta' };
+    try { Object.assign(opc, JSON.parse(localStorage.getItem('opcoes-corrida') || '{}')); } catch (e) {}
+    const salvarOpc = () => { try { localStorage.setItem('opcoes-corrida', JSON.stringify(opc)); } catch (e) {} };
+
+    /* ---------- efeitos sonoros sintetizados (sem arquivos) ---------- */
+    const som = (() => {
+      let ctx = null, mestre = null, ruidoBuf = null;
+      function garantir() {
+        if (!ctx) {
+          const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return null;
+          ctx = new AC(); mestre = ctx.createGain(); mestre.gain.value = .22; mestre.connect(ctx.destination);
+          ruidoBuf = ctx.createBuffer(1, ctx.sampleRate * .5, ctx.sampleRate);
+          const d = ruidoBuf.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+        }
+        if (ctx.state === 'suspended') ctx.resume();
+        return ctx;
+      }
+      function tom(freq, dur, tipo = 'sine', vol = .5, slide = 1, atraso = 0) {
+        if (!opc.som) return; const c = garantir(); if (!c) return;
+        const t0 = c.currentTime + atraso, o = c.createOscillator(), g = c.createGain();
+        o.type = tipo; o.frequency.setValueAtTime(freq, t0);
+        if (slide !== 1) o.frequency.exponentialRampToValueAtTime(Math.max(40, freq * slide), t0 + dur);
+        g.gain.setValueAtTime(.0001, t0); g.gain.exponentialRampToValueAtTime(vol, t0 + .012); g.gain.exponentialRampToValueAtTime(.0001, t0 + dur);
+        o.connect(g); g.connect(mestre); o.start(t0); o.stop(t0 + dur + .03);
+      }
+      function chiado(dur, vol, freq) {
+        if (!opc.som) return; const c = garantir(); if (!c) return;
+        const t0 = c.currentTime, s = c.createBufferSource(), f = c.createBiquadFilter(), g = c.createGain();
+        s.buffer = ruidoBuf; f.type = 'lowpass'; f.frequency.setValueAtTime(freq, t0); f.frequency.exponentialRampToValueAtTime(120, t0 + dur);
+        g.gain.setValueAtTime(vol, t0); g.gain.exponentialRampToValueAtTime(.0001, t0 + dur);
+        s.connect(f); f.connect(g); g.connect(mestre); s.start(t0); s.stop(t0 + dur);
+      }
+      return {
+        garantir,
+        coleta: n => tom(620 * Math.pow(2, Math.min(n, 24) / 24), .11, 'triangle', .32, 1.45),
+        grande: () => { tom(523, .1, 'triangle', .34); tom(784, .18, 'triangle', .34, 1, .07); },
+        pulo: () => tom(240, .24, 'sine', .3, 2.3),
+        mergulho: () => tom(460, .22, 'sine', .26, .42),
+        faixa: () => chiado(.1, .18, 2400),
+        poder: () => [523, 659, 784, 1047].forEach((f, i) => tom(f, .15, 'square', .1, 1, i * .07)),
+        bolha: () => tom(950, .16, 'sine', .3, .3),
+        batida: () => { chiado(.5, .7, 900); tom(150, .45, 'sawtooth', .22, .35); },
+        contagem: fim => tom(fim ? 880 : 440, fim ? .32 : .14, 'square', .12),
+        clique: () => tom(700, .05, 'triangle', .15),
+      };
+    })();
+    const vibrar = p => { if (opc.vibrar && navigator.vibrate) try { navigator.vibrate(p); } catch (e) {} };
+
+    /* ---------- cena ---------- */
+    const cena = new T.Scene(); cena.fog = new T.Fog(0x145067, 22, 80);
+    const cam = new T.PerspectiveCamera(54, 1, .1, 160); cam.position.set(0, 3, 9);
+    cena.add(new T.HemisphereLight(0xD6F6FF, 0x173540, 1));
+    const sol = new T.DirectionalLight(0xffffff, .8); sol.position.set(5, 18, 8); cena.add(sol);
+    const contraLuz = new T.DirectionalLight(0x8FE3FF, .45); contraLuz.position.set(-6, 6, -12); cena.add(contraLuz);
+
+    const mats = new Map();
+    const cm = (cor, extra) => { const k = cor + '|' + JSON.stringify(extra || {}); if (!mats.has(k)) mats.set(k, K.mat(cor, extra)); return mats.get(k); };
+    const contorno = new T.MeshBasicMaterial({ color: 0x0a1c24, side: T.BackSide });
+    function peca(geo, cor, o = {}) {
+      const m = new T.Mesh(geo, o.material || cm(cor, o.mat));
+      if (o.contorno !== false) { const c = new T.Mesh(geo, contorno); c.scale.setScalar(o.k || 1.08); m.add(c); }
+      return m;
+    }
+    const perfilG = [[0, -1.7], [.78, -1.7], [.9, -1.55], [.9, .7], [.52, 1.5], [.35, 1.78], [.35, 2.1]].map(([x, y]) => new T.Vector2(x * .28, y * .28));
+    const G = {
+      frag: new T.IcosahedronGeometry(.22, 0), pedra: new T.DodecahedronGeometry(1, 0), coluna: new T.CylinderGeometry(.75, .9, 1, 9),
+      bola: new T.SphereGeometry(.5, 14, 10), poste: new T.CylinderGeometry(.08, .08, 1, 8), garrafa: new T.LatheGeometry(perfilG, 18),
+      tampa: new T.CylinderGeometry(.11, .11, .1, 12), sacola: new T.SphereGeometry(.45, 14, 8, 0, Math.PI * 2, 0, Math.PI * .62),
+      alca: new T.TorusGeometry(.12, .03, 6, 12, Math.PI), canudo: new T.CylinderGeometry(.06, .06, 1.1, 8),
+      rede: new T.TorusKnotGeometry(.26, .055, 48, 6, 2, 3), ima: new T.TorusGeometry(.28, .1, 8, 18, Math.PI),
+      ponta: new T.CylinderGeometry(.1, .1, .16, 10), bolhaP: new T.SphereGeometry(.55, 18, 12), bolinha: new T.SphereGeometry(.3, 16, 12),
+      bolhinha: new T.SphereGeometry(.08, 8, 6), aura: new T.TorusGeometry(.55, .04, 6, 28), brilho: new T.OctahedronGeometry(.09, 0),
+    };
+    const CORES = [0xD9366B, 0x1C9CC0, 0xE3A821, 0x7A55C9, 0x2EA36B];
+    const FAIXA = 2.2, BASE_Y = .8, LONGE = -82, PERTO = 12, faixaRolagem = PERTO - LONGE;
+
+    // pista: vale de areia, três faixas e luz cáustica que ondula no chão
+    const chaoGeo = new T.PlaneGeometry(60, 230, 30, 115); chaoGeo.rotateX(-Math.PI / 2);
+    const pc = chaoGeo.attributes.position;
+    for (let i = 0; i < pc.count; i++) { const ax = Math.abs(pc.getX(i)); pc.setY(i, ax > 4 ? (ax - 4) * .38 + Math.sin(pc.getZ(i) * .3 + ax) * .3 : 0); }
+    chaoGeo.computeVertexNormals();
+    const chao = new T.Mesh(chaoGeo, K.mat(0x7E6E4F)); chao.position.z = -72; cena.add(chao);
+    [-1, 0, 1].forEach(f => {
+      const tira = new T.Mesh(new T.PlaneGeometry(FAIXA - .12, 230), K.mat(f === 0 ? 0x948259 : 0x887650)); tira.rotation.x = -Math.PI / 2; tira.position.set(f * FAIXA, .01, -72); cena.add(tira);
+    });
+    for (const x of [-1.5 * FAIXA, -FAIXA / 2, FAIXA / 2, 1.5 * FAIXA]) {
+      const l = new T.Mesh(new T.PlaneGeometry(.08, 230), new T.MeshBasicMaterial({ color: 0x5E5038 })); l.rotation.x = -Math.PI / 2; l.position.set(x, .02, -72); cena.add(l);
+    }
+    function texturaCausticas() {
+      const c = document.createElement('canvas'); c.width = c.height = 256; const g = c.getContext('2d');
+      g.strokeStyle = '#fff'; g.lineJoin = 'round';
+      for (let i = 0; i < 46; i++) {
+        const x = Math.random() * 256, y = Math.random() * 256, r = 12 + Math.random() * 26, pts = [];
+        for (let a = 0; a < 6.28; a += .55) pts.push([Math.cos(a) * r * (.65 + Math.random() * .5), Math.sin(a) * r * (.65 + Math.random() * .5)]);
+        g.lineWidth = 1.2 + Math.random() * 2.4; g.globalAlpha = .3 + Math.random() * .5;
+        for (const ox of [-256, 0, 256]) for (const oy of [-256, 0, 256]) {
+          g.beginPath(); pts.forEach(([dx, dy], k) => k ? g.lineTo(x + ox + dx, y + oy + dy) : g.moveTo(x + ox + dx, y + oy + dy)); g.closePath(); g.stroke();
+        }
+      }
+      const tx = new T.CanvasTexture(c); tx.wrapS = tx.wrapT = T.RepeatWrapping; return tx;
+    }
+    const txC = texturaCausticas();
+    const causticas = [0, 1].map(k => {
+      const tx = txC.clone(); tx.needsUpdate = true; tx.repeat.set(2.2 + k * .9, 30 + k * 7);
+      const m = new T.Mesh(new T.PlaneGeometry(16, 230), new T.MeshBasicMaterial({ map: tx, transparent: true, opacity: k ? .06 : .1, color: 0x8FE3F5, blending: T.AdditiveBlending, depthWrite: false }));
+      m.rotation.x = -Math.PI / 2; m.position.set(0, .03 + k * .01, -72); cena.add(m); return m;
+    });
+    const feixes = [];
+    for (let i = 0; i < 5; i++) {
+      const f = new T.Mesh(new T.PlaneGeometry(3, 40), new T.MeshBasicMaterial({ color: 0xCFF6FF, transparent: true, opacity: .05, blending: T.AdditiveBlending, depthWrite: false, side: T.DoubleSide }));
+      f.position.set(-12 + i * 6, 10, -40 - i * 6); f.rotation.z = .3; cena.add(f); feixes.push(f);
+    }
+
+    // cenário que rola na direção da câmera
+    const rolantes = [], algasJ = [];
+    function rolante(g, x, y, z) { g.position.set(x, y, z); cena.add(g); rolantes.push(g); }
+    for (let i = 0; i < 50; i++) {
+      const s = new T.Mesh(G.bola, cm(i % 2 ? 0x7A6A4A : 0x8E7C58)); s.scale.set(.5 + Math.random() * .5, .08, .4 + Math.random() * .3);
+      rolante(s, (Math.random() - .5) * 7, .02, LONGE + Math.random() * faixaRolagem);
+    }
+    for (let i = 0; i < 26; i++) {
+      const lado = i % 2 ? 1 : -1, x = lado * (5 + Math.random() * 4.5), y = (Math.abs(x) - 4) * .38;
+      let g; const tipo = i % 3;
+      if (tipo === 0) { const a = fazerAlga(K, 2.5 + Math.random() * 3, i % 4 ? 0x2EA36B : 0x4CC27E, i); g = a.g; algasJ.push(a); }
+      else if (tipo === 1) {
+        g = new T.Group(); const c = [0xF07CA8, 0xF2A65A, 0xB98AF0][i % 3];
+        for (let k = 0; k < 4; k++) { const b = peca(G.bola, c); b.scale.setScalar(.9 + (k % 2) * .5); b.position.set(Math.cos(k * 1.7) * .5, .3 + (k % 2) * .5, Math.sin(k * 1.7) * .4); g.add(b); }
+      } else { g = peca(G.pedra, 0x3E5A66); g.scale.set(1.8, 1.1, 1.4); }
+      rolante(g, x, y, LONGE + (i / 26) * faixaRolagem);
+    }
+    const nB = 40, bolhas = new T.InstancedMesh(G.bolhinha, new T.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: .45 }), nB);
+    const bd = [...Array(nB)].map(() => ({ x: (Math.random() - .5) * 16, y: Math.random() * 9, z: LONGE + Math.random() * faixaRolagem, s: 1 + Math.random() * 2 }));
+    cena.add(bolhas);
+    const NNEVE = 170, neve = new T.InstancedMesh(new T.SphereGeometry(.035, 5, 4), new T.MeshBasicMaterial({ color: 0xE8FBFF, transparent: true, opacity: .55 }), NNEVE);
+    const nd = [...Array(NNEVE)].map(() => ({ x: (Math.random() - .5) * 18, y: Math.random() * 8, z: LONGE + Math.random() * faixaRolagem, f: Math.random() * 6 }));
+    cena.add(neve);
+    const NLIN = 36, linhas = new T.InstancedMesh(new T.BoxGeometry(.025, .025, 1), new T.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0, depthWrite: false }), NLIN);
+    const ld = [...Array(NLIN)].map(() => { const lado = Math.random() < .5 ? -1 : 1; return { x: lado * (2.8 + Math.random() * 4), y: .4 + Math.random() * 4.5, z: -40 + Math.random() * 48 }; });
+    cena.add(linhas);
+
+    /* ---------- jogador: submarino visto de trás ---------- */
+    const jog = new T.Group(); cena.add(jog);
+    const giro = new T.Group(); jog.add(giro);
+    const sub = new T.Group(); sub.rotation.y = Math.PI / 2; giro.add(sub);
+    const casco = K.malha(new T.SphereGeometry(1, 28, 18), 0xF2C230); casco.scale.set(1.3, .72, .72); sub.add(casco);
+    const torre = K.malha(new T.CylinderGeometry(.28, .34, .42, 18), 0xF2C230); torre.position.set(-.35, .72, 0); sub.add(torre);
+    for (const z of [1, -1]) {
+      const zz = .72 * Math.sqrt(1 - (.1 / 1.3) ** 2) + .02;
+      const vid = new T.Mesh(new T.CircleGeometry(.17, 18), cm(0x9FE6F5)); vid.position.set(-.1, -.02, zz * z); if (z < 0) vid.rotation.y = Math.PI; sub.add(vid);
+      const aro = new T.Mesh(new T.TorusGeometry(.17, .045, 8, 18), cm(0xE3A821)); aro.position.copy(vid.position); sub.add(aro);
+    }
+    for (const z of [1, -1]) { const o = K.olho(.18); o.position.set(1.1, .2, .26 * z); if (z < 0) o.scale.z = -1; sub.add(o); }
+    const helice = new T.Group(); helice.position.set(-1.36, 0, 0); sub.add(helice);
+    for (let i = 0; i < 2; i++) { const p = peca(new T.BoxGeometry(.06, .55, .14), 0xD9366B); p.rotation.x = i * Math.PI / 2; helice.add(p); }
+    const aroRede = K.malha(new T.TorusGeometry(.62, .06, 10, 28), 0xffffff, { k: 1.15 }); aroRede.position.set(.95, .55, 0); aroRede.rotation.y = Math.PI / 2; sub.add(aroRede);
+    const malhaRede = new T.Mesh(new T.ConeGeometry(.62, .9, 12, 3, true), new T.MeshBasicMaterial({ color: 0xffffff, wireframe: true, transparent: true, opacity: .5 }));
+    malhaRede.rotation.z = Math.PI / 2; malhaRede.position.set(.5, .55, 0); sub.add(malhaRede);
+    const escudoM = new T.Mesh(new T.SphereGeometry(1.45, 24, 16), new T.MeshBasicMaterial({ color: 0x9FE6F5, transparent: true, opacity: .22, depthWrite: false }));
+    escudoM.visible = false; jog.add(escudoM);
+    const campoIma = new T.Mesh(new T.TorusGeometry(1.7, .035, 6, 48), new T.MeshBasicMaterial({ color: 0xFF7BA5, transparent: true, opacity: .6 }));
+    campoIma.rotation.x = Math.PI / 2; campoIma.visible = false; jog.add(campoIma);
+
+    /* ---------- efeitos: bolhas da hélice, poeira, brilhos e números ---------- */
+    const rastro = [...Array(28)].map(() => { const m = new T.Mesh(G.bolhinha, new T.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: .6 })); m.visible = false; cena.add(m); return { m, vida: 0 }; });
+    const poeira = [...Array(22)].map(() => { const m = new T.Mesh(G.bola, new T.MeshBasicMaterial({ color: 0xCDB98B, transparent: true, opacity: .5, depthWrite: false })); m.visible = false; cena.add(m); return { m, vida: 0, v: new T.Vector3() }; });
+    const brilhos = [...Array(48)].map(() => { const m = new T.Mesh(G.brilho, new T.MeshBasicMaterial({ color: 0xffffff })); m.visible = false; cena.add(m); return { m, vida: 0, v: new T.Vector3() }; });
+    function soltarPoeira(x, y, z, n, forca = 1) {
+      for (let k = 0; k < n; k++) {
+        const p = poeira.find(q => q.vida <= 0); if (!p) return;
+        p.m.position.set(x + (Math.random() - .5) * .8, y, z + (Math.random() - .5) * .6);
+        p.v.set((Math.random() - .5) * 2.4 * forca, .6 + Math.random() * 1.2, 1 + Math.random() * 2); p.vida = .55; p.m.visible = true;
+      }
+    }
+    function soltarBrilho(pos, cor, n, forca = 3.2) {
+      for (let k = 0; k < n; k++) {
+        const b = brilhos.find(q => q.vida <= 0); if (!b) return;
+        b.m.position.copy(pos); b.m.material.color.setHex(cor);
+        b.v.set(Math.random() - .5, Math.random() - .3, Math.random() - .5).normalize().multiplyScalar(forca * (.5 + Math.random() * .7));
+        b.vida = .45 + Math.random() * .2; b.m.visible = true;
+      }
+    }
+    const popsEl = $('pops'), popPool = [...Array(10)].map(() => { const s = document.createElement('span'); popsEl.appendChild(s); return s; });
+    let popI = 0; const proj = new T.Vector3();
+    function popTexto(texto, pos, grande) {
+      const s = popPool[popI++ % popPool.length];
+      proj.copy(pos).project(cam);
+      s.style.left = ((proj.x + 1) / 2 * arena.clientWidth) + 'px'; s.style.top = ((1 - proj.y) / 2 * arena.clientHeight) + 'px';
+      s.textContent = texto; s.className = grande ? 'grande' : ''; void s.offsetWidth; s.classList.add('ativo');
+    }
+
+    /* ---------- itens, poderes e obstáculos ---------- */
+    const GRANDES = {
+      garrafa: { fato: '<b>Garrafa PET.</b> Com sol, calor e atrito, o plástico se quebra em pedaços cada vez menores.' },
+      sacola: { fato: '<b>Sacola.</b> É de polietileno, um dos plásticos mais encontrados no sangue humano.' },
+      canudo: { fato: '<b>Canudo.</b> É de polipropileno, o plástico mais comum nos estudos da USP com pulmão e cérebro.' },
+      rede: { fato: '<b>Pedaço de rede.</b> Redes abandonadas soltam fibras de náilon que viram microplástico.' },
+    };
+    const TIPOS_G = Object.keys(GRANDES);
+    function fazerItem(tipo) {
+      const g = new T.Group(), corpo = new T.Group(); g.add(corpo);
+      let cor = CORES[Math.floor(Math.random() * 5)];
+      if (tipo === 'frag') corpo.add(peca(G.frag, cor, { k: 1.2 }));
+      else {
+        if (tipo === 'garrafa') { corpo.add(peca(G.garrafa, 0x7CC8E8, { mat: { side: T.DoubleSide } })); const t = peca(G.tampa, 0x1C9CC0); t.position.y = .63; corpo.add(t); corpo.rotation.z = .5; cor = 0x7CC8E8; }
+        else if (tipo === 'sacola') { const c = peca(G.sacola, 0xF4F1E6, { mat: { side: T.DoubleSide } }); c.rotation.x = Math.PI; corpo.add(c); for (const x of [-.16, .16]) { const a = peca(G.alca, 0xF4F1E6); a.position.set(x, .4, 0); corpo.add(a); } cor = 0xffffff; }
+        else if (tipo === 'canudo') { const c = peca(G.canudo, 0xD9366B); c.rotation.z = .9; corpo.add(c); cor = 0xD9366B; }
+        else if (tipo === 'rede') { corpo.add(peca(G.rede, 0x2EA36B, { k: 1.12 })); cor = 0x2EA36B; }
+        const aura = new T.Mesh(G.aura, new T.MeshBasicMaterial({ color: 0xFFE08A, transparent: true, opacity: .8 })); aura.rotation.x = Math.PI / 2; aura.position.y = -.35; g.add(aura); g.userData.aura = aura;
+      }
+      g.userData.corpo = corpo; g.userData.cor = cor;
+      return g;
+    }
+    function fazerPoder(tipo) {
+      const g = new T.Group();
+      g.add(new T.Mesh(G.bolhaP, new T.MeshBasicMaterial({ color: 0x9FE6F5, transparent: true, opacity: .3, depthWrite: false })));
+      if (tipo === 'ima') {
+        const u = peca(G.ima, 0xD9366B); u.rotation.z = Math.PI; g.add(u);
+        for (const x of [-.28, .28]) { const p = peca(G.ponta, 0xE8EFEC); p.position.set(x, .06, 0); g.add(p); }
+      } else {
+        g.add(new T.Mesh(G.bolinha, cm(0x6FD0EA, { transparent: true, opacity: .8 })));
+        const br = new T.Mesh(G.bolhinha, new T.MeshBasicMaterial({ color: 0xffffff })); br.position.set(.12, .14, .22); br.scale.setScalar(1.3); g.add(br);
+      }
+      return g;
+    }
+    function fazerObstaculo(tipo) {
+      const g = new T.Group(); const o = { tipo, g, y0: 0, y1: 9, prof: 1.5, vz: 0, nasc: 0, f: Math.random() * 6 };
+      if (tipo === 'coral') {
+        const c = peca(G.coluna, 0xF07CA8); c.scale.set(1, 3, 1); c.position.y = 1.5; g.add(c);
+        for (let k = 0; k < 3; k++) { const b = peca(G.bola, 0xF07CA8); b.scale.setScalar(.75); b.position.set((k - 1) * .45, 3.1 + (k % 2) * .3, 0); g.add(b); }
+      } else if (tipo === 'pedra') {
+        const p = peca(G.pedra, 0x3E5A66); p.scale.set(1.0, .55, .75); p.position.y = .4; g.add(p); o.y1 = .9;
+      } else if (tipo === 'rede') {
+        for (const x of [-1.05, 1.05]) { const p = peca(G.poste, 0x5B3A1E); p.scale.y = 4; p.position.set(x, 2, 0); g.add(p); }
+        const corda = peca(G.poste, 0xE8EFEC, { k: 1.3 }); corda.scale.y = 2.2; corda.rotation.z = Math.PI / 2; corda.position.y = 3.9; g.add(corda);
+        const malha = new T.Mesh(new T.PlaneGeometry(2.1, 2.6, 9, 10), new T.MeshBasicMaterial({ color: 0x9BE3B5, wireframe: true, transparent: true, opacity: .85 }));
+        malha.position.y = 2.6; g.add(malha);
+        for (let k = 0; k < 4; k++) { const b = peca(G.bola, 0xF2A65A); b.scale.setScalar(.3); b.position.set(-.8 + k * .53, 3.9, 0); g.add(b); }
+        o.y0 = 1.3; o.prof = .7; o.malha = malha;
+      } else if (tipo === 'peixe') {
+        const p = fazerPeixe(K, Math.random() < .5 ? { cor: 0x2F6FD6, cauda: 0xF2C230 } : { cor: 0xF57A1F, cauda: 0xF57A1F, listras: true });
+        p.g.rotation.y = -Math.PI / 2; p.g.scale.setScalar(.72); p.g.position.y = 1.0; g.add(p.g);
+        o.cauda = p.cauda; o.peixe = p.g; o.vz = 6; o.prof = 1.2;
+      }
+      g.scale.setScalar(.01);
+      return o;
+    }
+
+    /* ---------- estado ---------- */
+    const ui = {
+      hud: $('hud'), pontos: $('hudPontos'), plastico: $('hudPlastico'), multi: $('hudMulti'), multiN: $('hudMultiN'), combo: $('hudCombo'), dist: $('hudDist'),
+      poder: $('hudPoder'), poderNome: $('poderNome'), poderBarra: $('poderBarra'),
+      toast: $('toast'), centro: $('avisoCentro'), pausa: $('btnPausa'), flash: $('flash'),
+      menu: $('telaMenu'), telaPausa: $('telaPausa'), fim: $('telaFim'),
+    };
+    const MOTIVOS = {
+      coral: 'Você bateu em um coral. Dica: troque de faixa com ← e →.',
+      pedra: 'Você bateu em uma pedra. Dica: pule com ↑.',
+      rede: 'Você ficou preso numa <b>rede fantasma</b>, uma rede de pesca abandonada que continua no mar e solta fibras de náilon. Dica: mergulhe com ↓.',
+      peixe: 'Você bateu em um peixe. Peixes também engolem plástico por engano. Dica: troque de faixa.',
+    };
+    let estado = 'menu', antesDaPausa = 'jogando', voltarPara = 'principal', obst = [], itens = [], poderes = [];
+    let faixa = 1, px = 0, vx = 0, py = BASE_Y, vy = 0, noChao = true, mergulho = 0, rolo = 0, offY = 0, offYv = 0, estica = 1, esticaV = 0, pedidoPulo = -9;
+    let tJogo = 0, vel = 6, dist = 0, contagemT = 0, ultNum = -1, camDe = new T.Vector3(), camAng = 0;
+    let pontosPlast = 0, plastico = 0, escapou = 0, combo = 0, maiorMulti = 1, multi = 1, ima = 0, escudo = false, invul = 0;
+    let acum = 0, batidaT = 0, motivo = '', vistos = new Set(), toastAte = 0, tremor = 0, proxRastro = 0, fovExtra = 0, relogio = 0;
+    let recorde = 0; try { recorde = +localStorage.getItem('recorde-corrida') || 0; } catch (e) {}
+    $('menuRecorde').textContent = recorde.toLocaleString('pt-BR');
+
+    function aviso(html, seg = 2.6) { ui.toast.innerHTML = html; ui.toast.classList.add('visivel'); toastAte = performance.now() + seg * 1000; }
+    function grito(txt) { ui.centro.textContent = txt; ui.centro.classList.remove('visivel'); void ui.centro.offsetWidth; ui.centro.classList.add('visivel'); }
+    function pular(el) { el.classList.remove('pulo'); void el.offsetWidth; el.classList.add('pulo'); }
+    const pontos = () => Math.floor(dist) + pontosPlast;
+    let ultHud = '';
+    function hud() {
+      const chave = [pontos(), plastico, multi, combo, Math.floor(dist)].join();
+      if (chave === ultHud) return; ultHud = chave;
+      ui.pontos.textContent = pontos().toLocaleString('pt-BR'); ui.plastico.textContent = plastico; ui.dist.textContent = Math.floor(dist);
+      ui.multiN.textContent = 'x' + multi; ui.multi.classList.toggle('x1', multi === 1);
+      ui.combo.style.transform = `scaleX(${multi >= 5 ? 1 : (combo % 12) / 12})`;
+    }
+
+    /* ---------- telas e menus ---------- */
+    const telas = [ui.menu, ui.telaPausa, ui.fim];
+    function mostrarTela(tela, painel, focar = true) {
+      telas.forEach(t => { t.hidden = t !== tela; });
+      if (tela === ui.menu) {
+        ui.menu.querySelectorAll('.painel-menu').forEach(p => { p.hidden = p.dataset.painel !== (painel || 'principal'); });
+      }
+      const alvo = tela && (tela === ui.menu ? ui.menu.querySelector('.painel-menu:not([hidden])') : tela).querySelector('button:not([hidden])');
+      if (alvo && focar) setTimeout(() => alvo.focus({ preventScroll: true }), 30);
+    }
+    function sincronizarOpcoes() {
+      document.querySelectorAll('[data-opc]').forEach(b => b.setAttribute('aria-checked', String(!!opc[b.dataset.opc])));
+      document.querySelectorAll('[data-qualidade]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.qualidade === opc.qualidade)));
+    }
+    function aplicarQualidade() {
+      const alta = opc.qualidade === 'alta';
+      renderer.setPixelRatio(Math.min(devicePixelRatio || 1, alta ? 2 : 1));
+      causticas.forEach(c => { c.visible = alta; });
+      neve.count = alta ? NNEVE : 50;
+      ajustar();
+    }
+    if ('vibrate' in navigator && toqueTela) $('opcVibrar').hidden = false;
+    if (toqueTela) $('dicaTeclas').textContent = 'No celular, deslize o dedo: para os lados troca de faixa, para cima pula, para baixo mergulha.';
+
+    arena.addEventListener('click', e => {
+      const b = e.target.closest('button'); if (!b || !arena.contains(b)) return;
+      if (b.dataset.opc) { opc[b.dataset.opc] = !opc[b.dataset.opc]; salvarOpc(); sincronizarOpcoes(); som.clique(); return; }
+      if (b.dataset.qualidade) { opc.qualidade = b.dataset.qualidade; salvarOpc(); sincronizarOpcoes(); aplicarQualidade(); som.clique(); return; }
+      if (b.dataset.ir) {
+        som.clique();
+        if (b.dataset.ir === 'voltar') { if (voltarPara === 'pausa') mostrarTela(ui.telaPausa); else mostrarTela(ui.menu, 'principal'); }
+        else { voltarPara = 'principal'; mostrarTela(ui.menu, b.dataset.ir); }
+        return;
+      }
+      const acao = b.dataset.acao;
+      if (acao === 'jogar') comecar();
+      else if (acao === 'continuar') continuar();
+      else if (acao === 'menu') irMenu();
+      else if (acao === 'opcoes-pausa') { voltarPara = 'pausa'; mostrarTela(ui.menu, 'opcoes'); }
+    });
+    ui.pausa.addEventListener('click', e => { e.stopPropagation(); pausar(); });
+
+    function limpar() { [...obst, ...itens, ...poderes].forEach(e => cena.remove(e.g)); obst = []; itens = []; poderes = []; }
+    function zerarJogador() {
+      faixa = 1; px = 0; vx = 0; py = BASE_Y; vy = 0; noChao = true; mergulho = 0; rolo = 0; offY = 0; offYv = 0; estica = 1; esticaV = 0;
+      jog.rotation.set(0, 0, 0); giro.rotation.set(0, 0, 0); jog.scale.set(1, 1, 1); escudoM.visible = false; campoIma.visible = false;
+    }
+    function comecar() {
+      som.garantir(); limpar(); zerarJogador();
+      tJogo = 0; vel = 12; dist = 0; pontosPlast = 0; plastico = 0; escapou = 0; combo = 0; multi = 1; maiorMulti = 1; ima = 0; escudo = false; invul = 0;
+      acum = 0; vistos = new Set(); ui.poder.hidden = true; ultHud = ''; hud();
+      estado = 'contagem'; contagemT = 0; ultNum = -1; camDe.copy(cam.position);
+      mostrarTela(null); ui.hud.hidden = false; ui.pausa.hidden = false;
+      arena.focus({ preventScroll: true });
+    }
+    function pausar() {
+      if (estado !== 'jogando' && estado !== 'contagem') return;
+      antesDaPausa = estado; estado = 'pausado'; ui.toast.classList.remove('visivel'); mostrarTela(ui.telaPausa);
+    }
+    function continuar() {
+      if (estado !== 'pausado') return;
+      estado = antesDaPausa; mostrarTela(null); arena.focus({ preventScroll: true });
+      if (estado === 'jogando') grito('Vai!');
+    }
+    function irMenu() {
+      limpar(); zerarJogador(); estado = 'menu'; ui.hud.hidden = true; ui.pausa.hidden = true; ui.poder.hidden = true;
+      ui.toast.classList.remove('visivel'); voltarPara = 'principal'; mostrarTela(ui.menu, 'principal');
+    }
+    function terminar() {
+      estado = 'fim'; ui.pausa.hidden = true; ui.poder.hidden = true; ui.hud.hidden = true; ui.toast.classList.remove('visivel');
+      const p = pontos(), novo = p > recorde;
+      if (novo) { recorde = p; try { localStorage.setItem('recorde-corrida', recorde); } catch (e) {} $('menuRecorde').textContent = recorde.toLocaleString('pt-BR'); }
+      $('fimPontos').textContent = p.toLocaleString('pt-BR'); $('fimDist').textContent = Math.floor(dist); $('fimRecorde').textContent = recorde.toLocaleString('pt-BR');
+      $('fimPlastico').textContent = plastico; $('fimEscapou').textContent = escapou; $('fimCombo').textContent = 'x' + maiorMulti;
+      $('fimPontosBox').classList.toggle('novo', novo); $('fimPontosRotulo').textContent = novo ? 'novo recorde!' : 'pontos';
+      $('fimMotivo').innerHTML = MOTIVOS[motivo] || '';
+      $('fimLicao').textContent = escapou === 0
+        ? 'Nenhum pedaço escapou. No mar de verdade, o jeito mais eficaz de chegar nesse resultado é evitar que o plástico chegue à água.'
+        : `${escapou} pedaços de plástico passaram por você. No mar de verdade, eles se quebrariam em microplásticos, e aí não dá mais para recolher. Evitar que o plástico chegue à água é o caminho mais eficaz.`;
+      mostrarTela(ui.fim);
+      const fimPlacar = $('fimPlacar'); fimPlacar.textContent = '';
+      const mostrar = msg => { if (estado === 'fim') fimPlacar.textContent = msg; };
+      placar.enviar({ pontos: p, dist: Math.floor(dist), plastico }, mostrar).then(mostrar);
+    }
+
+    /* ---------- controles ---------- */
+    function mover(d) {
+      if (estado !== 'jogando') return;
+      const nova = Math.max(0, Math.min(2, faixa + d));
+      if (nova === faixa) { vx -= d * 5; return; } // bate na borda e volta
+      faixa = nova; som.faixa();
+      if (noChao) soltarPoeira(px, .1, .4, 3, .6);
+    }
+    function saltar() {
+      if (estado !== 'jogando') return;
+      if (!noChao) { pedidoPulo = relogio; return; } // guarda o comando para o pouso
+      vy = 10.5; noChao = false; mergulho = 0; esticaV = 6; som.pulo(); soltarPoeira(px, .1, .3, 4);
+    }
+    function mergulhar() {
+      if (estado !== 'jogando') return;
+      if (mergulho <= 0) { rolo = 0; som.mergulho(); }
+      mergulho = .7; if (!noChao) vy = -24;
+    }
+    arena.addEventListener('keydown', e => {
+      const k = e.key.toLowerCase();
+      if (estado === 'pausado' && (k === 'p' || k === 'escape')) { e.preventDefault(); continuar(); return; }
+      if (estado !== 'jogando' && estado !== 'contagem') return;
+      const mapa = { arrowleft: () => mover(-1), a: () => mover(-1), arrowright: () => mover(1), d: () => mover(1), arrowup: saltar, w: saltar, ' ': saltar, arrowdown: mergulhar, s: mergulhar, p: pausar, escape: pausar };
+      if (mapa[k]) { e.preventDefault(); if (!e.repeat || k === 'arrowup' || k === 'w' || k === ' ') mapa[k](); }
+    });
+    let toque = null;
+    canvas.addEventListener('pointerdown', e => { toque = { x: e.clientX, y: e.clientY, usado: false }; });
+    canvas.addEventListener('pointermove', e => {
+      if (!toque || toque.usado) return;
+      const dx = e.clientX - toque.x, dy = e.clientY - toque.y;
+      if (Math.max(Math.abs(dx), Math.abs(dy)) < 28) return;
+      toque.usado = true;
+      if (Math.abs(dx) > Math.abs(dy)) mover(dx > 0 ? 1 : -1); else if (dy < 0) saltar(); else mergulhar();
+    });
+    addEventListener('pointerup', () => { toque = null; });
+
+    /* ---------- geração de fileiras ---------- */
+    function novaFileira() {
+      const z = LONGE, livres = [0, 1, 2].sort(() => Math.random() - .5);
+      const dif = Math.min(1, tJogo / 60);
+      const nBloq = Math.random() < .2 - dif * .1 ? 0 : Math.random() < .55 - dif * .2 ? 1 : 2;
+      const bloqueadas = livres.splice(0, nBloq);
+      const tiposOk = ['coral', 'pedra'].concat(tJogo > 8 ? ['rede'] : [], tJogo > 18 ? ['peixe'] : []);
+      const linhasF = {};
+      bloqueadas.forEach(f => {
+        const tipo = tiposOk[Math.floor(Math.random() * tiposOk.length)];
+        const o = fazerObstaculo(tipo); o.x = (f - 1) * FAIXA; o.g.position.set(o.x, 0, tipo === 'peixe' ? z - 20 : z); cena.add(o.g); obst.push(o);
+        linhasF[f] = tipo;
+      });
+      const alvo = Object.keys(linhasF).find(f => linhasF[f] === 'pedra' && Math.random() < .5);
+      const fItens = alvo !== undefined ? +alvo : livres[0];
+      if (fItens !== undefined) {
+        const arco = alvo !== undefined, n = arco ? 7 : 5 + Math.floor(Math.random() * 4);
+        for (let i = 0; i < n; i++) {
+          const grande = !arco && i === n - 1 && Math.random() < .35;
+          const tipo = grande ? TIPOS_G[Math.floor(Math.random() * TIPOS_G.length)] : 'frag';
+          const g = fazerItem(tipo);
+          const iz = arco ? z + (i - 3) * 1.4 : z + 6 - i * 1.8;
+          const iy = arco ? BASE_Y + .2 + Math.sin(Math.PI * i / (n - 1)) * 2.0 : BASE_Y + .1;
+          const it = { tipo, g, x: (fItens - 1) * FAIXA, y: iy, f: i * .5 };
+          g.position.set(it.x, iy, iz); cena.add(g); itens.push(it);
+        }
+      }
+      if (livres.length && tJogo > 6 && Math.random() < .07 && !ima && !escudo && !poderes.length) {
+        const f = livres[livres.length - 1], tipo = Math.random() < .5 ? 'ima' : 'bolha';
+        const g = fazerPoder(tipo); g.position.set((f - 1) * FAIXA, BASE_Y + .3, z - 4); cena.add(g); poderes.push({ tipo, g, x: (f - 1) * FAIXA });
+      }
+    }
+
+    function ajustar() {
+      const w = arena.clientWidth, h = arena.clientHeight;
+      renderer.setSize(w, h, false); cam.aspect = w / h; cam.updateProjectionMatrix();
+    }
+    sincronizarOpcoes(); aplicarQualidade(); addEventListener('resize', ajustar);
+
+    let visivel = false, ultimo = performance.now(), t = 0;
+    new IntersectionObserver(([e]) => {
+      const antes = visivel; visivel = e.isIntersecting;
+      if (!visivel) pausar();
+      if (visivel && !antes) { ultimo = performance.now(); requestAnimationFrame(quadro); }
+    }).observe(arena);
+    document.addEventListener('visibilitychange', () => { if (document.hidden) pausar(); });
+
+    const aux = new T.Object3D(), mundo = new T.Vector3(), alvoCam = new T.Vector3(), olhar = new T.Vector3(0, 1.3, -9), alvoOlhar = new T.Vector3();
+    const suave = (x, k) => 1 - Math.exp(-k * x);
+    const easeIO = x => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+    const easeBack = x => { const c = 1.7; return 1 + (c + 1) * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2); };
+
+    function quadro(agora) {
+      if (!visivel) return;
+      const dtReal = Math.min(.05, (agora - ultimo) / 1000); ultimo = agora; relogio = agora / 1000;
+      const escala = estado === 'pausado' ? 0 : estado === 'batida' ? .3 : 1;
+      const dt = dtReal * escala; t += dt;
+      const jogando = estado === 'jogando';
+      const ocioso = estado === 'menu' || estado === 'fim';
+      const rolagem = jogando ? vel : ocioso ? 5 : estado === 'contagem' ? 5 + 7 * easeIO(Math.min(1, contagemT / 2.6)) : estado === 'batida' ? vel * Math.max(0, 1 - batidaT * 3) : 0;
+      const dz = rolagem * dt;
+
+      // contagem regressiva com a câmera girando para trás do submarino
+      if (estado === 'contagem') {
+        contagemT += dt;
+        const n = contagemT < .8 ? 0 : contagemT < 1.6 ? 1 : contagemT < 2.4 ? 2 : 3;
+        if (n !== ultNum) { ultNum = n; grito(['3', '2', '1', 'Vai!'][n]); som.contagem(n === 3); }
+        if (contagemT >= 2.6) { estado = 'jogando'; }
+      }
+      if (jogando) {
+        tJogo += dt; vel = Math.min(30, 12 + tJogo * .3); dist += dz * .5;
+        acum += dz;
+        if (acum >= Math.max(10, 17 - tJogo * .08)) { acum = 0; novaFileira(); }
+        if (ima > 0) { ima -= dt; ui.poderBarra.style.transform = `scaleX(${Math.max(0, ima / 8)})`; if (ima <= 0) { ima = 0; ui.poder.hidden = true; } }
+        if (invul > 0) invul -= dt;
+      }
+
+      // física do jogador: mola na troca de faixa, gravidade assimétrica e "estica e encolhe"
+      const alvoX = (estado === 'jogando' || estado === 'contagem' || estado === 'batida' || estado === 'pausado') ? (faixa - 1) * FAIXA : 0;
+      if (dt > 0) {
+        vx += ((alvoX - px) * 230 - vx * 27) * dt; px += vx * dt;
+        if (!noChao) {
+          vy -= (vy > 0 ? 26 : 42) * dt; py += vy * dt;
+          if (py <= BASE_Y) {
+            py = BASE_Y; noChao = true; esticaV = -7; if (Math.abs(vy) > 4) soltarPoeira(px, .1, .2, 5, 1.2); vy = 0;
+            if (relogio - pedidoPulo < .15) { pedidoPulo = -9; saltar(); }
+          }
+        }
+        if (mergulho > 0) { mergulho -= dt; rolo = Math.min(1, rolo + dt / .42); }
+        const alvoOff = mergulho > 0 ? -.35 : 0;
+        offYv += ((alvoOff - offY) * 260 - offYv * 30) * dt; offY += offYv * dt;
+        esticaV += ((1 - estica) * 320 - esticaV * 16) * dt; estica += esticaV * dt;
+      }
+      const abaixado = mergulho > 0;
+      const flutua = ocioso ? Math.sin(t * 2) * .12 : noChao && !abaixado ? Math.sin(t * 6) * .04 : 0;
+      const yDesenho = py + offY + flutua;
+      jog.position.set(px, yDesenho, 0);
+      if (estado !== 'batida') {
+        const e = Math.max(.6, Math.min(1.4, estica)), achata = abaixado ? .62 : 1;
+        jog.scale.set(1 / Math.sqrt(e), e * achata, 1 / Math.sqrt(e));
+        jog.rotation.z = -vx * .035;
+        jog.rotation.y = -vx * .02;
+        jog.rotation.x = noChao ? Math.sin(t * 3) * (ocioso ? .05 : .01) : Math.max(-.35, Math.min(.35, -vy * .03));
+        giro.rotation.z = abaixado ? easeIO(rolo) * Math.PI * 2 : 0;
+      }
+      helice.rotation.x += dt * (6 + rolagem * 1.3);
+      escudoM.visible = escudo; if (escudo) { escudoM.scale.setScalar(1 + Math.sin(t * 6) * .05); escudoM.rotation.y += dt; }
+      campoIma.visible = ima > 0; if (ima > 0) { campoIma.scale.setScalar(1 + Math.sin(t * 8) * .08); campoIma.material.opacity = .35 + Math.sin(t * 8) * .25; }
+      const base = yDesenho - .45, topo = yDesenho + (abaixado ? .3 : 1.05);
+
+      // cenário e partículas
+      rolantes.forEach(g => { g.position.z += dz; if (g.position.z > PERTO) g.position.z -= faixaRolagem; });
+      algasJ.forEach(a => a.segs.forEach((s, i) => { s.rotation.z = Math.sin(t * 1.4 + a.fase + i * .55) * .12; }));
+      causticas.forEach((c, k) => { const m = c.material.map; m.offset.y += dz / 230 * m.repeat.y; m.offset.x = Math.sin(t * (.25 + k * .1) + k) * .08; });
+      feixes.forEach((f, i) => { f.material.opacity = .035 + .03 * (.5 + .5 * Math.sin(t * .5 + i * 1.7)); });
+      bd.forEach((b, i) => {
+        b.z += dz; b.y += dt * .8; if (b.z > PERTO) b.z -= faixaRolagem; if (b.y > 10) b.y = 0;
+        aux.position.set(b.x, b.y, b.z); aux.rotation.set(0, 0, 0); aux.scale.setScalar(b.s); aux.updateMatrix(); bolhas.setMatrixAt(i, aux.matrix);
+      });
+      bolhas.instanceMatrix.needsUpdate = true;
+      for (let i = 0; i < neve.count; i++) {
+        const n = nd[i]; n.z += dz * 1.05; n.y -= dt * .15; if (n.z > PERTO) n.z -= faixaRolagem; if (n.y < 0) n.y = 8;
+        aux.position.set(n.x + Math.sin(t * .6 + n.f) * .3, n.y, n.z); aux.scale.setScalar(1); aux.updateMatrix(); neve.setMatrixAt(i, aux.matrix);
+      }
+      neve.instanceMatrix.needsUpdate = true;
+      const intensidade = jogando ? Math.max(0, Math.min(1, (vel - 15) / 12)) : 0;
+      linhas.material.opacity += (intensidade * .35 - linhas.material.opacity) * suave(dtReal, 4);
+      ld.forEach((l, i) => {
+        l.z += dz * 1.8; if (l.z > 10) { l.z -= 50; l.y = .4 + Math.random() * 4.5; }
+        aux.position.set(l.x, l.y, l.z); aux.rotation.set(0, 0, 0); aux.scale.set(1, 1, 1 + vel * .12); aux.updateMatrix(); linhas.setMatrixAt(i, aux.matrix);
+      });
+      linhas.instanceMatrix.needsUpdate = true;
+
+      proxRastro -= dt;
+      if (proxRastro <= 0 && dt > 0) {
+        proxRastro = .04; const r = rastro.find(b => b.vida <= 0);
+        if (r) { helice.getWorldPosition(mundo); r.m.position.copy(mundo).add(new T.Vector3((Math.random() - .5) * .3, (Math.random() - .5) * .3, .2)); r.vida = .7; r.m.visible = true; }
+      }
+      rastro.forEach(r => {
+        if (r.vida <= 0) return;
+        r.vida -= dt; r.m.position.z += dz * .7 + dt * 1.5; r.m.position.y += dt * .9;
+        r.m.scale.setScalar(Math.max(.01, r.vida * 1.8)); if (r.vida <= 0) r.m.visible = false;
+      });
+      poeira.forEach(p => {
+        if (p.vida <= 0) return;
+        p.vida -= dt; p.m.position.addScaledVector(p.v, dt); p.m.position.z += dz; p.v.y -= dt * 1.5;
+        const k = Math.max(0, p.vida / .55); p.m.scale.setScalar(.3 + (1 - k) * .9); p.m.material.opacity = .5 * k; if (p.vida <= 0) p.m.visible = false;
+      });
+      brilhos.forEach(b => {
+        if (b.vida <= 0) return;
+        b.vida -= dt; b.m.position.addScaledVector(b.v, dt); b.v.multiplyScalar(1 - dt * 3); b.m.rotation.x += dt * 8; b.m.rotation.y += dt * 6;
+        b.m.scale.setScalar(Math.max(.01, b.vida * 2.2)); if (b.vida <= 0) b.m.visible = false;
+      });
+
+      // obstáculos
+      for (let i = obst.length - 1; i >= 0; i--) {
+        const o = obst[i];
+        o.g.position.z += dz + (jogando ? o.vz * dt : 0);
+        o.nasc += dt; o.g.scale.setScalar(Math.max(.01, easeBack(Math.min(1, o.nasc / .4))));
+        if (o.cauda) { o.cauda.rotation.y = Math.sin(t * 12 + o.f) * .5; o.peixe.position.x = Math.sin(t * 3 + o.f) * .12; }
+        if (o.malha) o.malha.rotation.y = Math.sin(t * 1.5 + o.f) * .1;
+        if (o.tipo === 'coral') o.g.rotation.z = Math.sin(t * 1.2 + o.f) * .03;
+        if (jogando && invul <= 0 && Math.abs(o.x - px) < 1.05 && Math.abs(o.g.position.z) < o.prof / 2 + .55 && base < o.y1 && topo > o.y0) {
+          if (escudo) {
+            escudo = false; invul = .8; mundo.set(px, yDesenho, 0); soltarBrilho(mundo, 0x9FE6F5, 18, 5); soltarBrilho(mundo, 0xffffff, 10, 4);
+            cena.remove(o.g); obst.splice(i, 1); grito('Salvo pela bolha!'); som.bolha(); vibrar(40); continue;
+          }
+          estado = 'batida'; batidaT = 0; motivo = o.tipo; tremor = opc.tremor ? .7 : 0; ui.pausa.hidden = true;
+          som.batida(); vibrar([70, 40, 140]); ui.flash.classList.remove('ativo'); void ui.flash.offsetWidth; ui.flash.classList.add('ativo');
+          mundo.set(px, yDesenho + .4, -.6); soltarBrilho(mundo, 0xffffff, 14, 5); soltarPoeira(px, .2, -.4, 8, 2);
+        }
+        if (o.g.position.z > PERTO) { cena.remove(o.g); obst.splice(i, 1); }
+      }
+
+      // plástico
+      for (let i = itens.length - 1; i >= 0; i--) {
+        const it = itens[i], g = it.g;
+        if (it.pego) {
+          it.pego += dtReal * 4.5;
+          const k = it.pego; g.position.lerp(mundo.set(px, yDesenho + .6, 0), suave(dtReal, 14));
+          g.scale.setScalar(k < .25 ? 1 + k * 1.6 : Math.max(.01, 1.4 * (1 - (k - .25) / .75)));
+          if (k >= 1) { cena.remove(g); itens.splice(i, 1); } continue;
+        }
+        g.position.z += dz;
+        if (ima > 0 && g.position.z > -14 && g.position.z < 1.5) { it.x += (px - it.x) * suave(dt, 7); it.y += (yDesenho + .3 - it.y) * suave(dt, 7); }
+        g.position.x = it.x; g.position.y = it.y + Math.sin(t * 3.2 + it.f) * .1;
+        const c = g.userData.corpo; c.rotation.y += dt * 2.4; c.rotation.x = Math.sin(t * 2 + it.f) * .4;
+        if (g.userData.aura) { g.userData.aura.rotation.z += dt * 2; g.userData.aura.scale.setScalar(1 + Math.sin(t * 5 + it.f) * .12); }
+        if (jogando && Math.abs(it.x - px) < .95 && Math.abs(g.position.z) < .9 && it.y > base - .45 && it.y < topo + .45) {
+          it.pego = .01; plastico++; combo++;
+          const m = Math.min(5, 1 + Math.floor(combo / 12));
+          if (m > multi) { multi = m; maiorMulti = Math.max(maiorMulti, m); pular(ui.multi); grito('Combo x' + m); som.poder(); fovExtra = 4; }
+          const ganho = (it.tipo === 'frag' ? 10 : 30) * multi; pontosPlast += ganho; pular(ui.plastico);
+          popTexto('+' + ganho, g.position, it.tipo !== 'frag');
+          soltarBrilho(g.position, g.userData.cor, it.tipo === 'frag' ? 6 : 14);
+          if (it.tipo === 'frag') som.coleta(combo); else { som.grande(); vibrar(15); }
+          if (it.tipo !== 'frag' && !vistos.has(it.tipo) && opc.dicas) { vistos.add(it.tipo); aviso(GRANDES[it.tipo].fato, 4); }
+          continue;
+        }
+        if (g.position.z > 2.2) {
+          if (jogando) { escapou++; if (combo >= 12) aviso('Um pedaço escapou: o combo voltou para x1.', 1.6); combo = 0; multi = 1; }
+          cena.remove(g); itens.splice(i, 1);
+        }
+      }
+
+      // power-ups
+      for (let i = poderes.length - 1; i >= 0; i--) {
+        const p = poderes[i];
+        p.g.position.z += dz;
+        p.g.position.y = BASE_Y + .4 + Math.sin(t * 3) * .15; p.g.rotation.y += dt * 2;
+        if (jogando && Math.abs(p.x - px) < 1 && Math.abs(p.g.position.z) < 1 && topo > BASE_Y) {
+          soltarBrilho(p.g.position, p.tipo === 'ima' ? 0xFF7BA5 : 0x9FE6F5, 18, 4.5);
+          cena.remove(p.g); poderes.splice(i, 1); som.poder(); vibrar(25); fovExtra = 6;
+          if (p.tipo === 'ima') { ima = 8; ui.poderNome.textContent = 'Ímã de rede'; ui.poder.hidden = false; grito('Ímã!'); aviso('<b>Ímã de rede:</b> puxa o plástico de todas as faixas por 8 segundos.', 2.6); }
+          else { escudo = true; grito('Bolha!'); aviso('<b>Bolha protetora:</b> aguenta uma batida.', 2.4); }
+          continue;
+        }
+        if (p.g.position.z > PERTO) { cena.remove(p.g); poderes.splice(i, 1); }
+      }
+
+      // batida em câmera lenta
+      if (estado === 'batida') {
+        batidaT += dt;
+        jog.rotation.z += dt * 10; jog.rotation.x -= dt * 6; jog.position.y += Math.sin(Math.min(1, batidaT * 3) * Math.PI) * .8;
+        if (batidaT > .36) terminar();
+      }
+
+      // câmera
+      if (ocioso) {
+        camAng += dtReal * .22;
+        alvoCam.set(px + Math.sin(camAng) * 7, 2.4 + Math.sin(camAng * .7) * .5, Math.cos(camAng) * 7);
+        alvoOlhar.set(px, yDesenho + .4, 0);
+        cam.position.lerp(alvoCam, suave(dtReal, 2));
+      } else if (estado === 'contagem') {
+        const k = easeIO(Math.min(1, contagemT / 2.4));
+        alvoCam.set(px * .55, 3.8, 8.6);
+        cam.position.lerpVectors(camDe, alvoCam, k); cam.position.y += Math.sin(k * Math.PI) * 1.2;
+        alvoOlhar.set(px * .65 * k, 1.3 * k + (yDesenho + .4) * (1 - k), -9 * k);
+      } else {
+        alvoCam.set(px * .55, 3.8 + (py - BASE_Y) * .3, 8.6);
+        cam.position.lerp(alvoCam, suave(dtReal, 9));
+        alvoOlhar.set(px * .65, 1.3 + (py - BASE_Y) * .15, -9);
+      }
+      olhar.lerp(alvoOlhar, suave(dtReal, estado === 'contagem' ? 30 : 10));
+      tremor = Math.max(0, tremor - dtReal);
+      if (tremor > 0) cam.position.add(mundo.set((Math.random() - .5) * tremor, (Math.random() - .5) * tremor, 0));
+      cam.lookAt(olhar);
+      if (opc.tremor && !ocioso) cam.rotateZ(-vx * .006);
+      fovExtra = Math.max(0, fovExtra - dtReal * 8);
+      const fovAlvo = 54 + (jogando ? (vel - 12) * .4 : 0) + fovExtra + (ima > 0 ? 2 : 0);
+      cam.fov += (fovAlvo - cam.fov) * suave(dtReal, 4); cam.updateProjectionMatrix();
+
+      if (jogando) hud();
+      if (performance.now() > toastAte) ui.toast.classList.remove('visivel');
+      renderer.render(cena, cam);
+      requestAnimationFrame(quadro);
+    }
+    mostrarTela(ui.menu, 'principal', false);
+    return true;
+  }
+  if (!iniciarJogo()) document.getElementById('arena').classList.add('sem-webgl');
+
+  /* =========================================================
+     Mapa do corpo
+     ========================================================= */
+  const ORGAOS = {
+    cerebro:  { nome: 'Cérebro, fígado e rim', estudo: 'Nihart et al., 2025', ref: 'r-nihart', num: 18, dado: '+50%', legenda: 'de plástico no cérebro entre 2016 e 2024',
+                texto: 'Em autópsias nos EUA, o tecido cerebral tinha de 7 a 30 vezes mais plástico que fígado e rim. Cérebros de pessoas com demência tinham concentrações maiores. Os autores ressaltam que o estudo mostra associação, não causa.' },
+    olfato:   { nome: 'Bulbo olfatório', estudo: 'Amato-Lourenço et al., 2024', ref: 'r-amato2024', num: 17, br: true, dado: '8 de 15', legenda: 'pessoas com plástico no bulbo olfatório',
+                texto: 'Equipe da USP encontrou partículas e fibras, principalmente de polipropileno, em autópsias de moradores de São Paulo. A hipótese é que o nariz seja uma porta de entrada para o cérebro que contorna a barreira hematoencefálica.' },
+    arterias: { nome: 'Artérias carótidas', estudo: 'Marfella et al., 2024', ref: 'r-marfella', num: 16, dado: '4,5×', legenda: 'risco de infarto, AVC ou morte no grupo com plástico na placa',
+                texto: 'Em placas de gordura retiradas da carótida, 58% dos pacientes tinham polietileno. Em cerca de 34 meses, esse grupo teve mais eventos cardiovasculares. Estudo observacional: mostra associação, não prova causa.' },
+    pulmao:   { nome: 'Pulmão', estudo: 'Amato-Lourenço et al., 2021', ref: 'r-amato2021', num: 14, br: true, dado: '13 de 20', legenda: 'amostras de pulmão com partículas de plástico',
+                texto: 'Equipe da USP e do IPT analisou tecido pulmonar de autópsias em São Paulo e encontrou partículas e fibras de polipropileno e polietileno, mostrando que o plástico inalado pode ficar retido no pulmão.' },
+    figado:   { nome: 'Fígado e rim', estudo: 'Nihart et al., 2025', ref: 'r-nihart', num: 18, dado: '7 a 30×', legenda: 'menos plástico que no cérebro',
+                texto: 'O mesmo estudo encontrou plástico em todas as amostras de fígado e rim, em concentrações parecidas entre si. No fígado, os níveis também aumentaram entre 2016 e 2024.' },
+    sangue:   { nome: 'Sangue', estudo: 'Leslie et al., 2022', ref: 'r-leslie', num: 15, dado: '1,6 µg/mL', legenda: 'concentração média; cerca de 3 em cada 4 doadores com plástico detectável',
+                texto: 'Primeira medição de plástico no sangue humano, em 22 doadores saudáveis. Os polímeros mais comuns foram PET (garrafas), polietileno e poliestireno.' },
+    placenta: { nome: 'Placenta', estudo: 'Ragusa et al., 2021', ref: 'r-ragusa', num: 13, dado: '4 de 6', legenda: 'placentas com microplásticos',
+                texto: 'Pesquisadores italianos encontraram 12 fragmentos de 5 a 10 µm, no lado materno, no lado fetal e nas membranas. Apenas cerca de 4% de cada placenta foi examinada.' },
+  };
+  const painel = document.getElementById('painel'), lista = document.getElementById('orgaosLista');
+  const pontosOrgao = [...document.querySelectorAll('.ponto-orgao')];
+  Object.entries(ORGAOS).forEach(([k, o]) => {
+    const li = document.createElement('li'), b = document.createElement('button');
+    b.type = 'button'; b.dataset.orgao = k; b.textContent = o.nome.split(',')[0]; b.setAttribute('aria-pressed', 'false');
+    li.appendChild(b); lista.appendChild(li);
+  });
+  function mostrarOrgao(k, animar) {
+    const o = ORGAOS[k];
+    document.querySelectorAll('[data-orgao]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.orgao === k)));
+    const render = () => {
+      painel.innerHTML = `<h4>${o.nome}</h4>
+        <p class="estudo">${o.estudo}${o.br ? '<span class="selo">Pesquisa brasileira</span>' : ''}</p>
+        <p class="dado"><strong class="num">${o.dado}</strong><span>${o.legenda}</span></p>
+        <p class="corpo-texto">${o.texto}<sup class="ref"><a href="#${o.ref}">${o.num}</a></sup></p>`;
+      painel.classList.remove('troca');
+    };
+    if (animar && !reduz) { painel.classList.add('troca'); setTimeout(render, 160); } else render();
+  }
+  document.querySelectorAll('[data-orgao]').forEach(b => b.addEventListener('click', () => mostrarOrgao(b.dataset.orgao, true)));
+  mostrarOrgao('pulmao', false);
+
+  /* =========================================================
+     Quiz
+     ========================================================= */
+  const PERGUNTAS = [
+    { a: 'Microplásticos só existem no oceano.', r: false, ex: 'Eles estão também em rios, no solo, no ar e na água de torneira e engarrafada.', ref: 'r-oms2019', num: 10 },
+    { a: 'Já foram encontrados microplásticos na placenta humana.', r: true, ex: 'Em 2021, pesquisadores italianos encontraram fragmentos em 4 de 6 placentas analisadas.', ref: 'r-ragusa', num: 13 },
+    { a: 'Já está provado que microplásticos causam infarto.', r: false, ex: 'O estudo publicado no NEJM mostrou associação entre plástico nas artérias e mais eventos cardiovasculares, mas um estudo observacional não prova causa.', ref: 'r-marfella', num: 16 },
+    { a: 'Quem bebe só água engarrafada tende a ingerir mais microplásticos do que quem bebe água da torneira.', r: true, ex: 'A estimativa é de cerca de 90 mil partículas a mais por ano para quem bebe só água engarrafada.', ref: 'r-cox', num: 11 },
+    { a: 'Lavar roupas sintéticas libera microfibras de plástico.', r: true, ex: 'Uma carga de 6 kg de roupas de acrílico pode liberar cerca de 700 mil fibras.', ref: 'r-napper', num: 20 },
+    { a: 'Pesquisadores brasileiros encontraram microplásticos no pulmão humano.', r: true, ex: 'A equipe da USP encontrou partículas em 13 de 20 amostras de pulmão de moradores de São Paulo.', ref: 'r-amato2021', num: 14 },
+  ];
+  let atual = 0, acertos = 0;
+  const prog = document.getElementById('quizProgresso');
+  PERGUNTAS.forEach(() => prog.appendChild(document.createElement('i')));
+  const resp = [...document.querySelectorAll('#respostas button')];
+  const retorno = document.getElementById('retorno'), acao = document.getElementById('quizAcao');
+  function mostrarPergunta() {
+    const q = PERGUNTAS[atual];
+    document.getElementById('quizContador').textContent = `Afirmação ${atual + 1} de ${PERGUNTAS.length}`;
+    document.getElementById('afirmacao').textContent = q.a;
+    [...prog.children].forEach((b, i) => b.classList.toggle('atual', i === atual));
+    resp.forEach(b => { b.disabled = false; b.classList.remove('escolhida'); });
+    document.getElementById('respostas').style.display = '';
+    retorno.className = 'retorno'; acao.classList.remove('visivel');
+  }
+  resp.forEach(b => b.addEventListener('click', () => {
+    const q = PERGUNTAS[atual], certo = (b.dataset.r === 'true') === q.r;
+    if (certo) acertos++;
+    resp.forEach(o => o.disabled = true); b.classList.add('escolhida');
+    prog.children[atual].classList.remove('atual');
+    prog.children[atual].classList.add(certo ? 'certo' : 'errado');
+    retorno.className = `retorno visivel ${certo ? 'certo' : 'errado'}`;
+    retorno.innerHTML = `<b>${certo ? 'Isso mesmo.' : 'Não é bem assim.'} A afirmação é ${q.r ? 'verdadeira' : 'falsa'}.</b><p>${q.ex}<sup class="ref"><a href="#${q.ref}">${q.num}</a></sup></p>`;
+    acao.textContent = atual < PERGUNTAS.length - 1 ? 'Próxima afirmação' : 'Ver resultado';
+    acao.classList.add('visivel'); acao.focus({ preventScroll: true });
+  }));
+  acao.addEventListener('click', () => {
+    if (atual === -1) { atual = 0; acertos = 0; [...prog.children].forEach(i => i.className = ''); mostrarPergunta(); document.getElementById('afirmacao').focus({ preventScroll: true }); return; }
+    atual++;
+    if (atual < PERGUNTAS.length) { mostrarPergunta(); document.getElementById('afirmacao').focus({ preventScroll: true }); return; }
+    document.getElementById('quizContador').textContent = 'Resultado';
+    document.getElementById('afirmacao').textContent = `Você acertou ${acertos} de ${PERGUNTAS.length}.`;
+    document.getElementById('respostas').style.display = 'none';
+    retorno.className = 'retorno visivel ' + (acertos >= 4 ? 'certo' : 'errado');
+    retorno.innerHTML = `<p>${acertos === PERGUNTAS.length ? 'Gabaritou. Que tal compartilhar o que aprendeu?' : 'Releia as seções acima e tente de novo.'}</p>`;
+    acao.textContent = 'Refazer o quiz'; atual = -1;
+  });
+  mostrarPergunta();
+
+  /* =========================================================
+     Lista de ações
+     ========================================================= */
+  const caixas = [...document.querySelectorAll('#listaAcoes input')];
+  const compromisso = document.getElementById('compromisso');
+  try { const s = JSON.parse(localStorage.getItem('acoes-micro') || '[]'); caixas.forEach((c, i) => c.checked = !!s[i]); } catch (e) {}
+  function contar() {
+    const n = caixas.filter(c => c.checked).length;
+    compromisso.innerHTML = n === 0 ? 'Nenhuma ação marcada ainda.'
+      : `<strong>${n} de ${caixas.length}</strong> ações marcadas. ${n === caixas.length ? 'Você está fazendo tudo o que está ao seu alcance.' : 'Cada uma reduz o plástico que chega à água.'}`;
+    try { localStorage.setItem('acoes-micro', JSON.stringify(caixas.map(c => c.checked))); } catch (e) {}
+  }
+  caixas.forEach(c => c.addEventListener('change', contar));
+  contar();
+});
+</script>
+</body>
+</html>

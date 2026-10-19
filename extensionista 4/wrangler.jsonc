@@ -1,0 +1,12 @@
+{
+  // Site estático "Microplásticos e Saúde" servido como Cloudflare Worker (somente assets).
+  // Deploy: no painel da Cloudflare, Workers & Pages > Create > Import a repository,
+  // com "Root directory" = "extensionista 4" e "Deploy command" = "npx wrangler deploy".
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "microplasticos-saude",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": ".",
+    "not_found_handling": "single-page-application"
+  }
+}
