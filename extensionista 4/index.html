@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Microplásticos e Saúde</title>
+<meta name="description" content="Microplásticos e Saúde: impactos no corpo humano e nos ecossistemas aquáticos. Trabalho extensionista com base em fontes científicas revisadas por pares e relatórios da OMS e do PNUMA.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --filtro: #F1F4F2;      /* membrana de filtro do laboratório */
+    --filtro-2: #E3E9E6;
+    --tinta: #0F2733;       /* água profunda / texto */
+    --tinta-suave: #4E626C;
+    --pe: #D9366B;          /* fragmento rosa */
+    --pp: #1C9CC0;          /* fragmento ciano */
+    --pet: #E3A821;         /* fragmento âmbar */
+    --linha: #C9D3CE;
+    --fundo-escuro: #0F2733;
+    --texto-claro: #E8EFEC;
+    --display: 'Bricolage Grotesque', system-ui, sans-serif;
+    --serif: 'Source Serif 4', Georgia, serif;
+    --medida: 66ch;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --filtro: #0C1F28; --filtro-2: #123039; --tinta: #E4ECE8; --tinta-suave: #9DB0B7;
+      --linha: #24434E; --fundo-escuro: #07161D; --texto-claro: #E4ECE8;
+    }
+  }
+  :root[data-theme="dark"] {
+    --filtro: #0C1F28; --filtro-2: #123039; --tinta: #E4ECE8; --tinta-suave: #9DB0B7;
+    --linha: #24434E; --fundo-escuro: #07161D; --texto-claro: #E4ECE8;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  body {
+    background: var(--filtro);
+    color: var(--tinta);
+    font-family: var(--serif);
+    font-size: 1.1875rem;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration-color: var(--pp); text-underline-offset: 3px; text-decoration-thickness: 2px; }
+  a:hover { text-decoration-color: var(--pe); }
+  :focus-visible { outline: 3px solid var(--pp); outline-offset: 3px; border-radius: 2px; }
+  .pular { position: absolute; left: -9999px; top: 8px; background: var(--tinta); color: var(--filtro); padding: 8px 14px; z-index: 50; }
+  .pular:focus { left: 16px; }
+
+  .envoltorio { max-width: 1160px; margin: 0 auto; padding: 0 clamp(16px, 4vw, 40px); }
+
+  /* ---------- navegação ---------- */
+  .nav {
+    position: sticky; top: 0; z-index: 20;
+    background: color-mix(in srgb, var(--filtro) 88%, transparent);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--linha);
+  }
+  .nav .envoltorio { display: flex; align-items: center; justify-content: space-between; gap: 16px; height: 60px; }
+  .marca { font-family: var(--display); font-weight: 800; font-size: 1.05rem; text-decoration: none; letter-spacing: -0.01em; display: flex; align-items: center; gap: 10px; }
+  .marca svg { flex: none; }
+  .nav ul { display: flex; gap: clamp(12px, 2.2vw, 28px); list-style: none; font-family: var(--display); font-size: 0.95rem; }
+  .nav ul a { text-decoration: none; color: var(--tinta-suave); }
+  .nav ul a:hover { color: var(--tinta); }
+  @media (max-width: 760px) { .nav ul { display: none; } }
+
+  /* ---------- hero: a lupa ---------- */
+  .hero { position: relative; min-height: min(92vh, 860px); display: grid; align-items: end; overflow: hidden; border-bottom: 1px solid var(--linha); }
+  #campo { position: absolute; inset: 0; width: 100%; height: 100%; cursor: none; touch-action: pan-y; }
+  @media (hover: none) { #campo { cursor: auto; } }
+  .hero-texto { position: relative; z-index: 2; padding: 120px 0 clamp(40px, 7vh, 80px); pointer-events: none; }
+  .hero h1 {
+    font-family: var(--display); font-weight: 800;
+    font-size: clamp(2.6rem, 8.4vw, 7.4rem);
+    line-height: 0.92; letter-spacing: -0.035em;
+    max-width: 12ch;
+  }
+  .hero h1 span { display: block; }
+  .hero h1, .hero .lead { text-shadow: 0 0 18px var(--filtro), 0 0 4px var(--filtro); }
+  .hero h1 .t2 { color: var(--tinta-suave); }
+  .hero .lead { margin-top: 28px; max-width: 46ch; font-size: clamp(1.1rem, 1.6vw, 1.3rem); }
+  .dica { margin-top: 18px; font-family: var(--display); font-size: 0.9rem; color: var(--tinta-suave); display: flex; align-items: center; gap: 8px; }
+  .dica::before { content: ""; width: 18px; height: 18px; border: 2px solid currentColor; border-radius: 50%; }
+
+  /* ---------- seções ---------- */
+  section { padding: clamp(72px, 11vw, 140px) 0; }
+  .sec-titulo {
+    font-family: var(--display); font-weight: 800;
+    font-size: clamp(2rem, 4.6vw, 3.4rem); line-height: 1.02; letter-spacing: -0.025em;
+    max-width: 18ch; margin-bottom: 28px;
+  }
+  .prosa { max-width: var(--medida); }
+  .prosa p + p { margin-top: 1em; }
+  sup.ref { font-family: var(--display); font-size: 0.68em; font-weight: 600; line-height: 0; }
+  sup.ref a { text-decoration: none; color: var(--pp); padding: 0 1px; }
+  sup.ref a:hover { color: var(--pe); }
+
+  /* régua de tamanhos — é uma sequência real (escala) */
+  .regua { margin-top: 56px; }
+  .regua ol { list-style: none; display: grid; grid-template-columns: repeat(4, 1fr); border-top: 3px solid var(--tinta); }
+  .regua li { padding: 18px 18px 0 0; border-left: 1px solid var(--linha); padding-left: 16px; position: relative; }
+  .regua li:first-child { border-left: 0; padding-left: 0; }
+  .regua .medida { font-family: var(--display); font-weight: 800; font-size: clamp(1.5rem, 2.6vw, 2.1rem); letter-spacing: -0.02em; display: block; }
+  .regua .nome { font-family: var(--display); font-weight: 600; font-size: 1rem; display: block; margin: 2px 0 8px; }
+  .regua p { font-size: 1rem; color: var(--tinta-suave); line-height: 1.5; }
+  .regua .ponto { display: block; height: 46px; display: flex; align-items: center; margin-bottom: 6px; }
+  @media (max-width: 760px) {
+    .regua ol { grid-template-columns: 1fr 1fr; row-gap: 28px; }
+    .regua li:nth-child(3) { border-left: 0; padding-left: 0; }
+  }
+
+  .origens { margin-top: 64px; display: grid; grid-template-columns: 1fr 1fr; gap: 48px; max-width: 980px; }
+  .origens h3 { font-family: var(--display); font-weight: 600; font-size: 1.3rem; margin-bottom: 8px; }
+  .origens p { font-size: 1.05rem; }
+  @media (max-width: 760px) { .origens { grid-template-columns: 1fr; gap: 28px; } }
+
+  /* ---------- água (seção escura) ---------- */
+  .agua { background: var(--fundo-escuro); color: var(--texto-claro); }
+  .agua .sec-titulo { color: #fff; }
+  .agua a { text-decoration-color: #5CC6E4; }
+  .agua sup.ref a { color: #6FD0EA; }
+  .numeros { margin: 56px 0 8px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; border-top: 1px solid rgba(255,255,255,.18); }
+  .numeros div { padding: 26px 24px 0 0; }
+  .numeros div + div { padding-left: 24px; border-left: 1px solid rgba(255,255,255,.18); }
+  .numeros strong { font-family: var(--display); font-weight: 800; font-size: clamp(2rem, 4.2vw, 3.2rem); letter-spacing: -0.03em; line-height: 1; display: block; color: #fff; }
+  .numeros span { display: block; margin-top: 10px; font-size: 1rem; color: #AFC2C9; max-width: 30ch; }
+  @media (max-width: 760px) {
+    .numeros { grid-template-columns: 1fr; }
+    .numeros div + div { border-left: 0; padding-left: 0; border-top: 1px solid rgba(255,255,255,.18); margin-top: 24px; }
+  }
+
+  .cadeia { margin-top: 80px; }
+  .cadeia h3 { font-family: var(--display); font-weight: 600; font-size: 1.5rem; margin-bottom: 28px; color: #fff; }
+  .cadeia ol { list-style: none; display: grid; grid-template-columns: repeat(4, 1fr); gap: 28px; counter-reset: elo; }
+  .cadeia li { counter-increment: elo; position: relative; padding-top: 52px; }
+  .cadeia li::before {
+    content: counter(elo); position: absolute; top: 0; left: 0;
+    width: 36px; height: 36px; border-radius: 50%;
+    border: 2px solid #6FD0EA; color: #6FD0EA;
+    font-family: var(--display); font-weight: 800; display: grid; place-items: center; font-size: 1rem;
+  }
+  .cadeia li::after { content: ""; position: absolute; top: 17px; left: 46px; right: -18px; height: 2px; background: repeating-linear-gradient(90deg, rgba(111,208,234,.6) 0 6px, transparent 6px 12px); }
+  .cadeia li:last-child::after { display: none; }
+  .cadeia h4 { font-family: var(--display); font-weight: 600; font-size: 1.15rem; color: #fff; margin-bottom: 6px; }
+  .cadeia p { font-size: 1rem; color: #C2D2D8; line-height: 1.55; }
+  @media (max-width: 860px) {
+    .cadeia ol { grid-template-columns: 1fr; gap: 32px; }
+    .cadeia li { padding-top: 0; padding-left: 56px; }
+    .cadeia li::after { top: 44px; left: 17px; right: auto; width: 2px; height: calc(100% - 20px); background: repeating-linear-gradient(180deg, rgba(111,208,234,.6) 0 6px, transparent 6px 12px); }
+  }
+
+  .efeitos { margin-top: 80px; display: grid; grid-template-columns: 1fr 1fr; gap: 40px 56px; max-width: 1000px; }
+  .efeitos h3 { font-family: var(--display); font-weight: 600; font-size: 1.2rem; color: #fff; margin-bottom: 6px; }
+  .efeitos p { font-size: 1.02rem; color: #C2D2D8; }
+  @media (max-width: 760px) { .efeitos { grid-template-columns: 1fr; } }
+
+  /* ---------- corpo: laudos por tecido ---------- */
+  .corpo-intro { display: grid; grid-template-columns: 1.1fr 1fr; gap: 56px; align-items: start; }
+  @media (max-width: 860px) { .corpo-intro { grid-template-columns: 1fr; gap: 24px; } }
+  .vias { list-style: none; border-top: 3px solid var(--tinta); }
+  .vias li { display: grid; grid-template-columns: 9.5rem 1fr; gap: 16px; padding: 16px 0; border-bottom: 1px solid var(--linha); font-size: 1.02rem; }
+  .vias b { font-family: var(--display); font-weight: 600; }
+  @media (max-width: 480px) { .vias li { grid-template-columns: 1fr; gap: 2px; } }
+
+  .tecidos { margin-top: 72px; }
+  .tecidos > h3 { font-family: var(--display); font-weight: 600; font-size: 1.5rem; margin-bottom: 8px; }
+  .tecidos > p { color: var(--tinta-suave); max-width: 60ch; margin-bottom: 32px; font-size: 1.05rem; }
+  .tecido {
+    display: grid; grid-template-columns: 200px 1fr 260px; gap: 32px;
+    padding: 30px 0; border-top: 1px solid var(--linha); align-items: start;
+  }
+  .tecido:last-child { border-bottom: 1px solid var(--linha); }
+  .tecido h4 { font-family: var(--display); font-weight: 800; font-size: 1.7rem; letter-spacing: -0.02em; line-height: 1.05; }
+  .tecido .ano { font-family: var(--display); color: var(--tinta-suave); font-size: 0.95rem; display: block; margin-top: 6px; }
+  .tecido p { font-size: 1.05rem; }
+  .tecido .dado { font-family: var(--display); }
+  .tecido .dado strong { display: block; font-weight: 800; font-size: 1.9rem; letter-spacing: -0.02em; line-height: 1.05; }
+  .tecido .dado span { display: block; font-size: 0.95rem; color: var(--tinta-suave); margin-top: 4px; line-height: 1.4; }
+  .tecido.br h4::after { content: "Pesquisa brasileira"; display: block; font-size: 0.85rem; font-weight: 600; letter-spacing: 0; color: #fff; background: #1F8A4C; padding: 3px 9px; border-radius: 3px; margin-top: 10px; width: max-content; }
+  @media (max-width: 900px) {
+    .tecido { grid-template-columns: 1fr; gap: 12px; }
+  }
+
+  .aviso {
+    margin-top: 72px; padding: 32px clamp(20px, 4vw, 44px);
+    background: var(--filtro-2); border-left: 6px solid var(--pet);
+    max-width: 900px;
+  }
+  .aviso h3 { font-family: var(--display); font-weight: 600; font-size: 1.35rem; margin-bottom: 10px; }
+  .aviso ul { margin: 12px 0 0 1.2em; }
+  .aviso li { margin-top: 8px; font-size: 1.05rem; }
+
+  /* ---------- o que fazer ---------- */
+  .acoes { display: grid; grid-template-columns: 1fr 1fr; gap: 72px; margin-top: 40px; }
+  @media (max-width: 860px) { .acoes { grid-template-columns: 1fr; gap: 48px; } }
+  .acoes h3 { font-family: var(--display); font-weight: 600; font-size: 1.35rem; padding-bottom: 12px; border-bottom: 3px solid var(--tinta); margin-bottom: 4px; }
+  .acoes ul { list-style: none; }
+  .acoes li { padding: 16px 0 16px 30px; border-bottom: 1px solid var(--linha); position: relative; font-size: 1.05rem; }
+  .acoes li::before { content: ""; position: absolute; left: 2px; top: 25px; width: 12px; height: 9px; background: var(--pp); clip-path: polygon(0 30%, 60% 0, 100% 55%, 40% 100%); }
+  .acoes li:nth-child(3n+2)::before { background: var(--pe); clip-path: polygon(10% 0, 100% 20%, 70% 100%, 0 70%); }
+  .acoes li:nth-child(3n)::before { background: var(--pet); clip-path: polygon(0 0, 100% 40%, 30% 100%); }
+  .acoes li b { font-family: var(--display); font-weight: 600; }
+
+  /* ---------- referências ---------- */
+  .referencias { background: var(--filtro-2); }
+  .referencias ol { max-width: 900px; padding-left: 2.2em; margin-top: 32px; }
+  .referencias li { font-size: 1rem; line-height: 1.55; padding: 10px 0 10px 6px; border-bottom: 1px solid var(--linha); scroll-margin-top: 80px; }
+  .referencias li::marker { font-family: var(--display); font-weight: 800; color: var(--pp); }
+  .referencias li:target { background: color-mix(in srgb, var(--pet) 22%, transparent); }
+  .referencias .doi { word-break: break-all; }
+  .nota-abnt { font-size: 1rem; color: var(--tinta-suave); max-width: 64ch; }
+
+  footer { padding: 48px 0 56px; font-family: var(--display); font-size: 0.95rem; color: var(--tinta-suave); }
+  footer .envoltorio { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px; }
+  .tema-botao { font: inherit; background: none; border: 1px solid var(--linha); color: var(--tinta); padding: 6px 14px; border-radius: 999px; cursor: pointer; }
+</style>
+</head>
+<body>
+<a class="pular" href="#conteudo">Pular para o conteúdo</a>
+
+<nav class="nav" aria-label="Principal">
+  <div class="envoltorio">
+    <a class="marca" href="#topo">
+      <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><circle cx="9" cy="9" r="7" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M14.2 14.2 20 20" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><path d="M6 7l3-2 2 3-3 2z" fill="#D9366B"/><circle cx="11" cy="11" r="1.4" fill="#1C9CC0"/></svg>
+      Microplásticos e Saúde
+    </a>
+    <ul>
+      <li><a href="#o-que-sao">O que são</a></li>
+      <li><a href="#agua">Ecossistemas aquáticos</a></li>
+      <li><a href="#corpo">Corpo humano</a></li>
+      <li><a href="#acoes">O que fazer</a></li>
+      <li><a href="#referencias">Referências</a></li>
+    </ul>
+  </div>
+</nav>
+
+<header class="hero" id="topo">
+  <canvas id="campo" aria-hidden="true"></canvas>
+  <div class="envoltorio hero-texto">
+    <h1><span>Está na água.</span><span class="t2">Está no peixe.</span><span>Está em nós.</span></h1>
+    <p class="lead">Microplásticos e saúde: o que a ciência já encontrou no corpo humano e nos ecossistemas aquáticos, e o que ainda falta descobrir.</p>
+    <p class="dica" id="dica">Passe o cursor sobre a página para ver o que a água esconde</p>
+  </div>
+</header>
+
+<main id="conteudo">
+
+<!-- ================= O QUE SÃO ================= -->
+<section id="o-que-sao">
+  <div class="envoltorio">
+    <h2 class="sec-titulo">Pedaços de plástico pequenos demais para ver</h2>
+    <div class="prosa">
+      <p>Microplásticos são partículas de plástico com menos de 5 milímetros. Abaixo de 1 micrômetro (um milésimo de milímetro), passam a ser chamados de nanoplásticos. O termo foi popularizado em 2004, quando pesquisadores britânicos mostraram que esses fragmentos já se acumulavam em praias e no plâncton desde a década de 1960.<sup class="ref"><a href="#r-thompson">1</a></sup></p>
+      <p>O plástico não desaparece: com sol, calor e atrito ele se quebra em partes cada vez menores. Quanto menor a partícula, mais fácil ela atravessa barreiras biológicas, e mais difícil é medi-la no laboratório.<sup class="ref"><a href="#r-oms2022">2</a></sup></p>
+    </div>
+
+    <figure class="regua" aria-label="Escala de tamanhos das partículas de plástico">
+      <ol>
+        <li>
+          <span class="ponto"><svg width="40" height="40" viewBox="0 0 40 40" aria-hidden="true"><path d="M3 12 30 3 37 28 10 37z" fill="#D9366B"/></svg></span>
+          <span class="medida">5 mm</span><span class="nome">Limite superior</span>
+          <p>O tamanho de um grão de arroz. Daqui para baixo, é microplástico.</p>
+        </li>
+        <li>
+          <span class="ponto"><svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><path d="M2 6 14 1 19 14 6 19z" fill="#1C9CC0"/></svg></span>
+          <span class="medida">100 µm</span><span class="nome">Espessura de um fio de cabelo</span>
+          <p>Fibras de roupas sintéticas e fragmentos de embalagens.</p>
+        </li>
+        <li>
+          <span class="ponto"><svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><circle cx="5" cy="5" r="4" fill="#E3A821"/></svg></span>
+          <span class="medida">1–10 µm</span><span class="nome">Tamanho de uma célula</span>
+          <p>Já foram encontradas partículas assim no pulmão e na placenta.</p>
+        </li>
+        <li>
+          <span class="ponto"><svg width="6" height="6" viewBox="0 0 6 6" aria-hidden="true"><circle cx="3" cy="3" r="2" fill="currentColor"/></svg></span>
+          <span class="medida">&lt; 1 µm</span><span class="nome">Nanoplástico</span>
+          <p>Invisível ao microscópio comum; pode entrar nas células.</p>
+        </li>
+      </ol>
+    </figure>
+
+    <div class="origens">
+      <div>
+        <h3>Primários</h3>
+        <p>Fabricados já pequenos: microesferas de cosméticos e esfoliantes, pellets industriais usados como matéria-prima e partículas de abrasivos.</p>
+      </div>
+      <div>
+        <h3>Secundários</h3>
+        <p>Resultam da quebra de objetos maiores: garrafas, sacolas, redes de pesca, desgaste de pneus e fibras soltas na lavagem de roupas sintéticas. São a maior parte do que se encontra no ambiente.<sup class="ref"><a href="#r-pnuma">3</a></sup></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= ÁGUA ================= -->
+<section class="agua" id="agua">
+  <div class="envoltorio">
+    <h2 class="sec-titulo">Nos rios e oceanos, o plástico entra na cadeia alimentar</h2>
+    <div class="prosa">
+      <p>Os oceanos recebem plástico de rios, esgotos, ventos e atividades de pesca. Na superfície, uma parte flutua; outra parte afunda e se acumula nos sedimentos, onde vivem organismos que se alimentam filtrando o fundo.</p>
+    </div>
+
+    <div class="numeros">
+      <div><strong>5,25 trilhões</strong><span>de partículas de plástico flutuando nos oceanos, segundo estimativa mínima.<sup class="ref"><a href="#r-eriksen">4</a></sup></span></div>
+      <div><strong>4,8 a 12,7 mi t</strong><span>de resíduos plásticos chegaram ao mar vindos de países costeiros em um único ano (2010).<sup class="ref"><a href="#r-jambeck">5</a></sup></span></div>
+      <div><strong>1 em 4</strong><span>peixes vendidos para consumo em mercados da Indonésia e dos EUA continha detritos de origem humana.<sup class="ref"><a href="#r-rochman">6</a></sup></span></div>
+    </div>
+
+    <div class="cadeia">
+      <h3>Como uma partícula chega até o prato</h3>
+      <ol>
+        <li><h4>Plâncton</h4><p>O zooplâncton confunde microesferas com alimento e as ingere, o que reduz sua alimentação.<sup class="ref"><a href="#r-cole">7</a></sup></p></li>
+        <li><h4>Filtradores</h4><p>Mexilhões, ostras e outros bivalves filtram grandes volumes de água e retêm as partículas.<sup class="ref"><a href="#r-wright">8</a></sup></p></li>
+        <li><h4>Peixes</h4><p>Peixes comem o plâncton e os pequenos organismos contaminados, ou ingerem os fragmentos diretamente.<sup class="ref"><a href="#r-rochman">6</a></sup></p></li>
+        <li><h4>Pessoas</h4><p>Frutos do mar, sal marinho e água potável estão entre as vias de exposição alimentar humana.<sup class="ref"><a href="#r-oms2022">2</a></sup></p></li>
+      </ol>
+    </div>
+
+    <div class="efeitos">
+      <div>
+        <h3>Danos físicos</h3>
+        <p>Partículas ingeridas podem bloquear ou ferir o trato digestivo e dar sensação falsa de saciedade, reduzindo a energia disponível para crescer e se reproduzir.<sup class="ref"><a href="#r-wright">8</a></sup></p>
+      </div>
+      <div>
+        <h3>Carona para poluentes</h3>
+        <p>A superfície do plástico atrai poluentes orgânicos persistentes e metais presentes na água, e o próprio plástico carrega aditivos como plastificantes e retardantes de chama.<sup class="ref"><a href="#r-gesamp">9</a></sup></p>
+      </div>
+      <div>
+        <h3>Biofilme e microrganismos</h3>
+        <p>Bactérias colonizam os fragmentos e formam uma comunidade própria, que pode transportar espécies para novos ambientes.<sup class="ref"><a href="#r-gesamp">9</a></sup></p>
+      </div>
+      <div>
+        <h3>Água doce também</h3>
+        <p>Rios, lagos e a água tratada que chega às torneiras também contêm microplásticos; a OMS avaliou essa via em relatório dedicado à água potável.<sup class="ref"><a href="#r-oms2019">10</a></sup></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CORPO ================= -->
+<section id="corpo">
+  <div class="envoltorio">
+    <div class="corpo-intro">
+      <div>
+        <h2 class="sec-titulo">No corpo humano, a lista de órgãos só cresce</h2>
+        <div class="prosa">
+          <p>Uma revisão estimou que uma pessoa ingere entre 39 mil e 52 mil partículas de microplástico por ano, e que esse número passa de 74 mil quando se soma o que é inalado.<sup class="ref"><a href="#r-cox">11</a></sup> Em 2024, uma técnica nova de microscopia contou, em média, cerca de 240 mil partículas por litro de água engarrafada, a maioria delas nanoplásticos.<sup class="ref"><a href="#r-qian">12</a></sup></p>
+        </div>
+      </div>
+      <ul class="vias" aria-label="Vias de entrada no corpo">
+        <li><b>Ingestão</b><span>Alimentos, frutos do mar, sal, água engarrafada e de torneira, contato com embalagens.</span></li>
+        <li><b>Inalação</b><span>Poeira doméstica e ar urbano, com fibras de tecidos sintéticos e partículas de pneus.</span></li>
+        <li><b>Pele</b><span>Via considerada menos relevante para partículas, mas estudada no caso de cosméticos.</span></li>
+      </ul>
+    </div>
+
+    <div class="tecidos">
+      <h3>Onde já foram encontrados</h3>
+      <p>Estudos que identificaram partículas de plástico em tecidos humanos, em ordem de publicação.</p>
+
+      <article class="tecido">
+        <div><h4>Placenta</h4><span class="ano">Ragusa et al., 2021</span></div>
+        <p>Pesquisadores italianos encontraram 12 fragmentos de 5 a 10 µm em 4 de 6 placentas analisadas, no lado materno, no lado fetal e nas membranas. Apenas cerca de 4% de cada placenta foi examinada.<sup class="ref"><a href="#r-ragusa">13</a></sup></p>
+        <div class="dado"><strong>4 de 6</strong><span>placentas com microplásticos</span></div>
+      </article>
+
+      <article class="tecido br">
+        <div><h4>Pulmão</h4><span class="ano">Amato-Lourenço et al., 2021</span></div>
+        <p>Equipe da USP e do IPT analisou tecido pulmonar de autópsias de moradores de São Paulo e encontrou partículas e fibras de polímero, principalmente polipropileno e polietileno, mostrando que o plástico inalado pode ficar retido no pulmão.<sup class="ref"><a href="#r-amato2021">14</a></sup></p>
+        <div class="dado"><strong>13 de 20</strong><span>amostras de pulmão com partículas de plástico</span></div>
+      </article>
+
+      <article class="tecido">
+        <div><h4>Sangue</h4><span class="ano">Leslie et al., 2022</span></div>
+        <p>Primeira medição de plástico no sangue humano, em 22 doadores saudáveis. Os polímeros mais comuns foram PET (garrafas), polietileno e poliestireno.<sup class="ref"><a href="#r-leslie">15</a></sup></p>
+        <div class="dado"><strong>1,6 µg/mL</strong><span>concentração média; cerca de 3 em cada 4 doadores com plástico detectável</span></div>
+      </article>
+
+      <article class="tecido">
+        <div><h4>Artérias</h4><span class="ano">Marfella et al., 2024</span></div>
+        <p>Em placas de gordura retiradas da artéria carótida, 58% dos pacientes tinham polietileno. Em cerca de 34 meses de acompanhamento, esse grupo teve risco 4,5 vezes maior de infarto, AVC ou morte. É um estudo observacional: mostra associação, não prova causa.<sup class="ref"><a href="#r-marfella">16</a></sup></p>
+        <div class="dado"><strong>4,5×</strong><span>risco de infarto, AVC ou morte no grupo com plástico na placa</span></div>
+      </article>
+
+      <article class="tecido br">
+        <div><h4>Cérebro (bulbo olfatório)</h4><span class="ano">Amato-Lourenço et al., 2024</span></div>
+        <p>O mesmo grupo da USP encontrou partículas e fibras no bulbo olfatório de 8 de 15 pessoas autopsiadas em São Paulo. A hipótese é que o nariz seja uma porta de entrada para o cérebro que contorna a barreira hematoencefálica.<sup class="ref"><a href="#r-amato2024">17</a></sup></p>
+        <div class="dado"><strong>8 de 15</strong><span>bulbos olfatórios com plástico</span></div>
+      </article>
+
+      <article class="tecido">
+        <div><h4>Cérebro, fígado e rim</h4><span class="ano">Nihart et al., 2025</span></div>
+        <p>Em autópsias nos EUA, o tecido cerebral tinha de 7 a 30 vezes mais plástico que fígado e rim. As amostras de 2024 tinham cerca de 50% mais que as de 2016, e cérebros de pessoas com demência tinham concentrações maiores.<sup class="ref"><a href="#r-nihart">18</a></sup></p>
+        <div class="dado"><strong>+50%</strong><span>de plástico no cérebro entre 2016 e 2024</span></div>
+      </article>
+    </div>
+
+    <div class="aviso">
+      <h3>O que a ciência ainda não sabe</h3>
+      <p>Encontrar plástico em um órgão não é o mesmo que provar que ele causa doença. A OMS concluiu em 2022 que os dados disponíveis ainda não bastam para uma avaliação completa de risco à saúde humana.<sup class="ref"><a href="#r-oms2022">2</a></sup> Os principais limites hoje são:</p>
+      <ul>
+        <li>Amostras pequenas: muitos estudos analisaram poucas dezenas de pessoas.</li>
+        <li>Falta de métodos padronizados, principalmente para partículas abaixo de 10 µm.</li>
+        <li>Risco de contaminação das amostras pelo próprio ambiente do laboratório.</li>
+        <li>Estudos observacionais mostram associação; experimentos em células e animais sugerem inflamação e estresse oxidativo, mas em doses nem sempre comparáveis à exposição real.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ================= AÇÕES ================= -->
+<section id="acoes" style="padding-top: 0;">
+  <div class="envoltorio">
+    <h2 class="sec-titulo">O que dá para fazer</h2>
+    <div class="prosa"><p>Não é possível zerar a exposição, mas é possível reduzi-la e, principalmente, reduzir a quantidade de plástico que chega à água.</p></div>
+    <div class="acoes">
+      <div>
+        <h3>No dia a dia</h3>
+        <ul>
+          <li><b>Prefira água filtrada da torneira</b> à engarrafada, quando a água local for tratada e segura.</li>
+          <li><b>Não aqueça comida em potes plásticos</b> no micro-ondas; use vidro ou cerâmica.</li>
+          <li><b>Limpe a casa com pano úmido</b> e ventile os ambientes: a poeira doméstica concentra fibras sintéticas.</li>
+          <li><b>Lave roupas sintéticas com menos frequência</b>, em ciclos frios e com a máquina cheia, para soltar menos fibras.</li>
+          <li><b>Evite cosméticos com microesferas</b> (procure por polietileno ou "polyethylene" no rótulo).</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Na comunidade</h3>
+        <ul>
+          <li><b>Separe o lixo reciclável</b> e apoie cooperativas de catadores da sua cidade.</li>
+          <li><b>Participe de mutirões de limpeza</b> de praias, rios e córregos.</li>
+          <li><b>Reduza descartáveis</b>: garrafa, sacola e copo reutilizáveis.</li>
+          <li><b>Cobre políticas públicas</b> de saneamento: o esgoto sem tratamento é uma das portas de entrada do plástico nos rios.</li>
+          <li><b>Compartilhe informação confiável</b>, sempre com a fonte, e desconfie de números sem origem.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= REFERÊNCIAS ================= -->
+<section class="referencias" id="referencias">
+  <div class="envoltorio">
+    <h2 class="sec-titulo">Referências</h2>
+    <p class="nota-abnt">Todas as informações deste site vêm de artigos revisados por pares ou de relatórios de organismos internacionais. Formatadas segundo a ABNT NBR 6023.</p>
+    <ol>
+      <li id="r-thompson">THOMPSON, R. C. et al. Lost at sea: where is all the plastic? <i>Science</i>, v. 304, n. 5672, p. 838, 2004. DOI: <a class="doi" href="https://doi.org/10.1126/science.1094559">10.1126/science.1094559</a>.</li>
+      <li id="r-oms2022">WORLD HEALTH ORGANIZATION. <i>Dietary and inhalation exposure to nano- and microplastic particles and potential implications for human health</i>. Genebra: WHO, 2022. Disponível em: <a class="doi" href="https://www.who.int/publications/i/item/9789240054608">who.int/publications/i/item/9789240054608</a>.</li>
+      <li id="r-pnuma">UNITED NATIONS ENVIRONMENT PROGRAMME. <i>From pollution to solution: a global assessment of marine litter and plastic pollution</i>. Nairóbi: UNEP, 2021. Disponível em: <a class="doi" href="https://www.unep.org/resources/pollution-solution-global-assessment-marine-litter-and-plastic-pollution">unep.org</a>.</li>
+      <li id="r-eriksen">ERIKSEN, M. et al. Plastic pollution in the world's oceans: more than 5 trillion plastic pieces weighing over 250,000 tons afloat at sea. <i>PLOS ONE</i>, v. 9, n. 12, e111913, 2014. DOI: <a class="doi" href="https://doi.org/10.1371/journal.pone.0111913">10.1371/journal.pone.0111913</a>.</li>
+      <li id="r-jambeck">JAMBECK, J. R. et al. Plastic waste inputs from land into the ocean. <i>Science</i>, v. 347, n. 6223, p. 768-771, 2015. DOI: <a class="doi" href="https://doi.org/10.1126/science.1260352">10.1126/science.1260352</a>.</li>
+      <li id="r-rochman">ROCHMAN, C. M. et al. Anthropogenic debris in seafood: plastic debris and fibers from textiles in fish and bivalves sold for human consumption. <i>Scientific Reports</i>, v. 5, 14340, 2015. DOI: <a class="doi" href="https://doi.org/10.1038/srep14340">10.1038/srep14340</a>.</li>
+      <li id="r-cole">COLE, M. et al. Microplastic ingestion by zooplankton. <i>Environmental Science &amp; Technology</i>, v. 47, n. 12, p. 6646-6655, 2013. DOI: <a class="doi" href="https://doi.org/10.1021/es400663f">10.1021/es400663f</a>.</li>
+      <li id="r-wright">WRIGHT, S. L.; THOMPSON, R. C.; GALLOWAY, T. S. The physical impacts of microplastics on marine organisms: a review. <i>Environmental Pollution</i>, v. 178, p. 483-492, 2013. DOI: <a class="doi" href="https://doi.org/10.1016/j.envpol.2013.02.031">10.1016/j.envpol.2013.02.031</a>.</li>
+      <li id="r-gesamp">GESAMP. <i>Sources, fate and effects of microplastics in the marine environment: a global assessment</i>. Reports and Studies GESAMP n. 90. Londres: IMO, 2015. Disponível em: <a class="doi" href="http://www.gesamp.org/publications/reports-and-studies-no-90">gesamp.org</a>.</li>
+      <li id="r-oms2019">WORLD HEALTH ORGANIZATION. <i>Microplastics in drinking-water</i>. Genebra: WHO, 2019. Disponível em: <a class="doi" href="https://www.who.int/publications/i/item/9789241516198">who.int/publications/i/item/9789241516198</a>.</li>
+      <li id="r-cox">COX, K. D. et al. Human consumption of microplastics. <i>Environmental Science &amp; Technology</i>, v. 53, n. 12, p. 7068-7074, 2019. DOI: <a class="doi" href="https://doi.org/10.1021/acs.est.9b01517">10.1021/acs.est.9b01517</a>.</li>
+      <li id="r-qian">QIAN, N. et al. Rapid single-particle chemical imaging of nanoplastics by SRS microscopy. <i>Proceedings of the National Academy of Sciences</i>, v. 121, n. 3, e2300582121, 2024. DOI: <a class="doi" href="https://doi.org/10.1073/pnas.2300582121">10.1073/pnas.2300582121</a>.</li>
+      <li id="r-ragusa">RAGUSA, A. et al. Plasticenta: first evidence of microplastics in human placenta. <i>Environment International</i>, v. 146, 106274, 2021. DOI: <a class="doi" href="https://doi.org/10.1016/j.envint.2020.106274">10.1016/j.envint.2020.106274</a>.</li>
+      <li id="r-amato2021">AMATO-LOURENÇO, L. F. et al. Presence of airborne microplastics in human lung tissue. <i>Journal of Hazardous Materials</i>, v. 416, 126124, 2021. DOI: <a class="doi" href="https://doi.org/10.1016/j.jhazmat.2021.126124">10.1016/j.jhazmat.2021.126124</a>.</li>
+      <li id="r-leslie">LESLIE, H. A. et al. Discovery and quantification of plastic particle pollution in human blood. <i>Environment International</i>, v. 163, 107199, 2022. DOI: <a class="doi" href="https://doi.org/10.1016/j.envint.2022.107199">10.1016/j.envint.2022.107199</a>.</li>
+      <li id="r-marfella">MARFELLA, R. et al. Microplastics and nanoplastics in atheromas and cardiovascular events. <i>New England Journal of Medicine</i>, v. 390, n. 10, p. 900-910, 2024. DOI: <a class="doi" href="https://doi.org/10.1056/NEJMoa2309822">10.1056/NEJMoa2309822</a>.</li>
+      <li id="r-amato2024">AMATO-LOURENÇO, L. F. et al. Microplastics in the olfactory bulb of the human brain. <i>JAMA Network Open</i>, v. 7, n. 9, e2440018, 2024. DOI: <a class="doi" href="https://doi.org/10.1001/jamanetworkopen.2024.40018">10.1001/jamanetworkopen.2024.40018</a>.</li>
+      <li id="r-nihart">NIHART, A. J. et al. Bioaccumulation of microplastics in decedent human brains. <i>Nature Medicine</i>, v. 31, p. 1114-1119, 2025. DOI: <a class="doi" href="https://doi.org/10.1038/s41591-024-03453-1">10.1038/s41591-024-03453-1</a>.</li>
+    </ol>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="envoltorio">
+    <span>Projeto extensionista · Microplásticos e Saúde · 2026</span>
+    <button class="tema-botao" id="tema" type="button">Alternar tema</button>
+  </div>
+</footer>
+
+<script>
+(() => {
+  const canvas = document.getElementById('campo');
+  const ctx = canvas.getContext('2d');
+  const reduz = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const toque = window.matchMedia('(hover: none)').matches;
+  const cores = ['#D9366B', '#1C9CC0', '#E3A821', '#7A55C9', '#2EA36B'];
+  let W = 0, H = 0, dpr = 1, particulas = [];
+  const lupa = { x: 0, y: 0, alvoX: 0, alvoY: 0, r: 130, ativa: false };
+
+  function forma(tipo) {
+    if (tipo === 'fibra') {
+      const pts = []; let a = Math.random() * Math.PI * 2;
+      for (let i = 0; i < 7; i++) { a += (Math.random() - .5) * .9; pts.push(a); }
+      return pts;
+    }
+    const n = 4 + Math.floor(Math.random() * 3), pts = [];
+    for (let i = 0; i < n; i++) pts.push([(i / n) * Math.PI * 2 + Math.random() * .6, .55 + Math.random() * .45]);
+    return pts;
+  }
+
+  function criar() {
+    const area = W * H, n = Math.min(1100, Math.round(area / 1300));
+    particulas = [];
+    for (let i = 0; i < n; i++) {
+      const r = Math.random(), tipo = r < .3 ? 'fibra' : r < .55 ? 'esfera' : 'fragmento';
+      particulas.push({
+        x: Math.random() * W, y: Math.random() * H,
+        s: tipo === 'fibra' ? 3 + Math.random() * 4 : 1.2 + Math.random() * 3.2,
+        rot: Math.random() * Math.PI * 2, vr: (Math.random() - .5) * .004,
+        vx: (Math.random() - .5) * .12, vy: -.04 - Math.random() * .1,
+        cor: cores[Math.floor(Math.random() * cores.length)], tipo, pts: forma(tipo),
+      });
+    }
+  }
+
+  function tamanho() {
+    const ret = canvas.getBoundingClientRect();
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = ret.width; H = ret.height;
+    canvas.width = W * dpr; canvas.height = H * dpr;
+    lupa.r = Math.max(90, Math.min(160, W * .14));
+    if (!lupa.ativa) { lupa.alvoX = lupa.x = W * .72; lupa.alvoY = lupa.y = H * .38; }
+    criar();
+  }
+
+  function desenhar(p, escala) {
+    const s = p.s * escala;
+    ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot);
+    ctx.fillStyle = ctx.strokeStyle = p.cor;
+    if (p.tipo === 'fibra') {
+      ctx.lineWidth = Math.max(.6, .9 * escala * .6); ctx.lineCap = 'round';
+      ctx.beginPath(); let x = 0, y = 0; ctx.moveTo(0, 0);
+      for (const a of p.pts) { x += Math.cos(a) * s; y += Math.sin(a) * s; ctx.lineTo(x, y); }
+      ctx.stroke();
+    } else if (p.tipo === 'esfera') {
+      ctx.beginPath(); ctx.arc(0, 0, s * .8, 0, Math.PI * 2); ctx.fill();
+    } else {
+      ctx.beginPath();
+      p.pts.forEach(([a, m], i) => { const px = Math.cos(a) * s * m * 1.4, py = Math.sin(a) * s * m * 1.4; i ? ctx.lineTo(px, py) : ctx.moveTo(px, py); });
+      ctx.closePath(); ctx.fill();
+    }
+    ctx.restore();
+  }
+
+  function corTinta() { return getComputedStyle(document.documentElement).getPropertyValue('--tinta').trim() || '#0F2733'; }
+
+  function quadro(t) {
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, W, H);
+    if (!reduz) {
+      for (const p of particulas) {
+        p.x += p.vx; p.y += p.vy; p.rot += p.vr;
+        if (p.y < -10) { p.y = H + 10; p.x = Math.random() * W; }
+        if (p.x < -10) p.x = W + 10; else if (p.x > W + 10) p.x = -10;
+      }
+      if (!lupa.ativa || toque) {
+        lupa.alvoX = W * (.62 + .18 * Math.sin(t / 5200));
+        lupa.alvoY = H * (.38 + .14 * Math.sin(t / 3700));
+      }
+      lupa.x += (lupa.alvoX - lupa.x) * .14; lupa.y += (lupa.alvoY - lupa.y) * .14;
+    }
+    // fora da lupa: quase invisível, como na água real
+    ctx.globalAlpha = .1;
+    for (const p of particulas) desenhar(p, 1);
+    ctx.globalAlpha = 1;
+    // dentro da lupa: ampliado e nítido
+    const z = 2.4, tinta = corTinta();
+    ctx.save();
+    ctx.beginPath(); ctx.arc(lupa.x, lupa.y, lupa.r, 0, Math.PI * 2); ctx.clip();
+    ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--filtro-2').trim();
+    ctx.fill();
+    ctx.translate(lupa.x, lupa.y); ctx.scale(z, z); ctx.translate(-lupa.x, -lupa.y);
+    for (const p of particulas) {
+      if (Math.abs(p.x - lupa.x) < lupa.r / z + 12 && Math.abs(p.y - lupa.y) < lupa.r / z + 12) desenhar(p, 1);
+    }
+    ctx.restore();
+    // aro e cabo
+    ctx.strokeStyle = tinta; ctx.lineWidth = 5;
+    ctx.beginPath(); ctx.arc(lupa.x, lupa.y, lupa.r, 0, Math.PI * 2); ctx.stroke();
+    const ang = Math.PI / 4, cx = lupa.x + Math.cos(ang) * lupa.r, cy = lupa.y + Math.sin(ang) * lupa.r;
+    ctx.lineWidth = 12; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(cx + 4, cy + 4); ctx.lineTo(cx + lupa.r * .55, cy + lupa.r * .55); ctx.stroke();
+    // escala dentro da lupa
+    ctx.lineWidth = 2; ctx.lineCap = 'butt';
+    const bx = lupa.x - 40, by = lupa.y + lupa.r - 26;
+    ctx.beginPath(); ctx.moveTo(bx, by); ctx.lineTo(bx + 80, by); ctx.moveTo(bx, by - 5); ctx.lineTo(bx, by + 5); ctx.moveTo(bx + 80, by - 5); ctx.lineTo(bx + 80, by + 5); ctx.stroke();
+    ctx.fillStyle = tinta; ctx.font = '600 12px "Bricolage Grotesque", sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText('100 µm', lupa.x, by - 8);
+    if (!reduz) requestAnimationFrame(quadro);
+  }
+
+  canvas.addEventListener('pointermove', e => {
+    if (e.pointerType === 'touch') return;
+    const r = canvas.getBoundingClientRect();
+    lupa.ativa = true; lupa.alvoX = e.clientX - r.left; lupa.alvoY = e.clientY - r.top;
+    if (reduz) { lupa.x = lupa.alvoX; lupa.y = lupa.alvoY; quadro(0); }
+  });
+  canvas.addEventListener('pointerleave', () => { lupa.ativa = false; });
+  if (toque) document.getElementById('dica').textContent = 'A lupa mostra partículas que a olho nu passariam despercebidas';
+
+  window.addEventListener('resize', () => { tamanho(); if (reduz) quadro(0); });
+  tamanho();
+  if (reduz) quadro(0); else requestAnimationFrame(quadro);
+
+  // tema
+  const raiz = document.documentElement;
+  try { const t = localStorage.getItem('tema-micro'); if (t) raiz.dataset.theme = t; } catch (e) {}
+  document.getElementById('tema').addEventListener('click', () => {
+    const escuro = raiz.dataset.theme ? raiz.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+    raiz.dataset.theme = escuro ? 'light' : 'dark';
+    try { localStorage.setItem('tema-micro', raiz.dataset.theme); } catch (e) {}
+    if (reduz) quadro(0);
+  });
+})();
+</script>
+</body>
+</html>
