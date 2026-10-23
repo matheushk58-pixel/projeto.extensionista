@@ -127,69 +127,44 @@
   .legenda button[aria-pressed="true"] { border-color: var(--tinta); background: var(--tinta); color: var(--filtro); }
   .legenda svg { flex: none; }
 
-  /* intro: o zoom do microscópio */
-  .js.intro .hero h1 .linha > span { transform: translateY(110%); }
+  /* Abertura: uma gota vira um enxame de plástico que toma a forma do peixe e depois de uma pessoa */
+  .js.intro .hero h1 .linha > span { transform: translateY(110%); filter: blur(6px); }
   .js.intro .hero .lead { opacity: 0; transform: translateY(16px); }
   .js.intro .legenda { opacity: 0; }
-  .js.intro .hero h1 .linha:nth-child(2) > span { transition-delay: .1s; }
-  .js.intro .hero h1 .linha:nth-child(3) > span { transition-delay: .2s; }
+  .hero h1 .linha > span { transition: transform .9s var(--ease), filter .9s var(--ease); }
   .hero h1 .linha:nth-child(2) > span { transition-delay: .1s; }
   .hero h1 .linha:nth-child(3) > span { transition-delay: .2s; }
-  .ocular {
-    position: absolute; inset: 0; z-index: 5; display: none; place-items: center; pointer-events: none;
+  .abertura {
+    position: fixed; inset: 0; z-index: 60; display: none; overflow: hidden;
+    background: radial-gradient(120% 90% at 50% 38%, #163847 0%, #0F2733 55%, #081A22 100%); color: #F1F4F2;
+    transition: opacity .9s var(--ease), visibility 0s linear .9s;
   }
-  .js.intro .ocular { display: grid; }
-  .ocular .anel {
-    width: min(64vmin, 520px); aspect-ratio: 1; border-radius: 50%;
-    border: 2px solid var(--tinta); display: grid; place-items: center; text-align: center;
-    box-shadow: 0 0 0 100vmax color-mix(in srgb, var(--filtro) 92%, transparent);
-    transition: transform 1s var(--ease), opacity .6s;
+  .js.intro .abertura { display: block; }
+  .abertura.sai { opacity: 0; visibility: hidden; }
+  .abertura canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  .abertura-texto {
+    position: absolute; left: 0; right: 0; bottom: clamp(48px, 10vh, 110px); padding: 0 20px;
+    display: grid; justify-items: center; text-align: center; gap: 14px; pointer-events: none;
   }
-  .ocular.sai .anel { transform: scale(3.2); opacity: 0; }
-  /* 1) a gota cai, 2) a água ondula, 3) a lente aparece e entra em foco */
-  .gota {
-    position: absolute; left: 50%; top: 50%; width: 26px; height: 34px; margin: -17px 0 0 -13px;
-    background: linear-gradient(160deg, #9FE6F5, var(--pp)); border-radius: 50% 50% 50% 50% / 62% 62% 38% 38%;
-    box-shadow: inset -4px -6px 0 rgba(0,0,0,.12); opacity: 0;
+  .abertura-frase {
+    font-family: var(--display); font-weight: 800; font-size: clamp(2.6rem, 8.4vw, 6.6rem);
+    letter-spacing: -0.045em; line-height: .95; min-height: 1em;
   }
-  .js.intro .gota { animation: gota-cai .62s cubic-bezier(.55,0,1,.45) forwards; }
-  @keyframes gota-cai {
-    0% { transform: translateY(-46vh) scaleY(1.1); opacity: 1; }
-    88% { transform: translateY(0) scaleY(1.15); opacity: 1; }
-    100% { transform: translateY(0) scale(1.6, .4); opacity: 0; }
-  }
-  .ondas { position: absolute; inset: 0; display: grid; place-items: center; }
-  .ondas i { grid-area: 1 / 1; width: min(64vmin, 520px); aspect-ratio: 1; border-radius: 50%; border: 2px solid var(--pp); opacity: 0; transform: scale(.05); }
-  .js.intro .ondas i { animation: onda 1.3s cubic-bezier(.2,.7,.2,1) forwards; }
-  .js.intro .ondas i:nth-child(1) { animation-delay: .58s; }
-  .js.intro .ondas i:nth-child(2) { animation-delay: .74s; }
-  .js.intro .ondas i:nth-child(3) { animation-delay: .9s; }
-  @keyframes onda { 0% { transform: scale(.05); opacity: .9; } 100% { transform: scale(1.25); opacity: 0; } }
-  .js.intro .ocular .anel { animation: lente-entra .8s cubic-bezier(.2,.7,.2,1) .62s both; }
-  @keyframes lente-entra { from { transform: scale(.55); opacity: 0; filter: blur(8px); } to { transform: scale(1); opacity: 1; filter: blur(0); } }
-  .js.intro .ocular.sai .anel { animation: none; }
-  .ocular .mira { position: absolute; inset: 0; width: 100%; height: 100%; stroke: var(--tinta); stroke-width: 1; opacity: .45; }
-  .ocular .mira .cruz { stroke-width: 1.4; opacity: .8; }
-  .js.intro .ocular .mira { animation: mira-gira 9s linear infinite; }
-  @keyframes mira-gira { to { transform: rotate(360deg); } }
-  .ocular .rotulo { transition: opacity .25s; }
-  .ocular .rotulo.troca { opacity: 0; }
-  .js.intro .hero h1 .linha > span { filter: blur(6px); }
-  .hero h1 .linha > span { transition: transform .9s var(--ease), filter .9s var(--ease); }
-  /* versão suave para quem pede menos movimento: sem queda nem voo da câmera */
-  .js.intro.intro-suave .gota, .js.intro.intro-suave .ondas { display: none; }
-  .js.intro.intro-suave .ocular .anel { animation: lente-suave .6s ease both; }
-  .js.intro.intro-suave .ocular .mira { animation: none; }
-  @keyframes lente-suave { from { opacity: 0; } to { opacity: 1; } }
-  .ocular .zoom { font-family: var(--display); font-weight: 800; font-size: clamp(3.4rem, 11vmin, 7rem); letter-spacing: -0.04em; line-height: 1; }
-  .ocular .rotulo { font-family: var(--display); font-size: 1rem; color: var(--tinta-suave); margin-top: 6px; }
-  .ocular .mira { position: absolute; width: min(64vmin, 520px); aspect-ratio: 1; }
+  .abertura-frase .p { display: inline-block; white-space: pre; transform: translateY(.5em); opacity: 0; filter: blur(10px);
+    transition: transform .55s cubic-bezier(.2,.9,.25,1.2), opacity .35s, filter .45s; }
+  .abertura-frase.entra .p { transform: none; opacity: 1; filter: none; }
+  .abertura-frase.sai .p { transform: translateY(-.35em); opacity: 0; filter: blur(8px); transition-duration: .3s; transition-delay: 0s !important; }
+  .abertura-dado { font-size: clamp(1rem, 2.1vw, 1.3rem); line-height: 1.45; max-width: 44ch; color: #C9DAE0; opacity: 0; transition: opacity .5s; }
+  .abertura-dado.visivel { opacity: 1; }
+  .abertura-dado b { font-family: var(--display); font-weight: 800; color: #fff; font-variant-numeric: tabular-nums; }
+  .abertura-dado small { display: block; font-family: var(--display); font-size: .78rem; color: #8FA8B1; margin-top: 4px; }
   .pular-intro {
-    position: absolute; right: clamp(16px, 4vw, 40px); bottom: 24px; z-index: 6; display: none;
-    font-family: var(--display); font-size: .92rem; background: none; border: 1.5px solid var(--linha);
-    border-radius: 999px; padding: 8px 16px; min-height: 44px; cursor: pointer; pointer-events: auto; color: var(--tinta); background: var(--filtro);
+    position: absolute; right: clamp(16px, 4vw, 40px); top: clamp(16px, 3vh, 28px); z-index: 2;
+    font-family: var(--display); font-size: .92rem; border: 1.5px solid rgba(241,244,242,.35); color: #F1F4F2; background: rgba(15,39,51,.55);
+    border-radius: 999px; padding: 8px 16px; min-height: 44px; cursor: pointer;
   }
-  .js.intro .pular-intro { display: block; }
+  .pular-intro:hover { border-color: #F1F4F2; }
+  @media (prefers-reduced-motion: reduce) { .abertura-frase .p { transition: opacity .5s; transform: none; filter: none; } }
 
   /* etiqueta da partícula sob o cursor */
   .etiqueta {
@@ -602,6 +577,14 @@
 </style>
 </head>
 <body>
+<div class="abertura" id="abertura" role="presentation">
+  <canvas id="aberturaCanvas" aria-hidden="true"></canvas>
+  <div class="abertura-texto" aria-hidden="true">
+    <p class="abertura-frase" id="aberturaFrase"></p>
+    <p class="abertura-dado" id="aberturaDado">Uma pessoa pode ingerir até <b id="aberturaConta">0</b> partículas de microplástico por ano.<small>Estimativa de Cox et al., 2019</small></p>
+  </div>
+  <button class="pular-intro" id="pularIntro" type="button">Pular introdução</button>
+</div>
 <a class="pular" href="#conteudo">Pular para o conteúdo</a>
 
 <nav class="nav" aria-label="Principal">
@@ -627,18 +610,6 @@
 <header class="hero" id="topo">
   <canvas id="cena" aria-hidden="true"></canvas>
 
-  <div class="ocular" id="ocular" aria-hidden="true">
-    <div class="gota"></div>
-    <div class="ondas"><i></i><i></i><i></i></div>
-    <div class="anel">
-      <svg class="mira" viewBox="0 0 200 200" aria-hidden="true"><line x1="100" y1="4" x2="100" y2="14" transform="rotate(0 100 100)"/><line x1="100" y1="8" x2="100" y2="14" transform="rotate(5 100 100)"/><line x1="100" y1="8" x2="100" y2="14" transform="rotate(10 100 100)"/><line x1="100" y1="8" x2="100" y2="14" transform="rotate(15 100 100)"/><line x1="100" y1="8" x2="100" y2="14" transform="rotate(20 100 100)"/><line x1="100" y1="8" x2="100" y2="14" transform="rotate(25 100 100)"/><line x1="100" y1="4" x2="100" y2="14" transform="rotate(30 100 100)"/><line x1="100" y1="8" x2="100" y2="14" transform="rotate(35 100 100)"/><line x1="100" y1="8" x2="100" y2="14" transform="rotate(40 100 100)"/><line x1="100" y1="8" x2="100" y2="14" transform="rotate(45 100 100)"/><line x1="100" y1="8" x2="100" y2="14" transform="rotate(50 100 100)"/><line x1="100" y1="8" x2="100" y2="14" transform="rotate(55 100 100)"/><line x1="100" y1="4" x2="100" y2="14" transform="rotate(60 100 100)"/><line x1="100" y1="8" x2="100" y2="14" transform="rotate(65 100 100)"/><line x1="100" y1="8" x2="100" y2="14" transform="rotate(70 100 100)"/><line x1="100" y1="8" x2="100" y2="14" transform="rotate(75 100 100)"/><line x1="100" y1="8" x2="100" y2="14" transform="rotate(80 100 100)"/><line x1="100" y1="8" x2="100" y2="14" transform="rotate(85 100 100)"/><line x1="100" y1="4" x2="100" y2="14" transform="rotate(90 100 100)"/><line x1="100" y1="8" x2="100" y2="14" transform="rotate(95 100 100)"/><line x1="100" y1="8" x2="100" y2="14" transform="rotate(100 100 100)"/><line x1="100" y1="8" x2="100" y2="14" transform="rotate(105 100 100)"/><line x1="100" y1="8" x2="100" y2="14" transform="rotate(110 100 100)"/><line x1="100" y1="8" x2="100" y2="14" transform="rotate(115 100 100)"/><line x1="100" y1="4" x2="100" y2="14" transform="rotate(120 100 100)"/><line x1="100" y1="8" x2="100" y2="14" transform="rotate(125 100 100)"/><line x1="100" y1="8" x2="100" y2="14" transform="rotate(130 100 100)"/><line x1="100" y1="8" x2="100" y2="14" transform="rotate(135 100 100)"/><line x1="100" y1="8" x2="100" y2="14" transform="rotate(140 100 100)"/><line x1="100" y1="8" x2="100" y2="14" transform="rotate(145 100 100)"/><line x1="100" y1="4" x2="100" y2="14" transform="rotate(150 100 100)"/><line x1="100" y1="8" x2="100" y2="14" transform="rotate(155 100 100)"/><line x1="100" y1="8" x2="100" y2="14" transform="rotate(160 100 100)"/><line x1="100" y1="8" x2="100" y2="14" transform="rotate(165 100 100)"/><line x1="100" y1="8" x2="100" y2="14" transform="rotate(170 100 100)"/><line x1="100" y1="8" x2="100" y2="14" transform="rotate(175 100 100)"/><line x1="100" y1="4" x2="100" y2="14" transform="rotate(180 100 100)"/><line x1="100" y1="8" x2="100" y2="14" transform="rotate(185 100 100)"/><line x1="100" y1="8" x2="100" y2="14" transform="rotate(190 100 100)"/><line x1="100" y1="8" x2="100" y2="14" transform="rotate(195 100 100)"/><line x1="100" y1="8" x2="100" y2="14" transform="rotate(200 100 100)"/><line x1="100" y1="8" x2="100" y2="14" transform="rotate(205 100 100)"/><line x1="100" y1="4" x2="100" y2="14" transform="rotate(210 100 100)"/><line x1="100" y1="8" x2="100" y2="14" transform="rotate(215 100 100)"/><line x1="100" y1="8" x2="100" y2="14" transform="rotate(220 100 100)"/><line x1="100" y1="8" x2="100" y2="14" transform="rotate(225 100 100)"/><line x1="100" y1="8" x2="100" y2="14" transform="rotate(230 100 100)"/><line x1="100" y1="8" x2="100" y2="14" transform="rotate(235 100 100)"/><line x1="100" y1="4" x2="100" y2="14" transform="rotate(240 100 100)"/><line x1="100" y1="8" x2="100" y2="14" transform="rotate(245 100 100)"/><line x1="100" y1="8" x2="100" y2="14" transform="rotate(250 100 100)"/><line x1="100" y1="8" x2="100" y2="14" transform="rotate(255 100 100)"/><line x1="100" y1="8" x2="100" y2="14" transform="rotate(260 100 100)"/><line x1="100" y1="8" x2="100" y2="14" transform="rotate(265 100 100)"/><line x1="100" y1="4" x2="100" y2="14" transform="rotate(270 100 100)"/><line x1="100" y1="8" x2="100" y2="14" transform="rotate(275 100 100)"/><line x1="100" y1="8" x2="100" y2="14" transform="rotate(280 100 100)"/><line x1="100" y1="8" x2="100" y2="14" transform="rotate(285 100 100)"/><line x1="100" y1="8" x2="100" y2="14" transform="rotate(290 100 100)"/><line x1="100" y1="8" x2="100" y2="14" transform="rotate(295 100 100)"/><line x1="100" y1="4" x2="100" y2="14" transform="rotate(300 100 100)"/><line x1="100" y1="8" x2="100" y2="14" transform="rotate(305 100 100)"/><line x1="100" y1="8" x2="100" y2="14" transform="rotate(310 100 100)"/><line x1="100" y1="8" x2="100" y2="14" transform="rotate(315 100 100)"/><line x1="100" y1="8" x2="100" y2="14" transform="rotate(320 100 100)"/><line x1="100" y1="8" x2="100" y2="14" transform="rotate(325 100 100)"/><line x1="100" y1="4" x2="100" y2="14" transform="rotate(330 100 100)"/><line x1="100" y1="8" x2="100" y2="14" transform="rotate(335 100 100)"/><line x1="100" y1="8" x2="100" y2="14" transform="rotate(340 100 100)"/><line x1="100" y1="8" x2="100" y2="14" transform="rotate(345 100 100)"/><line x1="100" y1="8" x2="100" y2="14" transform="rotate(350 100 100)"/><line x1="100" y1="8" x2="100" y2="14" transform="rotate(355 100 100)"/><line class="cruz" x1="100" y1="30" x2="100" y2="58"/><line class="cruz" x1="100" y1="142" x2="100" y2="170"/><line class="cruz" x1="30" y1="100" x2="58" y2="100"/><line class="cruz" x1="142" y1="100" x2="170" y2="100"/></svg>
-      <div>
-        <div class="zoom num" id="zoom">1×</div>
-        <div class="rotulo" id="zoomRotulo">Uma gota de água</div>
-      </div>
-    </div>
-  </div>
-  <button class="pular-intro" id="pularIntro" type="button">Pular introdução</button>
 
   <div class="etiqueta" id="etiqueta" aria-hidden="true"></div>
 
@@ -1089,6 +1060,7 @@
     <span>Projeto extensionista · Grupo 4 · Universidade Nove de Julho · 2026 · <a href="apresentacao.html">Ver a apresentação</a> · <a href="guia-microplasticos-e-saude.pdf" download>Baixar o guia de dúvidas (PDF)</a></span>
     <div class="rodape-botoes">
       <button class="tema-botao botao-anim" type="button" data-pausar-anim aria-pressed="false"><svg class="ico-pausa" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path class="i-pausa" d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z" fill="currentColor"/><path class="i-play" d="M8 5.5v13l11-6.5z" fill="currentColor"/></svg><span>Pausar animações</span></button>
+      <button class="tema-botao" id="reverAbertura" type="button">Rever a abertura</button>
       <button class="tema-botao" id="tema" type="button">Alternar tema</button>
     </div>
   </div>
@@ -1325,48 +1297,216 @@ addEventListener('DOMContentLoaded', () => {
   }));
 
   /* =========================================================
-     Intro: zoom de 1× a 400×, uma vez por sessão
+     Abertura: a gota vira um enxame de plástico que forma
+     o peixe e depois uma pessoa. Uma vez por sessão.
      ========================================================= */
-  (function intro() {
+  (function abertura() {
     let visto = false;
     try { visto = sessionStorage.getItem('intro-micro') === '1'; } catch (e) {}
-    if (visto || !cena3d.pronto || !raiz.classList.contains('intro')) { raiz.classList.remove('intro', 'intro-suave'); return; }
+    const el = document.getElementById('abertura');
+    if (visto || !raiz.classList.contains('intro')) { raiz.classList.remove('intro', 'intro-suave'); return; }
     window.__introIniciada = true;
     const suave = reduz;
-    const ocular = document.getElementById('ocular'), zoom = document.getElementById('zoom'), rotulo = document.getElementById('zoomRotulo');
-    // a gota cai e a lente aparece antes do zoom começar
-    const ESPERA = suave ? 250 : 900, DUR = suave ? 1300 : 2600, t0 = performance.now() + ESPERA;
-    const ETAPAS = [[0, 'Uma gota de água'], [.3, 'Fibras e fragmentos aparecem'], [.7, 'Microplásticos à vista']];
-    let acabou = false, etapa = 0;
-    if (!suave) { cena3d.camZ = 110; canvas.style.filter = 'blur(14px)'; }
-    function trocarRotulo(i) {
-      etapa = i; rotulo.classList.add('troca');
-      setTimeout(() => { if (!acabou) rotulo.textContent = ETAPAS[i][1]; rotulo.classList.remove('troca'); }, 200);
+    const cv = document.getElementById('aberturaCanvas'), ctx = cv.getContext('2d');
+    const frase = document.getElementById('aberturaFrase'), dado = document.getElementById('aberturaDado'), conta = document.getElementById('aberturaConta');
+    let W = 0, H = 0;
+    function medir() {
+      const dpr = Math.min(devicePixelRatio || 1, 2); W = innerWidth; H = innerHeight;
+      cv.width = W * dpr; cv.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     }
-    function passo(t) {
-      if (acabou) return;
-      const k = Math.max(0, Math.min(1, (t - t0) / DUR)), e = 1 - Math.pow(1 - k, 3);
-      zoom.textContent = `${fmt(Math.round(1 + e * 399))}×`;
-      if (!suave) { cena3d.camZ = 110 - e * 78; canvas.style.filter = `blur(${(14 * (1 - e)).toFixed(1)}px)`; }
-      if (etapa + 1 < ETAPAS.length && k >= ETAPAS[etapa + 1][0]) trocarRotulo(etapa + 1);
-      if (k < 1) requestAnimationFrame(passo); else setTimeout(terminar, suave ? 150 : 350);
+    medir(); addEventListener('resize', medir);
+
+    // silhuetas desenhadas numa caixa 100×100 e amostradas em pontos
+    const caixa = (p, x, y, w, h, r) => { if (p.roundRect) p.roundRect(x, y, w, h, r); else p.rect(x, y, w, h); };
+    function formaPeixe() {
+      const p = new Path2D();
+      p.ellipse(44, 50, 33, 19, 0, 0, Math.PI * 2);
+      p.moveTo(70, 50); p.lineTo(97, 29); p.lineTo(90, 50); p.lineTo(97, 71); p.closePath();
+      p.moveTo(34, 34); p.lineTo(52, 16); p.lineTo(61, 35); p.closePath();
+      p.moveTo(40, 66); p.lineTo(50, 80); p.lineTo(56, 66); p.closePath();
+      return { p, fora: (u, v) => Math.hypot(u - 22, v - 45) < 4.2 }; // o olho fica vazio
     }
+    function formaPessoa() {
+      const p = new Path2D(), membro = (x, y, w, h, graus) => {
+        const m = new Path2D(); caixa(m, -w / 2, 0, w, h, w / 2);
+        p.addPath(m, new DOMMatrix().translate(x, y).rotate(graus));
+      };
+      p.arc(50, 10, 8, 0, Math.PI * 2);
+      p.rect(46.5, 16, 7, 6);
+      p.moveTo(39, 21); p.lineTo(61, 21); p.quadraticCurveTo(68, 21, 67, 29);
+      p.lineTo(63, 57); p.lineTo(37, 57); p.lineTo(33, 29); p.quadraticCurveTo(32, 21, 39, 21); p.closePath();
+      membro(35.5, 24, 7, 31, 11); membro(64.5, 24, 7, 31, -11);   // braços levemente abertos
+      membro(44.5, 54, 9.5, 43, 3); membro(55.5, 54, 9.5, 43, -3);  // pernas
+      return { p, fora: () => false };
+    }
+    function amostrar(forma) {
+      const R = 160, c = document.createElement('canvas'); c.width = c.height = R;
+      const g = c.getContext('2d'); g.scale(R / 100, R / 100); g.fill(forma.p);
+      const dados = g.getImageData(0, 0, R, R).data, pts = [];
+      for (let y = 0; y < R; y++) for (let x = 0; x < R; x++) {
+        const u = x / R * 100, v = y / R * 100;
+        if (dados[(y * R + x) * 4 + 3] > 128 && !forma.fora(u, v)) pts.push([u, v]);
+      }
+      return pts;
+    }
+    const PEIXE = amostrar(formaPeixe()), PESSOA = amostrar(formaPessoa());
+    // área livre acima das frases, para a forma nunca encostar no texto
+    const textoEl = el.querySelector('.abertura-texto');
+    function area() {
+      const topo = W < 700 ? 76 : 64, base = textoEl.getBoundingClientRect().top - (W < 700 ? 18 : 28);
+      return { topo, base, alto: Math.max(120, base - topo) };
+    }
+    const centro = () => { const a = area(); return { x: W / 2, y: (a.topo + a.base) / 2 }; };
+    function alvos(pts, tamanho) {
+      const c = centro();
+      parts.forEach(q => {
+        const [u, v] = pts[Math.floor(Math.random() * pts.length)];
+        q.tx = c.x + (u - 50) / 100 * tamanho + (Math.random() - .5) * 2;
+        q.ty = c.y + (v - 50) / 100 * tamanho + (Math.random() - .5) * 2;
+        q.alvo = true; q.atraso = performance.now() + Math.random() * 420;
+      });
+    }
+
+    // partículas: fragmentos, fibras e pellets nas cores do site
+    const CORES = ['#D9366B', '#1C9CC0', '#E3A821', '#7A55C9', '#2EA36B', '#F4F1E6', '#6FD0EA'];
+    const N = W < 700 ? 560 : 1000;
+    const parts = [...Array(N)].map(() => {
+      const tipo = Math.random() < .62 ? 0 : Math.random() < .55 ? 1 : 2;
+      const lados = 3 + Math.floor(Math.random() * 2);
+      return {
+        x: 0, y: 0, vx: 0, vy: 0, a: Math.random() * 6.3, va: (Math.random() - .5) * .08, f: Math.random() * 6.3,
+        cor: CORES[Math.floor(Math.random() * CORES.length)], tipo, t: 1.4 + Math.random() * 2.6,
+        forma: [...Array(lados)].map((_, i) => { const ang = i / lados * 6.283 + Math.random() * .6; const r = .6 + Math.random() * .6; return [Math.cos(ang) * r, Math.sin(ang) * r]; }),
+        vivo: false, alvo: false, tx: 0, ty: 0, atraso: 0, k: .016 + Math.random() * .014,
+      };
+    });
+
+    // roteiro (ms desde o início)
+    const R = suave
+      ? { gota: 0, agua: 0, peixe: 1700, pessoa: 3400, fim: 5600 }
+      : { gota: 620, agua: 620, peixe: 2400, pessoa: 4000, fim: 6300 };
+    const t0 = performance.now();
+    let fase = '', acabou = false, ondas = [], vivos = 0, fimEm = 0, alfa = suave ? 0 : 1, ultimo = t0;
+    if (cena3d.pronto && !suave) cena3d.camZ = 84;
+
+    function mostrarFrase(txt) {
+      frase.classList.add('sai');
+      setTimeout(() => {
+        frase.classList.remove('sai', 'entra');
+        frase.innerHTML = txt.split(' ').map((w, i) => `<span class="p" style="transition-delay:${i * 80}ms">${w} </span>`).join('');
+        requestAnimationFrame(() => requestAnimationFrame(() => frase.classList.add('entra')));
+      }, frase.textContent ? 280 : 0);
+    }
+    function entrar(nova) {
+      fase = nova;
+      if (nova === 'agua') {
+        mostrarFrase('Está na água.');
+        if (!suave) ondas = [0, 140, 280].map(d => performance.now() + d);
+      }
+      if (nova === 'peixe') { mostrarFrase('Está no peixe.'); alvos(PEIXE, Math.min(W * (W < 700 ? .86 : .6), area().alto * 1.25)); }
+      if (nova === 'pessoa') { mostrarFrase('Está em nós.'); alvos(PESSOA, Math.min(area().alto * .98, W * .9)); dado.classList.add('visivel'); }
+      if (suave) alfa = 0;
+    }
+
+    function quadro(agora) {
+      const t = agora - t0, c = centro();
+      const dt = Math.min(3, Math.max(0, (agora - ultimo) / 16.67)); ultimo = agora; // movimento em tempo real, não por quadro
+      if (!acabou) {
+        if (!fase && t >= R.agua) entrar('agua');
+        else if (fase === 'agua' && t >= R.peixe) entrar('peixe');
+        else if (fase === 'peixe' && t >= R.pessoa) entrar('pessoa');
+        else if (fase === 'pessoa' && t >= R.fim) terminar();
+      }
+      // contador do dado, depois que a pessoa se forma
+      if (fase === 'pessoa' && !acabou) {
+        const k = Math.min(1, (t - R.pessoa - 500) / 1300), e = k <= 0 ? 0 : 1 - Math.pow(1 - k, 3);
+        conta.textContent = fmt(Math.round(e * 52000));
+      }
+
+      ctx.clearRect(0, 0, W, H);
+
+      // 1) a gota cai
+      if (!suave && t < R.gota) {
+        const k = t / R.gota, y = -40 + (c.y + 40) * k * k;
+        ctx.save(); ctx.translate(c.x, y); ctx.scale(1, 1.15 + k * .2);
+        const gr = ctx.createLinearGradient(-12, -20, 12, 16); gr.addColorStop(0, '#CFF6FF'); gr.addColorStop(1, '#1C9CC0');
+        ctx.fillStyle = gr; ctx.beginPath();
+        ctx.moveTo(0, -22); ctx.bezierCurveTo(12, -6, 15, 4, 15, 9); ctx.arc(0, 9, 15, 0, Math.PI); ctx.bezierCurveTo(-15, 4, -12, -6, 0, -22);
+        ctx.fill(); ctx.restore();
+      }
+      // 2) ondas no impacto
+      ondas.forEach(o => {
+        const k = (agora - o) / 1400; if (k < 0 || k > 1) return;
+        ctx.strokeStyle = `rgba(111,208,234,${(1 - k) * .7})`; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.ellipse(c.x, c.y, k * W * .55, k * W * .55 * .32, 0, 0, 6.283); ctx.stroke();
+      });
+      // 3) o enxame nasce do impacto e se espalha
+      if (fase && !acabou) {
+        const alvoVivos = suave ? N : Math.min(N, Math.floor(N * Math.min(1, (t - R.agua) / 1300)));
+        while (vivos < alvoVivos) {
+          const q = parts[vivos++]; q.vivo = true;
+          if (suave) { q.x = Math.random() * W; q.y = Math.random() * H; }
+          else {
+            const ang = Math.random() * 6.283, v = 3 + Math.random() * 13;
+            q.x = c.x; q.y = c.y; q.vx = Math.cos(ang) * v; q.vy = Math.sin(ang) * v * .75 - 2;
+          }
+        }
+      }
+      if (suave) alfa = Math.min(1, alfa + .04 * dt);
+      ctx.globalAlpha = alfa;
+      for (const q of parts) {
+        if (!q.vivo) continue;
+        if (suave && q.alvo && !acabou) { q.x = q.tx; q.y = q.ty; }
+        else if (q.alvo && !acabou && agora > q.atraso) {
+          const tx = q.tx + Math.sin(agora / 600 + q.f) * 1.4, ty = q.ty + Math.cos(agora / 700 + q.f) * 1.4;
+          const am = Math.pow(.86, dt);
+          q.vx = (q.vx + (tx - q.x) * q.k * dt) * am; q.vy = (q.vy + (ty - q.y) * q.k * dt) * am;
+        } else if (!suave) {
+          const am = Math.pow(.965, dt);
+          q.vx = q.vx * am + Math.sin(agora / 900 + q.f) * .03 * dt; q.vy = q.vy * am + (Math.cos(agora / 1100 + q.f) * .03 - .006) * dt;
+        }
+        if (!suave || acabou) { q.x += q.vx * dt; q.y += q.vy * dt; }
+        q.a += q.va * dt;
+        ctx.save(); ctx.translate(q.x, q.y); ctx.rotate(q.a); ctx.fillStyle = ctx.strokeStyle = q.cor;
+        if (q.tipo === 0) {
+          ctx.beginPath(); q.forma.forEach(([x, y], i) => i ? ctx.lineTo(x * q.t * 1.5, y * q.t * 1.5) : ctx.moveTo(x * q.t * 1.5, y * q.t * 1.5)); ctx.fill();
+        } else if (q.tipo === 1) {
+          ctx.lineWidth = 1.3; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(-q.t * 2.4, 0); ctx.quadraticCurveTo(0, q.t * 1.6, q.t * 2.4, 0); ctx.stroke();
+        } else { ctx.beginPath(); ctx.arc(0, 0, q.t * .9, 0, 6.283); ctx.fill(); }
+        ctx.restore();
+      }
+      ctx.globalAlpha = 1;
+      if (!acabou || agora < fimEm) requestAnimationFrame(quadro);
+      else { el.style.display = 'none'; removeEventListener('resize', medir); }
+    }
+
     function terminar() {
-      if (acabou) return; acabou = true;
-      zoom.textContent = '400×'; cena3d.camZ = 32; canvas.style.filter = '';
-      ocular.classList.add('sai');
+      if (acabou) return; acabou = true; fimEm = performance.now() + 1000;
+      const c = centro();
+      // o enxame se dispersa e a página aparece por baixo
+      parts.forEach(q => {
+        if (!q.vivo) return;
+        const dx = q.x - c.x, dy = q.y - c.y, d = Math.hypot(dx, dy) || 1, v = suave ? 0 : 8 + Math.random() * 10;
+        q.vx = dx / d * v; q.vy = dy / d * v;
+      });
+      el.classList.add('sai');
       raiz.classList.remove('intro', 'intro-suave');
+      if (cena3d.pronto) cena3d.camZ = 32;
       const pi = document.getElementById('pularIntro');
-      if (document.activeElement === pi) document.querySelector('.hero h1').setAttribute('tabindex', '-1'), document.querySelector('.hero h1').focus({ preventScroll: true });
-      pi.style.display = 'none';
-      setTimeout(() => { ocular.style.display = 'none'; }, 1000);
+      if (document.activeElement === pi) { const h1 = document.querySelector('.hero h1'); h1.setAttribute('tabindex', '-1'); h1.focus({ preventScroll: true }); }
       try { sessionStorage.setItem('intro-micro', '1'); } catch (e) {}
-      removeEventListener('keydown', terminar); removeEventListener('wheel', terminar);
+      removeEventListener('keydown', aoTeclar); removeEventListener('wheel', terminar);
     }
+    const aoTeclar = e => { if (!['Shift', 'Control', 'Alt', 'Meta', 'Tab'].includes(e.key)) terminar(); };
     document.getElementById('pularIntro').addEventListener('click', terminar);
-    addEventListener('keydown', terminar); addEventListener('wheel', terminar, { passive: true });
-    requestAnimationFrame(passo);
+    addEventListener('keydown', aoTeclar); addEventListener('wheel', terminar, { passive: true });
+    requestAnimationFrame(quadro);
   })();
+
+  document.getElementById('reverAbertura').addEventListener('click', () => {
+    try { sessionStorage.removeItem('intro-micro'); } catch (e) {}
+    location.href = location.pathname + location.search;
+  });
 
   /* =========================================================
      Barra de progresso e seção atual no menu
