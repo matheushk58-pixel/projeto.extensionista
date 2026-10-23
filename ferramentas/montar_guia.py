@@ -55,6 +55,7 @@ SECOES = [
     ("Quiz", "Seis afirmações de verdadeiro ou falso, cada uma com a explicação e a fonte."),
     ("Jogo", "“Missão: limpar o oceano”: corra pelo fundo do mar recolhendo plástico antes que ele vire microplástico."),
     ("O que fazer", "Lista de ações para marcar: no dia a dia e na comunidade."),
+    ("Pesquisa", "A pesquisa anônima do projeto, para responder ali mesmo."),
     ("Referências", "As 24 fontes no formato ABNT, com DOI."),
     ("Apresentação", "Os slides da apresentação, para rever em tela cheia."),
 ]
@@ -175,7 +176,7 @@ paginas.append(f"""
   <div class="qr-caixa">{qr_svg('#0F2733', 34)}</div>
   <div><p class="qr-rot">Acesse o site</p><p class="qr-url">{SITE_CURTO}</p><p class="qr-nota">Aponte a câmera do celular para o código.</p></div>
 </div>
-<p class="capa-rodape">Grupo 4 · Universidade Nove de Julho · São Paulo, 2026</p>
+<p class="capa-rodape">Grupo 4 · Curso de Farmácia · Universidade Nove de Julho · São Paulo, 2026</p>
 </section>""")
 
 # 2. Como usar + materiais + mapa do site
@@ -187,12 +188,13 @@ paginas.append(f"""
 <p class="lead-claro">A apresentação tem três partes que se completam. Este guia organiza tudo em um só lugar para responder às dúvidas da turma depois da exibição.</p>
 <div class="tres">
   <div class="card"><p class="num-g">2:58</p><h3>Vídeo</h3><p>Resumo animado do tema, do oceano ao corpo humano. O roteiro com a minutagem está na página 3.</p></div>
-  <div class="card"><p class="num-g">8</p><h3>Seções no site</h3><p>Conteúdo completo, com cenas 3D, quiz, minijogo e as 24 referências.</p></div>
+  <div class="card"><p class="num-g">9</p><h3>Seções no site</h3><p>Conteúdo completo, com cenas 3D, quiz, minijogo e as 24 referências.</p></div>
   <div class="card"><p class="num-g">18</p><h3>Slides</h3><p>A apresentação em tela cheia, dentro do próprio site, na seção Apresentação.</p></div>
 </div>
 <h3 class="h3-sec">O que tem em cada seção do site</h3>
 <ul class="secoes">{secoes}</ul>
 <div class="aviso"><b>Sobre as fontes.</b> Os números entre colchetes, como {c(11).replace('sup class="ref"', 'span class="ref"').replace('</sup>', '</span>')}, indicam a referência na lista da página 7, a mesma numeração usada no site.</div>
+<div class="aviso"><b>Pesquisa do projeto.</b> Ajude o curso de Farmácia da Uninove respondendo à pesquisa anônima sobre microplásticos: <b>forms.gle/bjmRArt5MXB87Ryv9</b>. O link também está no site, na seção Pesquisa.</div>
 {rodape(2)}
 </section>""")
 
@@ -268,10 +270,10 @@ paginas.append(f"""
 <p class="sobre">Equipe</p>
 <h2 class="claro">Grupo 4</h2>
 <ul class="equipe">{equipe}</ul>
-<p class="uni">Universidade Nove de Julho · São Paulo, 2026</p>
+<p class="uni">Curso de Farmácia · Universidade Nove de Julho · São Paulo, 2026</p>
 <div class="fim-qr">
   <div class="qr-caixa">{qr_svg('#0F2733', 40)}</div>
-  <div><p class="fim-titulo">Ficou com alguma dúvida?</p><p class="fim-txt">Teste o que aprendeu no quiz e no minijogo do site, e confira cada número na fonte original.</p><p class="qr-url grande">{SITE_CURTO}</p></div>
+  <div><p class="fim-titulo">Ficou com alguma dúvida?</p><p class="fim-txt">Teste o que aprendeu no quiz e no minijogo do site, e confira cada número na fonte original. Ajude o projeto respondendo à nossa pesquisa anônima: <b class="pesq">forms.gle/bjmRArt5MXB87Ryv9</b></p><p class="qr-url grande">{SITE_CURTO}</p></div>
 </div>
 </section>""")
 
@@ -364,6 +366,7 @@ dd {{ color: #2B4350; }}
 .fim-qr {{ position: absolute; left: 18mm; right: 18mm; bottom: 20mm; }}
 .fim-titulo {{ font-size: 17pt; font-weight: 800; color: #fff; }}
 .fim-txt {{ font-size: 10.5pt; color: #BFD3D9; margin-top: 1.5mm; max-width: 105mm; }}
+.fim-txt .pesq {{ font-family: 'Bricolage', Arial, sans-serif; color: #6FD0EA; white-space: nowrap; }}
 """
 
 doc = f"""<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>Guia de apoio · Microplásticos e Saúde</title><style>{CSS}</style></head><body>{''.join(paginas)}</body></html>"""
