@@ -585,6 +585,58 @@
   .acoes input:checked::after { transform: rotate(-45deg) translate(1px, -1px) scale(1); }
   .acoes input:checked + span { color: var(--tinta-suave); }
   .acoes li b { font-family: var(--display); font-weight: 600; }
+  /* resultados da pesquisa: um tom só, do claro ao escuro (validado contra os dois fundos) */
+  .resultados { --g0: #082F3D; --g1: #0B5E78; --g2: #1786A8; --g3: #4FA9C8; background: var(--filtro-2); border-top: 1px solid var(--linha); }
+  :root[data-theme="dark"] .resultados { --g0: #BDEEF8; --g1: #6FD0EA; --g2: #2A97B5; --g3: #1A6880; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .resultados { --g0: #BDEEF8; --g1: #6FD0EA; --g2: #2A97B5; --g3: #1A6880; } }
+  .resultados:not([hidden]) + .pesquisa { border-top: 0; padding-top: 0; }
+  .res-destaques { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; margin: 40px 0 56px; }
+  .res-card { background: var(--filtro); border: 1px solid var(--linha); border-radius: 16px; padding: 22px 22px 20px; display: flex; flex-direction: column; gap: 14px; }
+  .res-card h3 { font-family: var(--display); font-weight: 700; font-size: 1.22rem; line-height: 1.22; letter-spacing: -0.01em; }
+  .res-card h3 b { font-weight: 800; color: var(--pp-texto); }
+  .res-card a { font-family: var(--display); font-size: .92rem; font-weight: 600; color: var(--pp-texto); margin-top: auto; }
+  .pilha { display: flex; height: 22px; gap: 2px; }
+  .pilha i { display: block; height: 100%; min-width: 3px; }
+  .pilha i:first-child { border-radius: 4px 0 0 4px; } .pilha i:last-child { border-radius: 0 4px 4px 0; }
+  .pilha-leg { list-style: none; display: grid; gap: 6px; font-family: var(--display); font-size: .88rem; color: var(--tinta-suave); }
+  .pilha-leg li { display: grid; grid-template-columns: 12px 1fr auto; gap: 8px; align-items: center; }
+  .pilha-leg li span:first-child { width: 12px; height: 12px; border-radius: 3px; }
+  .pilha-leg b { color: var(--tinta); font-variant-numeric: tabular-nums; }
+  .colunas { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; align-items: end; height: 150px; border-bottom: 1.5px solid var(--linha); }
+  .colunas div { display: flex; flex-direction: column; justify-content: flex-end; height: 100%; }
+  .colunas i { display: block; background: var(--g3); border-radius: 4px 4px 0 0; }
+  .colunas i.forte { background: var(--g1); }
+  .colunas small { display: block; text-align: center; font-family: var(--display); font-size: .76rem; color: var(--tinta-suave); font-variant-numeric: tabular-nums; margin-bottom: 4px; white-space: nowrap; }
+  .colunas-eixo { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; text-align: center; font-family: var(--display); font-size: .82rem; color: var(--tinta-suave); margin-top: 6px; }
+  .colunas-eixo + p { font-family: var(--display); font-size: .8rem; color: var(--tinta-suave); text-align: center; }
+  .res-grade { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: clamp(32px, 5vw, 72px); align-items: start; }
+  .res-fig { margin: 0 0 28px; }
+  .res-fig figcaption { font-family: var(--display); font-weight: 600; font-size: 1.05rem; margin-bottom: 12px; }
+  .res-perfil .res-fig figcaption { font-size: .95rem; color: var(--tinta-suave); font-weight: 600; }
+  .barras { list-style: none; display: grid; gap: 8px; }
+  .barras li { display: grid; grid-template-columns: minmax(7.5rem, 42%) 1fr 3.4rem; gap: 10px; align-items: center; font-family: var(--display); font-size: .9rem; }
+  .barras .rot { color: var(--tinta); line-height: 1.25; }
+  .barras .trilho { height: 14px; }
+  .barras .trilho i { display: block; height: 100%; background: var(--g2); border-radius: 0 4px 4px 0; min-width: 2px; }
+  .barras li.forte .trilho i { background: var(--g1); }
+  .barras .val { text-align: right; font-weight: 700; font-variant-numeric: tabular-nums; }
+  [data-dica] { position: relative; }
+  [data-dica]:hover::after {
+    content: attr(data-dica); position: absolute; left: 50%; bottom: calc(100% + 8px); transform: translateX(-50%); z-index: 3; white-space: nowrap; pointer-events: none;
+    background: var(--tinta); color: var(--filtro); font-family: var(--display); font-size: .8rem; font-weight: 600; padding: 5px 9px; border-radius: 6px;
+  }
+  .res-sus-tit { margin-top: 12px; }
+  .res-sus { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 10px; }
+  .res-sus p { font-family: var(--display); font-size: .92rem; color: var(--tinta-suave); line-height: 1.35; }
+  .res-sus b { display: block; font-weight: 800; font-size: 1.7rem; color: var(--tinta); letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+  .res-tabelas { margin-top: 8px; font-family: var(--display); }
+  .res-tabelas summary { cursor: pointer; font-weight: 600; color: var(--pp-texto); min-height: 44px; display: flex; align-items: center; }
+  .res-tabelas table { width: 100%; max-width: 640px; border-collapse: collapse; margin: 10px 0 22px; font-size: .9rem; }
+  .res-tabelas caption { text-align: left; font-weight: 600; padding: 6px 0; }
+  .res-tabelas th, .res-tabelas td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--linha); }
+  .res-tabelas td:not(:first-child), .res-tabelas th:not(:first-child) { text-align: right; font-variant-numeric: tabular-nums; }
+  .res-nota { margin-top: 24px; max-width: 72ch; font-family: var(--display); font-size: .86rem; color: var(--tinta-suave); line-height: 1.5; }
+  @media (max-width: 960px) { .res-destaques { grid-template-columns: 1fr; } .res-grade { grid-template-columns: 1fr; } }
   .pesquisa { background: var(--filtro-2); border-top: 1px solid var(--linha); }
   .pesquisa-grade { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: clamp(32px, 5vw, 72px); align-items: start; }
   .pesquisa-chamada { position: sticky; top: 96px; }
@@ -1057,6 +1109,31 @@
       </div>
     </div>
     <p class="compromisso" id="compromisso" aria-live="polite">Nenhuma ação marcada ainda.</p>
+  </div>
+</section>
+
+<!-- ================= RESULTADOS DA PESQUISA ================= -->
+<!-- Escondida até a pesquisa chegar a 150 respostas: atualizar os números em resultados() e tirar o hidden. -->
+<section class="resultados" id="resultados" hidden>
+  <div class="envoltorio">
+    <h2 class="sec-titulo">O que 135 pessoas responderam</h2>
+    <div class="prosa"><p>Resultados da pesquisa anônima do projeto, respondida por moradores de São Paulo e região. Ela mostra por que informar faz diferença: a maioria se preocupa com o tema, mas poucos sabem explicar o que são microplásticos.</p></div>
+    <div class="res-destaques" id="resDestaques"></div>
+    <div class="res-grade">
+      <div>
+        <figure class="res-fig" id="resArea"></figure>
+        <h3 class="sub res-sus-tit">Acesso à saúde</h3>
+        <div class="res-sus" id="resSus"></div>
+      </div>
+      <div class="res-perfil">
+        <h3 class="sub">Quem respondeu</h3>
+        <figure class="res-fig" id="resIdade"></figure>
+        <figure class="res-fig" id="resRegiao"></figure>
+        <figure class="res-fig" id="resEscola"></figure>
+      </div>
+    </div>
+    <details class="res-tabelas"><summary>Ver todos os números em tabela</summary><div id="resTabelas"></div></details>
+    <p class="res-nota">Percentuais calculados sobre as 135 pessoas que aceitaram participar (134 na pergunta sobre hábitos), de 139 respostas recebidas até 4 de novembro de 2026. É uma pesquisa de opinião, sem amostragem estatística: os números descrevem este grupo, não toda a população.</p>
   </div>
 </section>
 
@@ -1581,6 +1658,76 @@ addEventListener('DOMContentLoaded', () => {
     document.getElementById('pularIntro').addEventListener('click', terminar);
     addEventListener('keydown', aoTeclar); addEventListener('wheel', terminar, { passive: true });
     requestAnimationFrame(quadro);
+  })();
+
+  /* =========================================================
+     Resultados da pesquisa (contagens do resumo do Google Forms)
+     ========================================================= */
+  (function resultados() {
+    const R = {
+      conhece: { t: 'Antes da pesquisa, já tinha ouvido falar de microplásticos?', n: 135, itens: [['Sim, e sei explicar', 38], ['Já ouvi, mas não sei explicar', 52], ['Nunca tinha ouvido falar', 45]] },
+      preocupa: { t: 'Quanto se preocupa com microplásticos na água e nos alimentos (nota de 0 a 5)', n: 135, itens: [['0', 16], ['1', 5], ['2', 16], ['3', 29], ['4', 15], ['5', 54]] },
+      habitos: { t: 'Mudaria hábitos para diminuir a liberação de microplásticos?', n: 134, itens: [['Sim, com certeza', 99], ['Já procuro reduzir o plástico', 10], ['Talvez, depende da mudança', 18], ['Não sei responder', 7]] },
+      area: { t: 'Que área pode ser mais prejudicada pelos microplásticos?', n: 135, itens: [['Todas as áreas', 74], ['Saúde humana', 30], ['Animais e organismos aquáticos', 12], ['Não sei dizer', 11], ['Qualidade da água', 7], ['Pesca e alimentação', 1]] },
+      idade: { t: 'Idade', n: 135, itens: [['18 a 24 anos', 46], ['25 a 29', 19], ['30 a 34', 18], ['35 a 39', 13], ['40 a 44', 13], ['45 a 49', 15], ['50 a 54', 5], ['55 a 59', 4], ['60 a 65', 2]] },
+      regiao: { t: 'Onde mora', n: 135, itens: [['Zona Leste', 100], ['Região metropolitana', 25], ['Zona Sul', 6], ['Zona Norte', 2], ['Zona Oeste', 2]] },
+      escola: { t: 'Escolaridade (completa)', n: 135, itens: [['Ensino médio', 92], ['Ensino superior', 19], ['Pós-graduação', 12], ['Ensino fundamental', 10], ['Supletivo', 2]] },
+      sus: { t: 'Uso do SUS', n: 135, itens: [['usam o SUS para consultas e exames', 105], ['se vacinam pelo SUS', 128]] },
+    };
+    const pct = (v, n) => v / n * 100, f1 = x => x.toFixed(1).replace('.', ',') + '%';
+    const dica = (v, n) => `${v} de ${n} pessoas (${f1(pct(v, n))})`;
+    const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; };
+    const TONS = ['var(--g0)', 'var(--g1)', 'var(--g2)', 'var(--g3)'];
+
+    function pilha(d) {
+      const frag = document.createDocumentFragment(), barra = el('div', 'pilha'), leg = el('ul', 'pilha-leg');
+      d.itens.forEach(([r, v], i) => {
+        const s = el('i'); s.style.flex = String(v); s.style.background = TONS[i]; s.dataset.dica = `${r}: ${dica(v, d.n)}`; barra.append(s);
+        leg.append(el('li', null, `<span style="background:${TONS[i]}"></span><span>${r}</span><b>${f1(pct(v, d.n))}</b>`));
+      });
+      barra.setAttribute('role', 'img'); barra.setAttribute('aria-label', d.itens.map(([r, v]) => `${r}: ${f1(pct(v, d.n))}`).join('; '));
+      frag.append(barra, leg); return frag;
+    }
+    function barras(d, destaque = 0) {
+      const ul = el('ul', 'barras'), max = Math.max(...d.itens.map(x => x[1]));
+      d.itens.forEach(([r, v], i) => {
+        const li = el('li', i < destaque ? 'forte' : null);
+        const tr = el('span', 'trilho'), b = el('i'); b.style.width = (v / max * 100) + '%'; b.dataset.dica = dica(v, d.n); tr.append(b);
+        li.append(el('span', 'rot', r), tr, el('span', 'val', f1(pct(v, d.n)))); ul.append(li);
+      });
+      return ul;
+    }
+    function fig(id, d, destaque) { const f = document.getElementById(id); f.append(el('figcaption', null, d.t), barras(d, destaque)); }
+
+    // destaques
+    const dest = document.getElementById('resDestaques');
+    const naoSabe = R.conhece.itens[1][1] + R.conhece.itens[2][1];
+    const c1 = el('article', 'res-card', `<h3><b>${Math.round(pct(naoSabe, R.conhece.n))}%</b> não sabem explicar o que são microplásticos.</h3>`);
+    c1.append(pilha(R.conhece)); c1.append(el('a', null, 'Entenda o que são')); c1.lastChild.href = '#o-que-sao';
+    const alto = R.preocupa.itens[4][1] + R.preocupa.itens[5][1];
+    const c2 = el('article', 'res-card', `<h3><b>${Math.round(pct(alto, R.preocupa.n))}%</b> dão nota 4 ou 5 para a preocupação com microplásticos na água e na comida.</h3>`);
+    const cols = el('div', 'colunas'), maxP = Math.max(...R.preocupa.itens.map(x => x[1]));
+    R.preocupa.itens.forEach(([r, v], i) => {
+      const c = el('div'); const b = el('i', i >= 4 ? 'forte' : null); b.style.height = `calc((100% - 22px) * ${(v / maxP).toFixed(3)})`; b.dataset.dica = `Nota ${r}: ${dica(v, R.preocupa.n)}`;
+      c.append(el('small', null, f1(pct(v, R.preocupa.n)).replace(',0', '')), b); cols.append(c);
+    });
+    cols.setAttribute('role', 'img'); cols.setAttribute('aria-label', R.preocupa.itens.map(([r, v]) => `nota ${r}: ${f1(pct(v, R.preocupa.n))}`).join('; '));
+    c2.append(cols, el('div', 'colunas-eixo', R.preocupa.itens.map(([r]) => `<span>${r}</span>`).join('')), el('p', null, 'Nota dada para o quanto se preocupa, de 0 a 5'));
+    const dispostos = R.habitos.itens[0][1] + R.habitos.itens[1][1];
+    const c3 = el('article', 'res-card', `<h3><b>${Math.round(pct(dispostos, R.habitos.n))}%</b> mudariam ou já mudaram hábitos para liberar menos microplásticos.</h3>`);
+    c3.append(pilha(R.habitos)); c3.append(el('a', null, 'Veja o que dá para fazer')); c3.lastChild.href = '#acoes';
+    dest.append(c1, c2, c3);
+
+    fig('resArea', R.area, 1);
+    fig('resIdade', R.idade, 1);
+    fig('resRegiao', R.regiao, 1);
+    fig('resEscola', R.escola, 1);
+    document.getElementById('resSus').innerHTML = R.sus.itens.map(([r, v]) => `<p data-dica="${dica(v, R.sus.n)}"><b>${f1(pct(v, R.sus.n))}</b>${r}</p>`).join('');
+
+    // tabelas com todos os números
+    document.getElementById('resTabelas').innerHTML = Object.values(R).map(d =>
+      `<table><caption>${d.t} (${d.n} respostas)</caption><thead><tr><th scope="col">Resposta</th><th scope="col">Pessoas</th><th scope="col">%</th></tr></thead><tbody>${
+        d.itens.map(([r, v]) => `<tr><td>${r}</td><td>${v}</td><td>${f1(pct(v, d.n))}</td></tr>`).join('')}</tbody></table>`).join('');
   })();
 
   document.getElementById('reverAbertura').addEventListener('click', () => {
