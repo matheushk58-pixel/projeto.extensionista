@@ -412,6 +412,37 @@
     -webkit-user-select: none; user-select: none; isolation: isolate;
   }
   .arena:focus-visible { outline-offset: 4px; }
+  /* tela cheia: o jogo ocupa a janela inteira (e a tela, onde o navegador permite) */
+  .arena.cheia { position: fixed; inset: 0; z-index: 80; margin: 0; height: 100vh; height: 100dvh; border-radius: 0; border: 0; }
+  .arena.cheia:focus-visible { outline: none; }
+  .jogo-aberto, .jogo-aberto body { overflow: hidden; }
+  .sair-cheia {
+    position: absolute; top: 10px; right: 62px; z-index: 7; display: none; align-items: center; gap: 8px; min-height: 44px; padding: 0 14px;
+    border: 0; border-radius: 999px; background: rgba(7,22,29,.74); color: #fff; font-family: var(--display); font-size: .88rem; cursor: pointer;
+  }
+  .arena.cheia .sair-cheia { display: inline-flex; }
+  .arena.cheia .hud { right: 230px; }
+  @media (max-width: 560px) { .sair-cheia span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); } .sair-cheia { padding: 0; width: 44px; justify-content: center; } .arena.cheia .hud { right: 116px; } }
+  /* história antes da corrida */
+  .historia { position: absolute; inset: 0; z-index: 8; background: #0B2733; }
+  .historia[hidden] { display: none; }
+  .historia canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .historia-legenda {
+    position: absolute; left: 0; right: 0; bottom: clamp(84px, 14vh, 140px); margin: 0 auto; padding: 0 20px; max-width: 30ch; text-align: center;
+    font-family: var(--display); font-weight: 800; font-size: clamp(1.45rem, 3.4vw, 2.5rem); line-height: 1.12; letter-spacing: -0.02em; color: #fff;
+    text-shadow: 0 2px 18px rgba(4,16,22,.6); opacity: 0; transform: translateY(12px); transition: opacity .45s, transform .55s var(--ease);
+  }
+  .historia-legenda.visivel { opacity: 1; transform: none; }
+  .historia-passos { position: absolute; top: 22px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; }
+  .historia-passos i { width: 34px; height: 4px; border-radius: 2px; background: rgba(255,255,255,.28); overflow: hidden; }
+  .historia-passos i b { display: block; height: 100%; width: 0; background: #fff; }
+  .historia-pular {
+    position: absolute; top: 12px; right: 12px; min-height: 44px; padding: 0 16px; border-radius: 999px; cursor: pointer;
+    font-family: var(--display); font-size: .92rem; color: #fff; background: rgba(7,22,29,.55); border: 1.5px solid rgba(255,255,255,.35);
+  }
+  .historia-pular:hover { border-color: #fff; }
+  .historia-comecar.btn-jogo.grande { position: absolute; left: 0; right: 0; bottom: clamp(22px, 5vh, 52px); margin: 0 auto; width: min(320px, calc(100% - 40px)); background: var(--pe); color: #fff; }
+  .historia-comecar[hidden] { display: none; }
   .arena canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
   .arena.sem-webgl { display: none; }
   .vinheta { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse at 50% 45%, transparent 55%, rgba(4,16,22,.55) 100%); }
@@ -885,6 +916,14 @@
       <div class="poder" id="hudPoder" hidden aria-hidden="true"><span id="poderNome">Ímã</span><i><b id="poderBarra"></b></i></div>
       <button class="pausa-btn" id="btnPausa" type="button" aria-label="Pausar" hidden><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><rect x="3" y="2" width="3.5" height="12" rx="1" fill="#fff"/><rect x="9.5" y="2" width="3.5" height="12" rx="1" fill="#fff"/></svg></button>
       <div class="aviso-centro" id="avisoCentro" aria-hidden="true"></div>
+      <button class="sair-cheia" id="sairCheia" type="button" hidden><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 1v5H1M10 1v5h5M6 15v-5H1M10 15v-5h5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Sair da tela cheia</span></button>
+      <div class="historia" id="historia" hidden>
+        <canvas id="historiaCanvas" aria-hidden="true"></canvas>
+        <div class="historia-passos" id="historiaPassos" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+        <p class="historia-legenda" id="historiaLegenda" aria-live="polite"></p>
+        <button class="btn-jogo grande historia-comecar" id="historiaComecar" type="button" hidden>Começar a corrida</button>
+        <button class="historia-pular" id="historiaPular" type="button">Pular história</button>
+      </div>
       <p class="toast" id="toast" role="status" aria-live="polite"></p>
 
       <div class="tela" id="telaMenu">
@@ -897,6 +936,7 @@
               <button class="btn-sec" type="button" data-ir="como">Como jogar</button>
               <button class="btn-sec" type="button" data-ir="placar">Placar</button>
               <button class="btn-sec" type="button" data-ir="opcoes">Opções</button>
+              <button class="btn-sec" type="button" data-acao="historia">Ver a história</button>
             </div>
           </div>
           <div class="painel-menu" data-painel="como" hidden>
@@ -2541,12 +2581,232 @@ addEventListener('DOMContentLoaded', () => {
         return;
       }
       const acao = b.dataset.acao;
-      if (acao === 'jogar') comecar();
+      if (acao === 'jogar') jogar();
+      else if (acao === 'historia') { entrarCheia(); tocarHistoria(); }
       else if (acao === 'continuar') continuar();
       else if (acao === 'menu') irMenu();
       else if (acao === 'opcoes-pausa') { voltarPara = 'pausa'; mostrarTela(ui.menu, 'opcoes'); }
     });
     ui.pausa.addEventListener('click', e => { e.stopPropagation(); pausar(); });
+    /* ---------- tela cheia ---------- */
+    const btnSairCheia = $('sairCheia');
+    function entrarCheia() {
+      if (arena.classList.contains('cheia')) return;
+      arena.classList.add('cheia'); raiz.classList.add('jogo-aberto');
+      // onde o navegador deixa, esconde também as barras do navegador (no iPhone fica só a janela inteira)
+      if (arena.requestFullscreen && !document.fullscreenElement) arena.requestFullscreen({ navigationUI: 'hide' }).catch(() => {});
+      requestAnimationFrame(ajustar);
+    }
+    function sairCheia() {
+      if (!arena.classList.contains('cheia')) return;
+      pausar();
+      arena.classList.remove('cheia'); raiz.classList.remove('jogo-aberto');
+      if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+      requestAnimationFrame(ajustar);
+    }
+    btnSairCheia.hidden = false;
+    btnSairCheia.addEventListener('click', e => { e.stopPropagation(); sairCheia(); });
+    document.addEventListener('fullscreenchange', () => {
+      // Esc do navegador fecha a tela cheia nativa: volta o jogo para o lugar dele na página
+      if (!document.fullscreenElement && arena.classList.contains('cheia')) sairCheia();
+      requestAnimationFrame(ajustar);
+    });
+
+    /* ---------- história: de onde vem o plástico do jogo ---------- */
+    const hist = { el: $('historia'), cv: $('historiaCanvas'), leg: $('historiaLegenda'), comecar: $('historiaComecar'), pular: $('historiaPular') };
+    const hctx = hist.cv.getContext('2d');
+    const passosHist = [...$('historiaPassos').children];
+    passosHist.forEach(i => i.appendChild(document.createElement('b')));
+    const CENAS_HIST = [
+      'Um dia comum no litoral. Uma garrafa vai parar no mar.',
+      'Sol, sal e ondas quebram a garrafa em pedaços cada vez menores.',
+      'Os peixes confundem esses pedaços com comida. E a cadeia alimentar chega até nós.',
+      'Sua missão: recolher o plástico antes que ele vire microplástico.',
+    ];
+    const DUR_CENA = 3600;
+    const CORES_H = ['#D9366B', '#1C9CC0', '#E3A821', '#7A55C9', '#2EA36B', '#F4F1E6', '#9FE6F5'];
+    let hW = 0, hH = 0, hCena = -1, hInicio = 0, hUltimo = 0, hAtiva = false, frags = [], peixes = [];
+    const historiaVista = () => { try { return sessionStorage.getItem('historia-jogo') === '1'; } catch (e) { return false; } };
+    function medirHist() {
+      const dpr = Math.min(devicePixelRatio || 1, 2); hW = arena.clientWidth; hH = arena.clientHeight;
+      hist.cv.width = hW * dpr; hist.cv.height = hH * dpr; hctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    function novoFrag(x, y, tam, v) {
+      const ang = Math.random() * 6.283, lados = 3 + Math.floor(Math.random() * 2);
+      return { x, y, vx: Math.cos(ang) * v, vy: Math.sin(ang) * v, a: Math.random() * 6.3, va: (Math.random() - .5) * .08, tam, cor: CORES_H[Math.floor(Math.random() * 6)],
+        forma: [...Array(lados)].map((_, i) => { const t = i / lados * 6.283 + Math.random() * .6, r = .6 + Math.random() * .5; return [Math.cos(t) * r, Math.sin(t) * r]; }), vivo: 1 };
+    }
+    function irCena(n) {
+      hCena = n; hInicio = performance.now();
+      hist.leg.classList.remove('visivel');
+      setTimeout(() => { if (hCena === n) { hist.leg.textContent = CENAS_HIST[n]; hist.leg.classList.add('visivel'); } }, 220);
+      passosHist.forEach((p, i) => { p.firstChild.style.width = i < n ? '100%' : '0%'; });
+      hist.comecar.hidden = n < CENAS_HIST.length - 1;
+      if (n === 1) frags = [];
+      if (n === 2) {
+        if (!frags.length) for (let i = 0; i < 70; i++) frags.push(novoFrag(hW * (.3 + Math.random() * .4), hH * (.3 + Math.random() * .35), 2 + Math.random() * 5, .3));
+        peixes = [0, 1, 2].map(i => ({ x: hW + 80 + i * 120, y: hH * (.34 + i * .12), v: 1.6 + i * .35, fase: i * 2, cor: ['#F57A1F', '#2F6FD6', '#F2C230'][i] }));
+      }
+      if (n === 3 && frags.filter(f => f.vivo).length < 40) for (let i = 0; i < 70; i++) frags.push(novoFrag(hW * (.5 + Math.random() * .48), hH * (.22 + Math.random() * .4), 2.5 + Math.random() * 5, .15));
+      if (n === CENAS_HIST.length - 1) setTimeout(() => { if (hAtiva) hist.comecar.focus({ preventScroll: true }); }, 400);
+    }
+    function tocarHistoria() {
+      som.garantir(); limpar(); zerarJogador();
+      estado = 'historia'; mostrarTela(null); ui.hud.hidden = true; ui.pausa.hidden = true;
+      hist.el.hidden = false; hAtiva = true; medirHist(); frags = []; peixes = [];
+      irCena(0); hUltimo = performance.now(); requestAnimationFrame(quadroHist);
+      setTimeout(() => hist.pular.focus({ preventScroll: true }), 50);
+    }
+    function fecharHistoria() {
+      if (!hAtiva) return;
+      hAtiva = false; hist.el.hidden = true;
+      try { sessionStorage.setItem('historia-jogo', '1'); } catch (e) {}
+      comecar();
+    }
+    function avancarHist() { if (hCena < CENAS_HIST.length - 1) irCena(hCena + 1); }
+    hist.pular.addEventListener('click', e => { e.stopPropagation(); fecharHistoria(); });
+    hist.comecar.addEventListener('click', e => { e.stopPropagation(); fecharHistoria(); });
+    hist.cv.addEventListener('click', avancarHist);
+    arena.addEventListener('keydown', e => {
+      if (!hAtiva) return;
+      if (e.key === 'Escape') { e.preventDefault(); fecharHistoria(); }
+      else if ((e.key === ' ' || e.key === 'ArrowRight' || e.key === 'Enter') && e.target === arena) { e.preventDefault(); if (hCena < CENAS_HIST.length - 1) avancarHist(); else fecharHistoria(); }
+    });
+    addEventListener('resize', () => { if (hAtiva) medirHist(); });
+
+    // desenhos (tudo em proporção ao tamanho da arena)
+    function hFundo(fundo, t) {
+      const g = hctx, hz = hH * .42;
+      if (!fundo) {
+        let gr = g.createLinearGradient(0, 0, 0, hz); gr.addColorStop(0, '#FFD9A8'); gr.addColorStop(1, '#BFEFFF');
+        g.fillStyle = gr; g.fillRect(0, 0, hW, hz);
+        g.fillStyle = 'rgba(255,240,200,.95)'; g.beginPath(); g.arc(hW * .8, hz * .38, Math.min(hW, hH) * .07, 0, 6.283); g.fill();
+        gr = g.createLinearGradient(0, hz, 0, hH); gr.addColorStop(0, '#2E93AC'); gr.addColorStop(1, '#0B2733');
+        g.fillStyle = gr; g.beginPath(); g.moveTo(0, hH);
+        for (let x = 0; x <= hW + 12; x += 12) g.lineTo(x, hz + Math.sin(x / 38 + t * 2) * 3);
+        g.lineTo(hW + 12, hH); g.fill();
+        return hz;
+      }
+      const gr = g.createLinearGradient(0, 0, 0, hH); gr.addColorStop(0, '#2A8BA6'); gr.addColorStop(.45, '#145067'); gr.addColorStop(1, '#0B2733');
+      g.fillStyle = gr; g.fillRect(0, 0, hW, hH);
+      g.fillStyle = 'rgba(207,246,255,.07)';
+      for (let i = 0; i < 5; i++) { const x = hW * (.1 + i * .22) + Math.sin(t * .4 + i) * 20; g.beginPath(); g.moveTo(x - 30, 0); g.lineTo(x + 30, 0); g.lineTo(x + 140, hH); g.lineTo(x + 40, hH); g.fill(); }
+      g.fillStyle = 'rgba(159,230,245,.25)'; g.beginPath(); g.moveTo(0, 0);
+      for (let x = 0; x <= hW; x += 12) g.lineTo(x, hH * .05 + Math.sin(x / 40 + t * 1.6) * 4);
+      g.lineTo(hW, 0); g.fill();
+      g.fillStyle = '#0E3340'; g.beginPath(); g.moveTo(0, hH);
+      for (let x = 0; x <= hW; x += 20) g.lineTo(x, hH * .9 + Math.sin(x / 70) * 10);
+      g.lineTo(hW, hH); g.fill();
+      return 0;
+    }
+    function hBarco(x, y, s) {
+      const g = hctx;
+      g.fillStyle = '#D9366B'; g.beginPath(); g.moveTo(x - 80 * s, y); g.lineTo(x + 80 * s, y); g.lineTo(x + 58 * s, y + 26 * s); g.lineTo(x - 58 * s, y + 26 * s); g.fill();
+      g.fillStyle = '#F4F1E6'; g.fillRect(x - 34 * s, y - 34 * s, 48 * s, 34 * s);
+      g.fillStyle = '#6FD0EA'; g.fillRect(x - 26 * s, y - 26 * s, 14 * s, 12 * s); g.fillRect(x - 6 * s, y - 26 * s, 14 * s, 12 * s);
+      g.strokeStyle = '#0F2733'; g.lineWidth = 3 * s; g.beginPath(); g.moveTo(x + 30 * s, y); g.lineTo(x + 30 * s, y - 70 * s); g.stroke();
+      g.fillStyle = '#F2B84B'; g.beginPath(); g.moveTo(x + 32 * s, y - 68 * s); g.lineTo(x + 70 * s, y - 50 * s); g.lineTo(x + 32 * s, y - 34 * s); g.fill();
+    }
+    function hGarrafa(x, y, ang, s, rachada) {
+      const g = hctx; g.save(); g.translate(x, y); g.rotate(ang); g.scale(s, s);
+      g.fillStyle = 'rgba(159,230,245,.88)'; g.strokeStyle = '#E8FAFF'; g.lineWidth = 1.5;
+      g.beginPath(); if (g.roundRect) g.roundRect(-9, -14, 18, 34, 5); else g.rect(-9, -14, 18, 34); g.fill(); g.stroke();
+      g.fillRect(-4, -24, 8, 11); g.fillStyle = '#1C9CC0'; g.fillRect(-5, -28, 10, 5);
+      g.fillStyle = '#2EA36B'; g.fillRect(-9, -2, 18, 9);
+      if (rachada) { g.strokeStyle = '#fff'; g.lineWidth = 1.2; g.beginPath(); g.moveTo(-6, -10); g.lineTo(1, -2); g.lineTo(-3, 6); g.lineTo(5, 14); g.moveTo(1, -2); g.lineTo(7, -6); g.stroke(); }
+      g.restore();
+    }
+    function hPeixe(f, t, s) {
+      const g = hctx, x = f.x, y = f.y + Math.sin(t * 3 + f.fase) * 6;
+      g.save(); g.translate(x, y); g.scale(s, s);
+      g.fillStyle = f.cor; g.beginPath(); g.ellipse(0, 0, 30, 16, 0, 0, 6.283); g.fill();
+      const c = Math.sin(t * 12 + f.fase) * 5;
+      g.beginPath(); g.moveTo(24, 0); g.lineTo(46, -14 + c); g.lineTo(46, 14 + c); g.fill();
+      g.fillStyle = '#fff'; g.beginPath(); g.arc(-15, -4, 5, 0, 6.283); g.fill();
+      g.fillStyle = '#0F2733'; g.beginPath(); g.arc(-16, -4, 2.6, 0, 6.283); g.fill();
+      g.strokeStyle = '#0F2733'; g.lineWidth = 2; g.beginPath(); g.arc(-27, 3, 4, -.6, .9); g.stroke();
+      g.restore();
+    }
+    function hSub(x, y, s, t) {
+      const g = hctx; g.save(); g.translate(x, y); g.scale(s, s);
+      g.fillStyle = '#D9366B'; const h = Math.abs(Math.cos(t * 14)); g.fillRect(-66, -18 * h, 8, 36 * h);
+      g.fillStyle = '#F2C230'; g.beginPath(); g.ellipse(0, 0, 58, 32, 0, 0, 6.283); g.fill();
+      g.beginPath(); if (g.roundRect) g.roundRect(-22, -48, 26, 22, 6); else g.rect(-22, -48, 26, 22); g.fill();
+      g.fillStyle = '#9FE6F5'; g.strokeStyle = '#E3A821'; g.lineWidth = 4; g.beginPath(); g.arc(-10, 2, 11, 0, 6.283); g.fill(); g.stroke();
+      for (const dy of [-8, 6]) { g.fillStyle = '#fff'; g.beginPath(); g.arc(40, dy - 4, 7, 0, 6.283); g.fill(); g.fillStyle = '#0F2733'; g.beginPath(); g.arc(42, dy - 4, 3.4, 0, 6.283); g.fill(); }
+      g.strokeStyle = '#fff'; g.lineWidth = 3; g.beginPath(); g.ellipse(70, -6, 10, 30, 0, 0, 6.283); g.stroke();
+      g.lineWidth = 1; g.globalAlpha = .6;
+      for (let i = -2; i <= 2; i++) { g.beginPath(); g.moveTo(70, -6 + i * 12); g.lineTo(108, -6 + i * 4); g.stroke(); }
+      g.globalAlpha = 1; g.restore();
+    }
+    function hFrags(dt, puxar) {
+      const g = hctx;
+      for (const f of frags) {
+        if (!f.vivo) continue;
+        if (puxar) {
+          const dx = puxar.x - f.x, dy = puxar.y - f.y, d = Math.hypot(dx, dy);
+          if (d < puxar.r) { f.vx += dx / d * .5 * dt; f.vy += dy / d * .5 * dt; }
+          if (d < 18) { f.vivo = 0; continue; }
+        }
+        f.vx *= Math.pow(.97, dt); f.vy = f.vy * Math.pow(.97, dt) + .004 * dt;
+        f.x += f.vx * dt; f.y += f.vy * dt; f.a += f.va * dt;
+        g.save(); g.translate(f.x, f.y); g.rotate(f.a); g.fillStyle = f.cor; g.beginPath();
+        f.forma.forEach(([x, y], i) => i ? g.lineTo(x * f.tam, y * f.tam) : g.moveTo(x * f.tam, y * f.tam)); g.fill(); g.restore();
+      }
+    }
+    function quadroHist(agora) {
+      if (!hAtiva) return;
+      const dt = Math.min(3, (agora - hUltimo) / 16.67); hUltimo = agora;
+      const t = agora / 1000, k = Math.min(1, (agora - hInicio) / DUR_CENA), s = Math.min(hW, hH) / 560;
+      passosHist[hCena].firstChild.style.width = (k * 100) + '%';
+      hctx.clearRect(0, 0, hW, hH);
+      if (hCena === 0) {
+        const hz = hFundo(false, t), bx = hW * .3, by = hz - 4 + Math.sin(t * 2) * 3;
+        hBarco(bx, by, s * 1.1);
+        const ini = { x: bx + 20 * s, y: by - 40 * s }, fim = { x: hW * .64, y: hz + 4 };
+        if (k < .22) hGarrafa(ini.x, ini.y, 0, s * 1.1);
+        else if (k < .55) { const u = (k - .22) / .33; hGarrafa(ini.x + (fim.x - ini.x) * u, ini.y + (fim.y - ini.y) * u - Math.sin(u * Math.PI) * hH * .2, u * 6, s * 1.1); }
+        else {
+          const u = (k - .55) / .45;
+          hctx.strokeStyle = `rgba(255,255,255,${(1 - u) * .8})`; hctx.lineWidth = 2;
+          for (const r of [1, .6]) { hctx.beginPath(); hctx.ellipse(fim.x, fim.y, u * 90 * s * r + 6, u * 22 * s * r + 2, 0, 0, 6.283); hctx.stroke(); }
+          hGarrafa(fim.x, fim.y + Math.sin(t * 2.4) * 3, .9 + Math.sin(t * 1.6) * .2, s * 1.1);
+        }
+      } else if (hCena === 1) {
+        hFundo(true, t);
+        const cx = hW * .5, cy = hH * (.22 + k * .2);
+        if (k < .42) hGarrafa(cx, cy, .4 + k * 2, s * 2.6, k > .25);
+        else if (!frags.length) {
+          for (let i = 0; i < 26; i++) frags.push(novoFrag(cx, cy, (9 + Math.random() * 9) * s, (2 + Math.random() * 3.5) * s));
+        }
+        if (k > .7 && frags.length < 120) {
+          // cada pedaço se quebra de novo: viram microplásticos
+          const grandes = frags.filter(f => f.tam > 3.5 * s && f.vivo);
+          grandes.slice(0, 4).forEach(f => { f.tam *= .55; for (let j = 0; j < 3; j++) frags.push(novoFrag(f.x, f.y, f.tam * .8, (.6 + Math.random()) * s)); });
+        }
+        hFrags(dt);
+      } else if (hCena === 2) {
+        hFundo(true, t);
+        hFrags(dt);
+        peixes.forEach(f => {
+          f.x -= f.v * dt * s * 1.6;
+          frags.forEach(q => { if (q.vivo && Math.hypot(q.x - (f.x - 27 * s), q.y - f.y) < 22 * s) q.vivo = 0; });
+          hPeixe(f, t, s * 1.15);
+        });
+      } else {
+        hFundo(true, t);
+        const e = 1 - Math.pow(1 - Math.min(1, k / .5), 3), x = -120 * s + (hW * .36 + 120 * s) * e + Math.sin(t * 1.2) * 6, y = hH * .4 + Math.sin(t * 1.8) * 8;
+        hFrags(dt, { x: x + 80 * s, y: y - 6 * s, r: 150 * s });
+        hSub(x, y, s * 1.25, t);
+      }
+      if (k >= 1 && hCena < CENAS_HIST.length - 1) irCena(hCena + 1);
+      requestAnimationFrame(quadroHist);
+    }
+    function jogar() {
+      entrarCheia();
+      if (!historiaVista()) tocarHistoria(); else comecar();
+    }
+
 
     function limpar() { [...obst, ...itens, ...poderes].forEach(e => cena.remove(e.g)); obst = []; itens = []; poderes = []; }
     function zerarJogador() {
