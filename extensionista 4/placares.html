@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Placares ao vivo · Quiz e Missão</title>
+<meta name="robots" content="noindex">
+<style>
+  /* Os dois placares em paralelo: cada um é uma página independente (placar-quiz.html e placar-missao.html),
+     aqui só abertas lado a lado. Cada página lê o banco por conta própria. */
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; background: #07161D; }
+  .paralelo { display: grid; grid-template-columns: 1fr 1fr; height: 100vh; }
+  .paralelo iframe { width: 100%; height: 100%; border: 0; display: block; }
+  @media (max-aspect-ratio: 1/1), (max-width: 900px) {
+    html, body { height: auto; }
+    .paralelo { grid-template-columns: 1fr; height: auto; }
+    .paralelo iframe { height: 100vh; }
+  }
+</style>
+</head>
+<body>
+<main class="paralelo">
+  <iframe title="Placar ao vivo do quiz" src="placar-quiz.html"></iframe>
+  <iframe title="Placar ao vivo da Missão: limpar o oceano" src="placar-missao.html"></iframe>
+</main>
+</body>
+</html>
