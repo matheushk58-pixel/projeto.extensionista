@@ -3,110 +3,126 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Placares · Quiz e Game sobre microplásticos</title>
+<title>Placares ao vivo · Quiz e Missão: limpar o oceano</title>
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&display=swap" rel="stylesheet">
 <style>
-  /* Só os placares, para projetar: quiz e game, lado a lado. Dados: GET /api/quiz?modo=quiz|game. */
+  /* Placares ao vivo: quiz (/api/quiz) e Missão: limpar o oceano (/api/placar).
+     ?so=quiz ou ?so=missao mostra só um painel; ?compacto=1 tira o cabeçalho (para embutir no site). */
   :root { --fundo: #0B1D25; --fundo-2: #112B36; --fundo-3: #18394A; --linha: #24434E; --texto: #E8EFEC; --texto-suave: #9DB0B7;
     --pe: #D9366B; --pp: #6FD0EA; --pet: #E3A821; --verde: #3FBF74; --display: 'Bricolage Grotesque', system-ui, sans-serif; }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  html, body { height: 100%; }
-  body { background: var(--fundo); color: var(--texto); font-family: var(--display); padding: 3vh 3vw; min-height: 100vh;
+  html, body { min-height: 100%; }
+  body { background: var(--fundo); color: var(--texto); font-family: var(--display); padding: 3vh 3vw;
     background-image: radial-gradient(circle at 10% 10%, rgba(111,208,234,.08), transparent 40%), radial-gradient(circle at 90% 90%, rgba(217,54,107,.08), transparent 42%); }
+  body.compacto { padding: 16px; }
   header { display: flex; justify-content: space-between; align-items: center; gap: 2vw; margin-bottom: 3vh; flex-wrap: wrap; }
+  body.compacto header { display: none; }
   h1 { font-weight: 800; font-size: clamp(1.6rem, 3.4vw, 3rem); letter-spacing: -.02em; }
   .ao-vivo { display: inline-flex; align-items: center; gap: .6em; color: var(--texto-suave); font-size: clamp(.9rem, 1.2vw, 1.1rem); }
-  .ao-vivo i { width: .7em; height: .7em; border-radius: 50%; background: var(--verde); }
-  .ao-vivo.off i { background: var(--pet); }
+  .ao-vivo i { width: .7em; height: .7em; border-radius: 50%; background: var(--verde); box-shadow: 0 0 0 0 rgba(63,191,116,.6); animation: pulsa 1.8s infinite; }
+  .ao-vivo.off i { background: var(--pet); animation: none; }
+  @keyframes pulsa { 70% { box-shadow: 0 0 0 .7em rgba(63,191,116,0); } 100% { box-shadow: 0 0 0 0 rgba(63,191,116,0); } }
   .colunas { display: grid; grid-template-columns: 1fr 1fr; gap: 3vw; }
+  body.so .colunas { grid-template-columns: 1fr; }
   @media (max-width: 760px) { .colunas { grid-template-columns: 1fr; } }
   .painel { background: var(--fundo-2); border-radius: 22px; padding: 2.4vh 2vw; border-top: 6px solid var(--c); }
-  .painel.quiz { --c: var(--pe); } .painel.game { --c: var(--pp); }
-  .painel h2 { font-weight: 800; font-size: clamp(1.4rem, 2.4vw, 2.3rem); letter-spacing: -.01em; }
-  .painel .sub { color: var(--texto-suave); font-size: clamp(.9rem, 1.2vw, 1.1rem); margin: 4px 0 2vh; }
-  .painel .num { color: var(--texto-suave); font-size: clamp(.9rem, 1.2vw, 1.1rem); margin-bottom: 2vh; }
+  body.compacto .painel { padding: 16px 18px; }
+  .painel.quiz { --c: var(--pe); } .painel.missao { --c: var(--pp); }
+  .painel h2 { font-weight: 800; font-size: clamp(1.3rem, 2.4vw, 2.3rem); letter-spacing: -.01em; display: flex; align-items: center; gap: .6em; flex-wrap: wrap; }
+  .painel h2 .ao-vivo { font-size: .5em; font-weight: 400; }
+  .painel .sub { color: var(--texto-suave); font-size: clamp(.9rem, 1.2vw, 1.1rem); margin: 4px 0 1.6vh; }
+  .painel .num { color: var(--texto-suave); font-size: clamp(.9rem, 1.2vw, 1.1rem); margin-bottom: 1.6vh; }
   .painel .num b { color: var(--texto); font-size: 1.3em; }
   ol { list-style: none; display: grid; gap: .9vh; }
   li { display: grid; grid-template-columns: 3em 2.2em 1fr auto 4.4em; align-items: center; gap: .9vw; padding: .9vh 1.2vw; border-radius: 14px; background: var(--fundo-3);
     font-size: clamp(1rem, 1.7vw, 1.6rem); }
+  body.compacto li { padding: 8px 12px; gap: 10px; font-size: 1rem; }
   li.vazio { background: transparent; border: 2px dashed var(--linha); color: var(--texto-suave); grid-template-columns: 3em 1fr; font-size: clamp(.9rem, 1.3vw, 1.3rem); }
+  body.compacto li.vazio { font-size: .95rem; }
   li.novo { animation: brilho 2.4s ease-out 2; }
   @keyframes brilho { 0% { box-shadow: 0 0 0 0 rgba(227,168,33,0); } 25% { box-shadow: 0 0 0 4px rgba(227,168,33,.9); } 100% { box-shadow: 0 0 0 0 rgba(227,168,33,0); } }
   .pos { font-weight: 800; color: var(--texto-suave); font-variant-numeric: tabular-nums; }
   li:nth-child(1) .pos { color: #F2C14E; } li:nth-child(2) .pos { color: #C7D3D8; } li:nth-child(3) .pos { color: #E0915A; }
   .av { width: 2em; height: 2em; border-radius: 50%; display: grid; place-items: center; font-weight: 800; font-size: .8em; color: #fff; }
   .nome { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .pts { font-weight: 800; font-variant-numeric: tabular-nums; }
+  .pts { font-weight: 800; font-variant-numeric: tabular-nums; text-align: right; }
   .pts small { font-weight: 400; color: var(--texto-suave); font-size: .6em; }
   .tempo { color: var(--texto-suave); text-align: right; font-variant-numeric: tabular-nums; font-size: .8em; }
+  @media (max-width: 420px) { li { grid-template-columns: 2.4em 2em 1fr auto; } .tempo { display: none; } }
+  body.compacto li { grid-template-columns: 2.6em 2em 1fr auto 3.6em; }
   @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
 </style>
 </head>
 <body>
 <header>
-  <h1>Placares</h1>
+  <h1>Placares ao vivo</h1>
   <p class="ao-vivo" id="aoVivo"><i></i><span id="estado">Ao vivo</span></p>
 </header>
 <main class="colunas">
-  <section class="painel quiz" aria-labelledby="tQuiz">
-    <h2 id="tQuiz">Quiz</h2>
+  <section class="painel quiz" id="pQuiz" aria-labelledby="tQuiz">
+    <h2 id="tQuiz">Quiz <span class="ao-vivo" id="aoVivoQuiz"><i></i><span>ao vivo</span></span></h2>
     <p class="sub">Verdadeiro ou falso · acertos de 16, e no empate quem foi mais rápido</p>
     <p class="num"><b id="nQuiz">0</b> pessoas no placar</p>
     <ol id="listaQuiz" aria-label="Placar do quiz"></ol>
   </section>
-  <section class="painel game" aria-labelledby="tGame">
-    <h2 id="tGame">Game: o mar</h2>
-    <p class="sub">Arraste para a praia ou para o fundo do mar · acertos de 16, e no empate quem foi mais rápido</p>
-    <p class="num"><b id="nGame">0</b> pessoas no placar</p>
-    <ol id="listaGame" aria-label="Placar do game"></ol>
+  <section class="painel missao" id="pMissao" aria-labelledby="tMissao">
+    <h2 id="tMissao">Missão: limpar o oceano <span class="ao-vivo" id="aoVivoMissao"><i></i><span>ao vivo</span></span></h2>
+    <p class="sub">Minijogo · pontos, e a distância percorrida em metros</p>
+    <p class="num"><b id="nMissao">0</b> jogadores no top 10</p>
+    <ol id="listaMissao" aria-label="Placar da missão"></ol>
   </section>
 </main>
 
 <script>
 (() => {
-  const ATUALIZA_MS = 8000;
+  const params = new URLSearchParams(location.search);
+  const so = params.get('so');
+  if (params.get('compacto')) document.body.classList.add('compacto');
+  if (so === 'quiz' || so === 'missao') { document.body.classList.add('so'); document.getElementById(so === 'quiz' ? 'pMissao' : 'pQuiz').hidden = true; }
+  const ATUALIZA_MS = 6000;
   const corAvatar = nome => { let h = 0; for (const ch of nome) h = (h * 31 + ch.codePointAt(0)) % 360; return `hsl(${h} 55% 42%)`; };
   const fmtTempo = ms => { const s = Math.round(ms / 1000); return s < 60 ? s + ' s' : Math.floor(s / 60) + 'min' + String(s % 60).padStart(2, '0'); };
-  const vistos = { quiz: new Set(), game: new Set() };
-  const primeira = { quiz: true, game: true };
+  const vistos = { quiz: new Set(), missao: new Set() }, primeira = { quiz: true, missao: true };
 
+  // linha de cada placar: quiz = acertos/16 e tempo; missão = pontos e metros
+  const colunasDe = {
+    quiz: { lista: 'listaQuiz', n: 'nQuiz', pontos: (t, d) => `${t.acertos}<small>/${d.total}</small>`, extra: t => fmtTempo(t.tempo), chave: t => `${t.nome}|${t.acertos}|${t.tempo}` },
+    missao: { lista: 'listaMissao', n: 'nMissao', pontos: t => (+t.pontos || 0).toLocaleString('pt-BR'), extra: t => (+t.dist || 0) + ' m', chave: t => `${t.nome}|${t.pontos}` },
+  };
   function render(modo, dados) {
-    const lista = document.getElementById(modo === 'game' ? 'listaGame' : 'listaQuiz');
-    document.getElementById(modo === 'game' ? 'nGame' : 'nQuiz').textContent = dados.pessoas.toLocaleString('pt-BR');
+    const c = colunasDe[modo], lista = document.getElementById(c.lista);
+    document.getElementById(c.n).textContent = (modo === 'quiz' ? dados.pessoas : dados.top.length).toLocaleString('pt-BR');
     const itens = dados.top.map((t, i) => {
-      const li = document.createElement('li');
-      const chave = t.nome + '|' + t.acertos + '|' + t.tempo;
-      if (!primeira[modo] && !vistos[modo].has(chave)) li.className = 'novo';
+      const li = document.createElement('li'), k = c.chave(t);
+      if (!primeira[modo] && !vistos[modo].has(k)) li.className = 'novo';
       const pos = document.createElement('span'); pos.className = 'pos'; pos.textContent = (i + 1) + 'º';
-      const av = document.createElement('span'); av.className = 'av'; av.setAttribute('aria-hidden', 'true');
       const nome = t.nome || 'Participante';
-      av.textContent = [...nome][0].toUpperCase(); av.style.background = corAvatar(nome);
+      const av = document.createElement('span'); av.className = 'av'; av.setAttribute('aria-hidden', 'true'); av.textContent = [...nome][0].toUpperCase(); av.style.background = corAvatar(nome);
       const n = document.createElement('span'); n.className = 'nome'; n.textContent = nome;
-      const pts = document.createElement('span'); pts.className = 'pts'; pts.innerHTML = `${t.acertos}<small>/${dados.total}</small>`;
-      const tp = document.createElement('span'); tp.className = 'tempo'; tp.textContent = fmtTempo(t.tempo);
-      li.append(pos, av, n, pts, tp); return li;
+      const pts = document.createElement('span'); pts.className = 'pts'; pts.innerHTML = c.pontos(t, dados);
+      const ex = document.createElement('span'); ex.className = 'tempo'; ex.textContent = c.extra(t);
+      li.append(pos, av, n, pts, ex); return li;
     });
     for (let i = itens.length; i < 10; i++) {
       const li = document.createElement('li'); li.className = 'vazio';
       const pos = document.createElement('span'); pos.className = 'pos'; pos.textContent = (i + 1) + 'º';
-      const t = document.createElement('span'); t.textContent = i === itens.length && i === 0 ? 'Ainda ninguém no placar' : (i === itens.length ? 'Este lugar pode ser seu' : '');
+      const t = document.createElement('span'); t.textContent = i === itens.length ? (i === 0 ? 'Ainda ninguém no placar' : 'Este lugar pode ser seu') : '';
       li.append(pos, t); itens.push(li);
     }
     lista.replaceChildren(...itens);
-    vistos[modo] = new Set(dados.top.map(t => t.nome + '|' + t.acertos + '|' + t.tempo));
-    primeira[modo] = false;
+    vistos[modo] = new Set(dados.top.map(c.chave)); primeira[modo] = false;
   }
-
+  const rotas = { quiz: '/api/quiz', missao: '/api/placar' };
   async function atualizar() {
     let ok = true;
-    for (const modo of ['quiz', 'game']) {
-      try {
-        const r = await fetch('/api/quiz' + (modo === 'game' ? '?modo=game' : ''), { cache: 'no-store' });
-        if (!r.ok) throw 0; render(modo, await r.json());
-      } catch (e) { ok = false; }
+    for (const modo of ['quiz', 'missao']) {
+      if (so && so !== modo) continue;
+      try { const r = await fetch(rotas[modo], { cache: 'no-store' }); if (!r.ok) throw 0; render(modo, await r.json()); }
+      catch (e) { ok = false; }
+      document.getElementById(modo === 'quiz' ? 'aoVivoQuiz' : 'aoVivoMissao').classList.toggle('off', !ok);
     }
     document.getElementById('aoVivo').classList.toggle('off', !ok);
     document.getElementById('estado').textContent = ok ? 'Ao vivo' : 'Sem conexão, tentando de novo…';
