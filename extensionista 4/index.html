@@ -3427,13 +3427,17 @@ addEventListener('DOMContentLoaded', () => {
     { a: 'A OMS já concluiu que os microplásticos fazem mal à saúde em qualquer quantidade.', r: false, ex: 'Em 2022, a OMS concluiu que os dados disponíveis ainda não bastam para uma avaliação completa do risco à saúde humana.', ref: 'r-oms2022', num: 2, fonte: 'OMS, 2022' },
   ];
   let atual = 0, acertos = 0, escolhas = [], inicioQuiz = 0, tempoQuiz = 0;
+  // a ordem das afirmações é sorteada a cada tentativa; "escolhas" fica na ordem
+  // original (a do gabarito no servidor), pelo índice em PERGUNTAS
+  const embaralhar = n => { const o = [...Array(n).keys()]; for (let i = n - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [o[i], o[j]] = [o[j], o[i]]; } return o; };
+  let ordem = embaralhar(PERGUNTAS.length);
   const prog = document.getElementById('quizProgresso');
   PERGUNTAS.forEach(() => prog.appendChild(document.createElement('i')));
   const resp = [...document.querySelectorAll('#respostas button')];
   const retorno = document.getElementById('retorno'), acao = document.getElementById('quizAcao');
   function mostrarPergunta() {
-    const q = PERGUNTAS[atual];
-    if (atual === 0) { escolhas = []; inicioQuiz = performance.now(); }
+    if (atual === 0) { escolhas = []; inicioQuiz = performance.now(); ordem = embaralhar(PERGUNTAS.length); }
+    const q = PERGUNTAS[ordem[atual]];
     document.getElementById('quizContador').textContent = `Afirmação ${atual + 1} de ${PERGUNTAS.length}`;
     document.getElementById('afirmacao').textContent = q.a;
     [...prog.children].forEach((b, i) => b.classList.toggle('atual', i === atual));
@@ -3442,15 +3446,15 @@ addEventListener('DOMContentLoaded', () => {
     retorno.className = 'retorno'; acao.classList.remove('visivel');
   }
   resp.forEach(b => b.addEventListener('click', () => {
-    const q = PERGUNTAS[atual], certo = (b.dataset.r === 'true') === q.r;
+    const iq = ordem[atual], q = PERGUNTAS[iq], certo = (b.dataset.r === 'true') === q.r;
     if (certo) acertos++;
-    escolhas[atual] = b.dataset.r === 'true';
+    escolhas[iq] = b.dataset.r === 'true';
     if (atual === PERGUNTAS.length - 1) tempoQuiz = Math.round(performance.now() - inicioQuiz);
     resp.forEach(o => o.disabled = true); b.classList.add('escolhida');
     prog.children[atual].classList.remove('atual');
     prog.children[atual].classList.add(certo ? 'certo' : 'errado');
     retorno.className = `retorno visivel ${certo ? 'certo' : 'errado'}`;
-    retorno.innerHTML = `<b>${certo ? 'Isso mesmo.' : 'Não é bem assim.'} A afirmação é ${q.r ? 'verdadeira' : 'falsa'}.</b><p>${q.ex}</p><p class="quiz-fonte">Fonte: <a href="#${q.ref}">${q.fonte}</a> (referência ${q.num})</p>${quizPlacar.comunidade(atual)}`;
+    retorno.innerHTML = `<b>${certo ? 'Isso mesmo.' : 'Não é bem assim.'} A afirmação é ${q.r ? 'verdadeira' : 'falsa'}.</b><p>${q.ex}</p><p class="quiz-fonte">Fonte: <a href="#${q.ref}">${q.fonte}</a> (referência ${q.num})</p>${quizPlacar.comunidade(iq)}`;
     acao.textContent = atual < PERGUNTAS.length - 1 ? 'Próxima afirmação' : 'Ver resultado';
     acao.classList.add('visivel'); acao.focus({ preventScroll: true });
   }));
