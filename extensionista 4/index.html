@@ -638,6 +638,12 @@
   .res-nota { margin-top: 24px; max-width: 72ch; font-family: var(--display); font-size: .86rem; color: var(--tinta-suave); line-height: 1.5; }
   @media (max-width: 960px) { .res-destaques { grid-template-columns: 1fr; } .res-grade { grid-template-columns: 1fr; } }
   .pesquisa { background: var(--filtro-2); border-top: 1px solid var(--linha); }
+  .video-sec { border-bottom: 1px solid var(--linha); }
+  .video-quadro { margin: 32px 0 0; max-width: 1080px; }
+  .video-quadro video { display: block; width: 100%; aspect-ratio: 16 / 9; border-radius: 18px; background: #0F2733; }
+  .video-quadro video::cue { font-family: var(--display); font-size: 1.05em; line-height: 1.35; color: #fff; background: rgba(7,22,29,.82); }
+  .video-quadro figcaption { margin-top: 12px; font-family: var(--display); font-size: .92rem; color: var(--tinta-suave); }
+  .video-quadro figcaption a { color: var(--pp-texto); font-weight: 600; }
   .pesquisa-grade { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: clamp(32px, 5vw, 72px); align-items: start; }
   .pesquisa-chamada { position: sticky; top: 96px; }
   .btn-pesquisa {
@@ -697,6 +703,7 @@
       Microplásticos e Saúde
     </a>
     <ul>
+      <li><a href="#video">Vídeo</a></li>
       <li><a href="#o-que-sao">O que são</a></li>
       <li><a href="#agua">Ecossistemas aquáticos</a></li>
       <li><a href="#corpo">Corpo humano</a></li>
@@ -740,6 +747,20 @@
 <main id="conteudo">
 
 <!-- ================= O QUE SÃO ================= -->
+<section class="video-sec" id="video">
+  <div class="envoltorio">
+    <h2 class="sec-titulo">O tema em 4 minutos</h2>
+    <div class="prosa"><p>Um resumo em vídeo, do oceano ao corpo humano, com os dados e as fontes de cada parte na tela.</p></div>
+    <figure class="video-quadro">
+      <video controls preload="none" playsinline poster="video/capa.jpg" aria-describedby="videoDesc">
+        <source src="video/microplasticos-e-saude.mp4" type="video/mp4">
+        Seu navegador não reproduz vídeo. <a href="video/microplasticos-e-saude.mp4">Baixe o vídeo</a>.
+      </video>
+      <figcaption id="videoDesc">Vídeo do projeto (4 min 15 s), com música de fundo e textos em português.</figcaption>
+    </figure>
+  </div>
+</section>
+
 <section id="o-que-sao">
   <div class="envoltorio">
     <h2 class="sec-titulo">Pedaços de plástico pequenos demais para ver</h2>
