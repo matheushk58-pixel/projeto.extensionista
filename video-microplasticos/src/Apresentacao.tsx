@@ -52,6 +52,16 @@ const Progresso: React.FC = () => {
   );
 };
 
+const Trilha: React.FC = () => {
+  const { durationInFrames, fps } = useVideoConfig();
+  return (
+    <Audio
+      src={staticFile("trilha.mp3")}
+      volume={(f) => interpolate(f, [durationInFrames - 3 * fps, durationInFrames], [1, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" })}
+    />
+  );
+};
+
 export const Apresentacao: React.FC = () => (
   <AbsoluteFill style={{ background: COR.escuro }}>
     <TransitionSeries>
@@ -69,8 +79,8 @@ export const Apresentacao: React.FC = () => (
       })}
     </TransitionSeries>
     <Progresso />
-    {/* Narração (scripts/narrar.py) e trilha ambiente original (scripts/trilha.py), mais baixa para não competir com a voz */}
-    <Audio src={staticFile("narracao.wav")} volume={1} />
-    <Audio src={staticFile("trilha.mp3")} volume={0.32} />
+    {/* Só a trilha ambiente original (scripts/trilha.py), sumindo nos últimos 3 s.
+        A narração (scripts/narrar.py → public/narracao.wav) saiu do vídeo publicado; as durações das cenas continuam as dela. */}
+    <Trilha />
   </AbsoluteFill>
 );
