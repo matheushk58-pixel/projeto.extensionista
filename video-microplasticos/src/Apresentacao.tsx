@@ -16,25 +16,26 @@ import { Incertezas } from "./cenas/Incertezas";
 import { Acoes } from "./cenas/Acoes";
 import { Encerramento, Equipe, Fontes, Projeto } from "./cenas/Final";
 import { COR } from "./tema";
+import { DURACOES } from "./narracao";
 
-// Duração de cada cena em quadros (30 fps), pensada para dar tempo de ler.
+// Duração de cada cena em quadros (30 fps): o mínimo para ler, esticado para caber a narração (src/narracao.ts).
 export const CENAS = [
-  { id: "Abertura", componente: Abertura, duracao: 195 },
-  { id: "OQueSao", componente: OQueSao, duracao: 450 },
-  { id: "Escala", componente: Escala, duracao: 450 },
-  { id: "Oceanos", componente: Oceanos, duracao: 270 },
-  { id: "Cadeia", componente: Cadeia, duracao: 450 },
-  { id: "Efeitos", componente: Efeitos, duracao: 330 },
-  { id: "Exposicao", componente: Exposicao, duracao: 420 },
-  { id: "Corpo", componente: Corpo, duracao: 510 },
-  { id: "Arterias", componente: Arterias, duracao: 300 },
-  { id: "Brasil", componente: Brasil, duracao: 360 },
-  { id: "Incertezas", componente: Incertezas, duracao: 480 },
-  { id: "Acoes", componente: Acoes, duracao: 420 },
-  { id: "Projeto", componente: Projeto, duracao: 300 },
-  { id: "Fontes", componente: Fontes, duracao: 240 },
-  { id: "Equipe", componente: Equipe, duracao: 210 },
-  { id: "Encerramento", componente: Encerramento, duracao: 180 },
+  { id: "Abertura", componente: Abertura, duracao: DURACOES.Abertura },
+  { id: "OQueSao", componente: OQueSao, duracao: DURACOES.OQueSao },
+  { id: "Escala", componente: Escala, duracao: DURACOES.Escala },
+  { id: "Oceanos", componente: Oceanos, duracao: DURACOES.Oceanos },
+  { id: "Cadeia", componente: Cadeia, duracao: DURACOES.Cadeia },
+  { id: "Efeitos", componente: Efeitos, duracao: DURACOES.Efeitos },
+  { id: "Exposicao", componente: Exposicao, duracao: DURACOES.Exposicao },
+  { id: "Corpo", componente: Corpo, duracao: DURACOES.Corpo },
+  { id: "Arterias", componente: Arterias, duracao: DURACOES.Arterias },
+  { id: "Brasil", componente: Brasil, duracao: DURACOES.Brasil },
+  { id: "Incertezas", componente: Incertezas, duracao: DURACOES.Incertezas },
+  { id: "Acoes", componente: Acoes, duracao: DURACOES.Acoes },
+  { id: "Projeto", componente: Projeto, duracao: DURACOES.Projeto },
+  { id: "Fontes", componente: Fontes, duracao: DURACOES.Fontes },
+  { id: "Equipe", componente: Equipe, duracao: DURACOES.Equipe },
+  { id: "Encerramento", componente: Encerramento, duracao: DURACOES.Encerramento },
 ];
 export const TRANSICAO = 15;
 export const DURACAO_TOTAL = CENAS.reduce((s, c) => s + c.duracao, 0) - TRANSICAO * (CENAS.length - 1);
@@ -68,7 +69,8 @@ export const Apresentacao: React.FC = () => (
       })}
     </TransitionSeries>
     <Progresso />
-    {/* Trilha ambiente original, gerada por scripts/trilha.py */}
-    <Audio src={staticFile("trilha.mp3")} volume={0.8} />
+    {/* Narração (scripts/narrar.py) e trilha ambiente original (scripts/trilha.py), mais baixa para não competir com a voz */}
+    <Audio src={staticFile("narracao.wav")} volume={1} />
+    <Audio src={staticFile("trilha.mp3")} volume={0.32} />
   </AbsoluteFill>
 );

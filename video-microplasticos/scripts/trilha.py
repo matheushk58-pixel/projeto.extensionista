@@ -10,7 +10,10 @@ import wave
 import numpy as np
 
 SR = 44100
-DUR = 178.0
+import os
+DUR = float(os.environ.get("TRILHA_DUR", "178"))
+# trecho em tom menor (corpo e saúde), em segundos
+TRECHO_ESCURO = (float(os.environ.get("TRILHA_ESCURO_INI", "52")), float(os.environ.get("TRILHA_ESCURO_FIM", "128")))
 N = int(SR * DUR)
 rng = np.random.default_rng(4)
 
@@ -43,7 +46,7 @@ n_acordes = int(np.ceil(DUR / ACORDE))
 prog = []
 for i in range(n_acordes):
     t = i * ACORDE
-    if t < 52 or t >= 128:
+    if t < TRECHO_ESCURO[0] or t >= TRECHO_ESCURO[1]:
         prog.append(CLARO[i % 4])
     else:
         prog.append(ESCURO[i % 4])
@@ -109,7 +112,7 @@ for passo in range(int(DUR / COLCHEIA)):
     tt = passo * COLCHEIA
     if tt < 7 or tt > DUR - 5:
         continue
-    meio = 52 <= tt < 128
+    meio = TRECHO_ESCURO[0] <= tt < TRECHO_ESCURO[1]
     prob = 0.32 if meio else 0.5
     if passo % 8 == 0:
         prob = 0.9

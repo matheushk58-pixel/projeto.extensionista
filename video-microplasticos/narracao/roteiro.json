@@ -1,0 +1,71 @@
+{
+  "Abertura": [
+    ["Microplásticos e saúde.", null],
+    ["Os impactos no corpo humano e nos ecossistemas aquáticos.", null]
+  ],
+  "OQueSao": [
+    ["Microplásticos são pedaços de plástico com menos de 5 milímetros, menores que um grão de arroz.", "Microplásticos são pedaços de plástico com menos de cinco milímetros, menores que um grão de arroz."],
+    ["Abaixo de 1 micrômetro, eles passam a ser chamados de nanoplásticos.", "Abaixo de um micrômetro, eles passam a ser chamados de nanoplásticos."],
+    ["Alguns já são fabricados pequenos, como as microesferas de cosméticos.", null],
+    ["A maioria vem da quebra de garrafas, sacolas, redes de pesca e roupas sintéticas.", null]
+  ],
+  "Escala": [
+    ["Quanto menor a partícula, mais longe ela pode chegar no corpo.", null],
+    ["Segundo a autoridade europeia de segurança dos alimentos, só uma pequena fração atravessa o intestino.", null]
+  ],
+  "Oceanos": [
+    ["Estima-se que pelo menos 5,25 trilhões de partículas de plástico flutuem nos oceanos.", "Estima-se que pelo menos cinco vírgula vinte e cinco trilhões de partículas de plástico flutuem nos oceanos."],
+    ["Só em 2010, de 4,8 a 12,7 milhões de toneladas de resíduos plásticos chegaram ao mar.", "Só em dois mil e dez, de quatro vírgula oito a doze vírgula sete milhões de toneladas de resíduos plásticos chegaram ao mar."]
+  ],
+  "Cadeia": [
+    ["No mar, o plástico sobe pela cadeia alimentar.", null],
+    ["O plâncton confunde as partículas com comida, e os mexilhões retêm o que passa por eles.", null],
+    ["Em mercados, 1 em cada 4 peixes vendidos tinha detritos de origem humana.", "Em mercados, um em cada quatro peixes vendidos tinha detritos de origem humana."],
+    ["Assim, o plástico chega até nós pelos frutos do mar, pelo sal e pela água.", null]
+  ],
+  "Efeitos": [
+    ["Nos animais, as partículas podem ferir ou bloquear o sistema digestivo e dar uma falsa sensação de saciedade.", null],
+    ["Elas também atraem poluentes, carregam aditivos químicos e levam bactérias para novos ambientes.", null]
+  ],
+  "Exposicao": [
+    ["E quanto plástico chega até nós?", null],
+    ["Uma pessoa pode engolir de 39 mil a 52 mil partículas por ano.", "Uma pessoa pode engolir de trinta e nove mil a cinquenta e duas mil partículas por ano."],
+    ["Somando o que respiramos, passa de 74 mil.", "Somando o que respiramos, passa de setenta e quatro mil."],
+    ["Um litro de água engarrafada tem, em média, cerca de 240 mil partículas.", "Um litro de água engarrafada tem, em média, cerca de duzentas e quarenta mil partículas."]
+  ],
+  "Corpo": [
+    ["Os microplásticos já foram encontrados na placenta, no pulmão e no sangue.", null],
+    ["Também nas artérias, no cérebro, no fígado e nos rins.", null]
+  ],
+  "Arterias": [
+    ["Um estudo de 2024 acompanhou pacientes com plástico nas placas de gordura das artérias.", "Um estudo de dois mil e vinte e quatro acompanhou pacientes com plástico nas placas de gordura das artérias."],
+    ["Em cerca de 34 meses, eles tiveram 4,5 vezes mais infarto, AVC ou morte.", "Em cerca de trinta e quatro meses, eles tiveram quatro vírgula cinco vezes mais infarto, derrame ou morte."],
+    ["É uma associação, ainda não uma prova de causa.", null]
+  ],
+  "Brasil": [
+    ["No Brasil, pesquisadores da USP encontraram plástico em 13 de 20 amostras de pulmão.", "No Brasil, pesquisadores da Universidade de São Paulo encontraram plástico em treze de vinte amostras de pulmão."],
+    ["E em 8 de 15 pessoas, na entrada do cérebro, logo acima do nariz.", "E em oito de quinze pessoas, na entrada do cérebro, logo acima do nariz."]
+  ],
+  "Incertezas": [
+    ["Mas a ciência ainda tem muitas perguntas.", null],
+    ["Os estudos têm poucas pessoas, faltam métodos para as partículas menores e o próprio laboratório pode contaminar as amostras.", null],
+    ["Por isso, a Organização Mundial da Saúde diz que ainda não dá para medir todo o risco.", null]
+  ],
+  "Acoes": [
+    ["O que dá para fazer?", null],
+    ["Beber água filtrada da torneira, não esquentar comida em pote plástico e limpar a casa com pano úmido.", null],
+    ["Lavar roupa sintética em ciclo frio, participar de mutirões de limpeza e cobrar saneamento básico.", null]
+  ],
+  "Projeto": [
+    ["Para levar esse conhecimento à comunidade, criamos um site aberto, com cenas em 3D, mapa do corpo, quiz e um minijogo.", "Para levar esse conhecimento à comunidade, criamos um site aberto, com cenas em três dê, mapa do corpo, quiz e um minijogo."]
+  ],
+  "Fontes": [
+    ["Tudo com base em artigos científicos e relatórios internacionais. As 24 referências estão no site.", "Tudo com base em artigos científicos e relatórios internacionais. As vinte e quatro referências estão no site."]
+  ],
+  "Equipe": [
+    ["Este trabalho foi feito pelo Grupo 4 da Universidade Nove de Julho.", "Este trabalho foi feito pelo grupo quatro da Universidade Nove de Julho."]
+  ],
+  "Encerramento": [
+    ["Obrigado! Teste o que você aprendeu no quiz e no minijogo do site.", null]
+  ]
+}
