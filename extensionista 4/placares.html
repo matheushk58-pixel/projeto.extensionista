@@ -85,6 +85,10 @@
   .lista li.vazio { background: transparent; border: 2px dashed rgba(255,244,236,.35); color: rgba(255,244,236,.78); grid-template-columns: 2.6em 1fr; }
   .glifo { width: 1.3em; height: 1.3em; }
 
+  body.so .faixa { align-items: center; }
+  body.so .faixa > .topo, body.so .faixa > .podio, body.so .faixa > .janela { width: 100%; max-width: 1100px; }
+  body.so .janela { margin-left: 0; margin-right: 0; padding: 0; }
+
   /* ---- aviso de quem acabou de entrar ---- */
   .aviso { position: absolute; z-index: 5; left: 50%; top: 2.2vh; transform: translate(-50%, -220%); background: var(--pet); color: var(--tinta); font-family: var(--titulo); font-weight: 800; font-stretch: 115%;
     font-variation-settings: 'wdth' 115, 'wght' 800; font-size: clamp(1rem, 2vw, 1.8rem); padding: 1.2vh 2.2vw; border-radius: 999px; white-space: nowrap; box-shadow: 0 1.4vh 3vh rgba(0,0,0,.35);
@@ -150,7 +154,7 @@
 <script>
 (() => {
   const params = new URLSearchParams(location.search);
-  const so = params.get('so');
+  const so = window.PLACAR_SO || params.get('so');
   if (so === 'quiz' || so === 'missao') { document.body.classList.add('so'); document.getElementById(so === 'quiz' ? 'fMissao' : 'fQuiz').hidden = true; }
   const reduz = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const ATUALIZA_MS = 6000, LIMITE = 50, SEG_POR_LINHA = 2.4;
