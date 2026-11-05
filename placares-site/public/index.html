@@ -5,21 +5,35 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Placares ao vivo</title>
 <meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,800&family=Source+Serif+4:opsz,wght@8..60,400&display=swap" rel="stylesheet">
 <style>
   /* Dois placares, cada um na sua página. Esta página só leva a um deles. */
+  :root { --filtro: #F1F4F2; --tinta: #0F2733; --tinta-suave: #4E626C; --linha: #C9D3CE; --pe: #D9366B; --pp: #1C9CC0;
+    --display: 'Bricolage Grotesque', system-ui, sans-serif; --serif: 'Source Serif 4', Georgia, serif; color-scheme: light; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --filtro: #0C1F28; --tinta: #E4ECE8; --tinta-suave: #9DB0B7; --linha: #24434E; color-scheme: dark; } }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  html, body { height: 100%; font-family: system-ui, sans-serif; color: #FFF4EC; }
-  main { display: grid; grid-template-columns: 1fr 1fr; height: 100%; }
-  a { display: grid; place-items: center; text-decoration: none; color: inherit; font-weight: 900; font-size: clamp(2.4rem, 9vw, 7rem); letter-spacing: -.02em; }
-  a.quiz { background: #A81F4C; } a.missao { background: #07566F; }
-  a:hover, a:focus-visible { filter: brightness(1.15); outline: none; }
-  @media (max-width: 700px) { main { grid-template-columns: 1fr; grid-template-rows: 1fr 1fr; } }
+  html, body { height: 100%; }
+  body { background: var(--filtro); color: var(--tinta); font-family: var(--serif); display: flex; flex-direction: column; }
+  header { height: 60px; display: flex; align-items: center; gap: 10px; padding: 0 clamp(16px, 4vw, 40px); border-bottom: 1px solid var(--linha); font-family: var(--display); font-weight: 800; }
+  main { flex: 1; display: grid; grid-template-columns: 1fr 1fr; }
+  a { display: grid; align-content: center; gap: .3em; padding: clamp(20px, 5vw, 64px); text-decoration: none; color: inherit; border-top: 6px solid var(--c); transition: background-color .2s; }
+  a:hover, a:focus-visible { background: color-mix(in srgb, var(--c) 10%, transparent); outline: none; }
+  a.quiz { --c: var(--pe); } a.missao { --c: var(--pp); }
+  a b { font-family: var(--display); font-weight: 800; font-size: clamp(3.4rem, 11vw, 9rem); line-height: .94; letter-spacing: -.035em; }
+  a span { color: var(--tinta-suave); font-size: clamp(1rem, 1.6vw, 1.25rem); }
+  @media (max-width: 700px) { main { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
+<header>
+  <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><circle cx="9" cy="9" r="7" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M14.2 14.2 20 20" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><path d="M6 7l3-2 2 3-3 2z" fill="#D9366B"/><circle cx="11" cy="11" r="1.4" fill="#1C9CC0"/></svg>
+  Microplásticos e Saúde
+</header>
 <main>
-  <a class="quiz" href="/quiz">Quiz</a>
-  <a class="missao" href="/missao">Missão</a>
+  <a class="quiz" href="/quiz"><b>Quiz</b><span>Verdadeiro ou falso sobre microplásticos</span></a>
+  <a class="missao" href="/missao"><b>Missão</b><span>Limpar o oceano</span></a>
 </main>
 </body>
 </html>
