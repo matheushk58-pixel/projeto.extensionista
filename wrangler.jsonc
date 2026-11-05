@@ -2,6 +2,7 @@
   // Publicado pelo Workers Builds a cada push na main.
   // O site "Microplásticos e Saúde" fica em /extensionista%204/; a raiz redireciona para ele.
   // worker.js atende só /api/* (/api/placar do jogo e /api/quiz, guardados no D1); o resto sai direto dos assets.
+  // Publicado também com as páginas placares.html, acesso.html e placar.html.
   // O banco D1 do placar é criado sozinho no primeiro deploy (sem database_id fixo).
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "projeto-extensionista-2",
