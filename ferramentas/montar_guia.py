@@ -138,6 +138,7 @@ EQUIPE = [
     "Fabiana Bernadino da Costa Rodrigues", "Sara dos Santos Rocha", "Maiara Rosa da Silva",
     "Eduardo Talhoni Ribeiro", "Emily Janaína Santos Silva", "Maria Letícia Lima Madrid",
     "Victoria Gabriely Oliveira Santos", "Ana Clara Silva Dantas", "Ana Lívia de Freitas Rocha",
+    "Rafaela do Prado Diogo",
 ]
 
 PAG = {"PAG_CORPO": "5", "PAG_ACOES": "6"}
