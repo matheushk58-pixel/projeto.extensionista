@@ -703,7 +703,7 @@
       <li><a href="#quiz">Quiz</a></li>
       <li><a href="#jogo">Jogo</a></li>
       <li><a href="#acoes">O que fazer</a></li>
-      <li><a href="#pesquisa">Pesquisa</a></li>
+      <li><a href="#resultados">Pesquisa</a></li>
       <li><a href="#referencias">Referências</a></li>
       <li><a href="apresentacao.html">Apresentação</a></li>
     </ul>
@@ -1113,10 +1113,9 @@
 </section>
 
 <!-- ================= RESULTADOS DA PESQUISA ================= -->
-<!-- Escondida até a pesquisa chegar a 150 respostas: atualizar os números em resultados() e tirar o hidden. -->
-<section class="resultados" id="resultados" hidden>
+<section class="resultados" id="resultados">
   <div class="envoltorio">
-    <h2 class="sec-titulo">O que 135 pessoas responderam</h2>
+    <h2 class="sec-titulo">O que 147 pessoas responderam</h2>
     <div class="prosa"><p>Resultados da pesquisa anônima do projeto, respondida por moradores de São Paulo e região. Ela mostra por que informar faz diferença: a maioria se preocupa com o tema, mas poucos sabem explicar o que são microplásticos.</p></div>
     <div class="res-destaques" id="resDestaques"></div>
     <div class="res-grade">
@@ -1133,7 +1132,7 @@
       </div>
     </div>
     <details class="res-tabelas"><summary>Ver todos os números em tabela</summary><div id="resTabelas"></div></details>
-    <p class="res-nota">Percentuais calculados sobre as 135 pessoas que aceitaram participar (134 na pergunta sobre hábitos), de 139 respostas recebidas até 4 de novembro de 2026. É uma pesquisa de opinião, sem amostragem estatística: os números descrevem este grupo, não toda a população.</p>
+    <p class="res-nota">Percentuais calculados sobre as 147 pessoas que aceitaram participar (146 na pergunta sobre hábitos), de 151 respostas recebidas até 5 de novembro de 2026. É uma pesquisa de opinião, sem amostragem estatística: os números descrevem este grupo, não toda a população.</p>
   </div>
 </section>
 
@@ -1665,14 +1664,14 @@ addEventListener('DOMContentLoaded', () => {
      ========================================================= */
   (function resultados() {
     const R = {
-      conhece: { t: 'Antes da pesquisa, já tinha ouvido falar de microplásticos?', n: 135, itens: [['Sim, e sei explicar', 38], ['Já ouvi, mas não sei explicar', 52], ['Nunca tinha ouvido falar', 45]] },
-      preocupa: { t: 'Quanto se preocupa com microplásticos na água e nos alimentos (nota de 0 a 5)', n: 135, itens: [['0', 16], ['1', 5], ['2', 16], ['3', 29], ['4', 15], ['5', 54]] },
-      habitos: { t: 'Mudaria hábitos para diminuir a liberação de microplásticos?', n: 134, itens: [['Sim, com certeza', 99], ['Já procuro reduzir o plástico', 10], ['Talvez, depende da mudança', 18], ['Não sei responder', 7]] },
-      area: { t: 'Que área pode ser mais prejudicada pelos microplásticos?', n: 135, itens: [['Todas as áreas', 74], ['Saúde humana', 30], ['Animais e organismos aquáticos', 12], ['Não sei dizer', 11], ['Qualidade da água', 7], ['Pesca e alimentação', 1]] },
-      idade: { t: 'Idade', n: 135, itens: [['18 a 24 anos', 46], ['25 a 29', 19], ['30 a 34', 18], ['35 a 39', 13], ['40 a 44', 13], ['45 a 49', 15], ['50 a 54', 5], ['55 a 59', 4], ['60 a 65', 2]] },
-      regiao: { t: 'Onde mora', n: 135, itens: [['Zona Leste', 100], ['Região metropolitana', 25], ['Zona Sul', 6], ['Zona Norte', 2], ['Zona Oeste', 2]] },
-      escola: { t: 'Escolaridade (completa)', n: 135, itens: [['Ensino médio', 92], ['Ensino superior', 19], ['Pós-graduação', 12], ['Ensino fundamental', 10], ['Supletivo', 2]] },
-      sus: { t: 'Uso do SUS', n: 135, itens: [['usam o SUS para consultas e exames', 105], ['se vacinam pelo SUS', 128]] },
+      conhece: { t: 'Antes da pesquisa, já tinha ouvido falar de microplásticos?', n: 147, itens: [['Sim, e sei explicar', 42], ['Já ouvi, mas não sei explicar', 53], ['Nunca tinha ouvido falar', 52]] },
+      preocupa: { t: 'Quanto se preocupa com microplásticos na água e nos alimentos (nota de 0 a 5)', n: 147, itens: [['0', 18], ['1', 6], ['2', 16], ['3', 30], ['4', 16], ['5', 61]] },
+      habitos: { t: 'Mudaria hábitos para diminuir a liberação de microplásticos?', n: 146, itens: [['Sim, com certeza', 110], ['Já procuro reduzir o plástico', 11], ['Talvez, depende da mudança', 18], ['Não sei responder', 7]] },
+      area: { t: 'Que área pode ser mais prejudicada pelos microplásticos?', n: 147, itens: [['Todas as áreas', 83], ['Saúde humana', 31], ['Não sei dizer', 13], ['Animais e organismos aquáticos', 12], ['Qualidade da água', 7], ['Pesca e alimentação', 1]] },
+      idade: { t: 'Idade', n: 147, itens: [['18 a 24 anos', 48], ['25 a 29', 20], ['30 a 34', 18], ['35 a 39', 15], ['40 a 44', 15], ['45 a 49', 15], ['50 a 54', 6], ['55 a 59', 5], ['60 a 65', 5]] },
+      regiao: { t: 'Onde mora', n: 147, itens: [['Zona Leste', 102], ['Região metropolitana', 34], ['Zona Sul', 7], ['Zona Norte', 2], ['Zona Oeste', 2]] },
+      escola: { t: 'Escolaridade (completa)', n: 147, itens: [['Ensino médio', 102], ['Ensino superior', 20], ['Pós-graduação', 12], ['Ensino fundamental', 11], ['Supletivo', 2]] },
+      sus: { t: 'Uso do SUS', n: 147, itens: [['usam o SUS para consultas e exames', 113], ['se vacinam pelo SUS', 138]] },
     };
     const pct = (v, n) => v / n * 100, f1 = x => x.toFixed(1).replace('.', ',') + '%';
     const dica = (v, n) => `${v} de ${n} pessoas (${f1(pct(v, n))})`;
