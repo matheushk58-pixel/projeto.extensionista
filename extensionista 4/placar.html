@@ -124,12 +124,7 @@
 (() => {
   const $ = id => document.getElementById(id);
   const params = new URLSearchParams(location.search);
-  const MODO = params.get('modo') === 'game' ? 'game' : 'quiz';
-  const NOME_MODO = MODO === 'game' ? 'Game: o mar' : 'Quiz Microplásticos e Saúde';
-  const qs = [params.get('data') ? 'data=' + encodeURIComponent(params.get('data')) : '', MODO === 'game' ? 'modo=game' : ''].filter(Boolean).join('&');
-  const API = '/api/quiz/dia' + (qs ? '?' + qs : '');
-  document.title = 'Placar do dia · ' + NOME_MODO;
-  document.querySelector('header h1 span').textContent = '· ' + NOME_MODO;
+  const API = '/api/quiz/dia' + (params.get('data') ? '?data=' + encodeURIComponent(params.get('data')) : '');
   const ATUALIZA_MS = 5000;
   const CURIOSIDADES = [
     'Pelo menos <b>5,25 trilhões</b> de partículas de plástico flutuam nos oceanos.',
