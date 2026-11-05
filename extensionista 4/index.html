@@ -403,6 +403,28 @@
   .retorno b { font-family: var(--display); font-size: 1.15rem; display: block; margin-bottom: 4px; }
   .retorno p { font-size: 1.02rem; }
   .quiz-acao { margin-top: 20px; display: none; }
+  .quiz-apelido { margin: 22px 0 0; max-width: 560px; }
+  .quiz-apelido .quiz-acao { margin-top: 0; }
+  .quiz-apelido[hidden] { display: none; }
+  .comunidade-q { display: block; margin-top: 8px; font-family: var(--display); font-size: .92rem; color: var(--tinta-suave); }
+  .quiz-comunidade { margin-top: 48px; max-width: 760px; }
+  .quiz-numeros p { margin: 0; }
+  .quiz-numeros[hidden] { display: none; }
+  .quiz-perguntas { list-style: none; margin: 6px 0 28px; font-family: var(--display); font-size: .92rem; }
+  .quiz-perguntas li { display: grid; grid-template-columns: 1fr minmax(90px, 30%) 3.2rem; gap: 12px; align-items: center; padding: 7px 0; border-bottom: 1px solid var(--linha); }
+  .quiz-perguntas .qp-txt { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .quiz-perguntas .qp-barra { height: 10px; border-radius: 5px; background: var(--filtro-3); overflow: hidden; }
+  .quiz-perguntas .qp-barra i { display: block; height: 100%; background: var(--verde); border-radius: 5px; }
+  .quiz-perguntas b { text-align: right; font-variant-numeric: tabular-nums; }
+  .quiz-placar-tit { margin: 0 0 10px; }
+  .nota-quiz { font-size: .88rem; color: var(--tinta-suave); margin-top: 12px; }
+  #quizMsg { margin: 12px 0 0; }
+  @media (max-width: 560px) {
+    .quiz-perguntas li { grid-template-columns: 1fr 3rem; gap: 4px 10px; }
+    .quiz-perguntas .qp-txt { grid-column: 1 / -1; white-space: normal; }
+    .quiz-comunidade .lista-placar li { grid-template-columns: 1.8rem 28px 1fr auto 3.4rem; }
+    .quiz-comunidade .pl-m { display: block; }
+  }
   .quiz-acao.visivel { display: inline-block; }
 
   /* ---------- minijogo (corrida em 3 faixas) ---------- */
@@ -538,6 +560,7 @@
   .pl-topo .sub-nota { font-size: .98rem; }
   .lista-placar { list-style: none; border-top: 3px solid var(--tinta); }
   .lista-placar li { display: grid; grid-template-columns: 2.2rem 34px 1fr auto 4.5rem; gap: 12px; align-items: center; padding: 10px 6px; border-bottom: 1px solid var(--linha); font-family: var(--display); }
+  .lista-placar li.vazio { display: block; color: var(--tinta-suave); }
   .lista-placar li.eu { background: color-mix(in srgb, var(--pet) 20%, transparent); border-radius: 8px; }
   .pl-pos { font-weight: 800; color: var(--tinta-suave); font-variant-numeric: tabular-nums; }
   .lista-placar li:nth-child(1) .pl-pos { color: #B7860B; }
@@ -966,6 +989,27 @@
       </div>
       <div class="retorno" id="retorno" role="status" aria-live="polite"></div>
       <button type="button" class="quiz-acao" id="quizAcao">Próxima afirmação</button>
+      <form class="form-apelido quiz-apelido" id="formApelidoQuiz" hidden>
+        <label for="apelidoQuiz">Quer aparecer no placar do quiz? Escolha um apelido</label>
+        <div class="form-apelido-linha"><input id="apelidoQuiz" name="apelido" maxlength="20" minlength="2" autocomplete="nickname" spellcheck="false" placeholder="Ex.: Tartaruga Veloz" required><button class="quiz-acao visivel" type="submit">Entrar no placar</button></div>
+      </form>
+      <p class="fim-placar" id="quizMsg" aria-live="polite"></p>
+    </div>
+
+    <div class="quiz-comunidade" id="quizComunidade">
+      <div class="pl-topo">
+        <h3 class="sub">Como a comunidade está indo</h3>
+        <p class="sub-nota" id="quizEstado">Carregando os resultados…</p>
+      </div>
+      <div class="placar quiz-numeros" id="quizNumeros" hidden>
+        <p><strong id="qzPessoas">–</strong><span>pessoas fizeram o quiz</span></p>
+        <p><strong id="qzMedia">–</strong><span>acertos em média, de 6</span></p>
+        <p><strong id="qzGabarito">–</strong><span>gabaritaram</span></p>
+      </div>
+      <ol class="quiz-perguntas" id="quizPerguntas" aria-label="Quantas pessoas acertaram cada afirmação"></ol>
+      <h3 class="sub quiz-placar-tit">Placar do quiz</h3>
+      <ol class="lista-placar" id="quizPlacar" aria-label="Melhores resultados do quiz: acertos e tempo"></ol>
+      <p class="nota-quiz">O placar ordena por acertos e, no empate, por quem respondeu mais rápido. Cada resultado conta nas estatísticas de forma anônima (vale a primeira tentativa); o apelido só aparece se você escolher entrar no placar.</p>
     </div>
   </div>
 </section>
@@ -3369,13 +3413,14 @@ addEventListener('DOMContentLoaded', () => {
     { a: 'Lavar roupas sintéticas libera microfibras de plástico.', r: true, ex: 'Uma carga de 6 kg de roupas de acrílico pode liberar cerca de 700 mil fibras.', ref: 'r-napper', num: 20 },
     { a: 'Pesquisadores brasileiros encontraram microplásticos no pulmão humano.', r: true, ex: 'A equipe da USP encontrou partículas em 13 de 20 amostras de pulmão de moradores de São Paulo.', ref: 'r-amato2021', num: 14 },
   ];
-  let atual = 0, acertos = 0;
+  let atual = 0, acertos = 0, escolhas = [], inicioQuiz = 0, tempoQuiz = 0;
   const prog = document.getElementById('quizProgresso');
   PERGUNTAS.forEach(() => prog.appendChild(document.createElement('i')));
   const resp = [...document.querySelectorAll('#respostas button')];
   const retorno = document.getElementById('retorno'), acao = document.getElementById('quizAcao');
   function mostrarPergunta() {
     const q = PERGUNTAS[atual];
+    if (atual === 0) { escolhas = []; inicioQuiz = performance.now(); }
     document.getElementById('quizContador').textContent = `Afirmação ${atual + 1} de ${PERGUNTAS.length}`;
     document.getElementById('afirmacao').textContent = q.a;
     [...prog.children].forEach((b, i) => b.classList.toggle('atual', i === atual));
@@ -3386,11 +3431,13 @@ addEventListener('DOMContentLoaded', () => {
   resp.forEach(b => b.addEventListener('click', () => {
     const q = PERGUNTAS[atual], certo = (b.dataset.r === 'true') === q.r;
     if (certo) acertos++;
+    escolhas[atual] = b.dataset.r === 'true';
+    if (atual === PERGUNTAS.length - 1) tempoQuiz = Math.round(performance.now() - inicioQuiz);
     resp.forEach(o => o.disabled = true); b.classList.add('escolhida');
     prog.children[atual].classList.remove('atual');
     prog.children[atual].classList.add(certo ? 'certo' : 'errado');
     retorno.className = `retorno visivel ${certo ? 'certo' : 'errado'}`;
-    retorno.innerHTML = `<b>${certo ? 'Isso mesmo.' : 'Não é bem assim.'} A afirmação é ${q.r ? 'verdadeira' : 'falsa'}.</b><p>${q.ex}<sup class="ref"><a href="#${q.ref}">${q.num}</a></sup></p>`;
+    retorno.innerHTML = `<b>${certo ? 'Isso mesmo.' : 'Não é bem assim.'} A afirmação é ${q.r ? 'verdadeira' : 'falsa'}.</b><p>${q.ex}<sup class="ref"><a href="#${q.ref}">${q.num}</a></sup></p>${quizPlacar.comunidade(atual)}`;
     acao.textContent = atual < PERGUNTAS.length - 1 ? 'Próxima afirmação' : 'Ver resultado';
     acao.classList.add('visivel'); acao.focus({ preventScroll: true });
   }));
@@ -3402,9 +3449,94 @@ addEventListener('DOMContentLoaded', () => {
     document.getElementById('afirmacao').textContent = `Você acertou ${acertos} de ${PERGUNTAS.length}.`;
     document.getElementById('respostas').style.display = 'none';
     retorno.className = 'retorno visivel ' + (acertos >= 4 ? 'certo' : 'errado');
-    retorno.innerHTML = `<p>${acertos === PERGUNTAS.length ? 'Gabaritou. Que tal compartilhar o que aprendeu?' : 'Releia as seções acima e tente de novo.'}</p>`;
+    retorno.innerHTML = `<p>${acertos === PERGUNTAS.length ? 'Gabaritou. Que tal compartilhar o que aprendeu?' : 'Releia as seções acima e tente de novo.'}</p><p class="comunidade-q" id="quizComparacao"></p>`;
     acao.textContent = 'Refazer o quiz'; atual = -1;
+    quizPlacar.enviar(escolhas.slice(), tempoQuiz);
   });
+
+  /* Placar e estatísticas do quiz: /api/quiz (worker.js). A correção é feita no
+     servidor; o id e o apelido são os mesmos do placar do jogo (localStorage). */
+  const quizPlacar = (() => {
+    const API = '/api/quiz', $q = i => document.getElementById(i);
+    const ler = (k, p) => { try { return localStorage.getItem(k) ?? p; } catch (e) { return p; } };
+    const gravar = (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} };
+    let id = ler('placar-id', '');
+    if (!/^[a-f0-9-]{20,40}$/.test(id)) { id = crypto.randomUUID ? crypto.randomUUID() : [...crypto.getRandomValues(new Uint8Array(16))].map(b => b.toString(16).padStart(2, '0')).join(''); gravar('placar-id', id); }
+    let dados = null;
+    const form = $q('formApelidoQuiz'), msg = $q('quizMsg');
+    const fmtTempo = ms => { const s = Math.round(ms / 1000); return s < 60 ? s + ' s' : Math.floor(s / 60) + ' min ' + String(s % 60).padStart(2, '0') + ' s'; };
+    const pct = (v, n) => n ? Math.round(v / n * 100) : 0;
+    const corAvatar = nome => { let h = 0; for (const ch of nome) h = (h * 31 + ch.codePointAt(0)) % 360; return `hsl(${h} 55% 42%)`; };
+    function render() {
+      if (!dados) return;
+      const n = dados.pessoas;
+      $q('quizEstado').textContent = n ? 'Resultados de todos que já responderam' : 'Ninguém respondeu ainda. Seja a primeira pessoa!';
+      $q('quizNumeros').hidden = !n;
+      $q('qzPessoas').textContent = n.toLocaleString('pt-BR');
+      $q('qzMedia').textContent = dados.media == null ? '–' : String(dados.media).replace('.', ',');
+      $q('qzGabarito').textContent = pct(dados.gabaritaram, n) + '%';
+      $q('quizPerguntas').replaceChildren(...(n ? PERGUNTAS.map((q, i) => {
+        const li = document.createElement('li'), p = pct(dados.porPergunta[i], n);
+        const t = document.createElement('span'); t.className = 'qp-txt'; t.textContent = q.a; t.title = q.a;
+        const bar = document.createElement('span'); bar.className = 'qp-barra'; bar.setAttribute('aria-hidden', 'true');
+        const fill = document.createElement('i'); fill.style.width = p + '%'; bar.append(fill);
+        const v = document.createElement('b'); v.textContent = p + '%';
+        li.append(t, bar, v); li.setAttribute('aria-label', `${q.a} ${p}% acertaram`); return li;
+      }) : []));
+      const lista = $q('quizPlacar');
+      if (!dados.top.length) { const li = document.createElement('li'); li.className = 'vazio'; li.textContent = 'Ainda não há ninguém no placar do quiz.'; lista.replaceChildren(li); return; }
+      lista.replaceChildren(...dados.top.map((l, i) => {
+        const li = document.createElement('li'); if (l.eu) li.className = 'eu';
+        const pos = document.createElement('span'); pos.className = 'pl-pos'; pos.textContent = (i + 1) + 'º';
+        const nomeTxt = l.nome || 'Participante';
+        const av = document.createElement('span'); av.className = 'pl-av'; av.setAttribute('aria-hidden', 'true'); av.textContent = [...nomeTxt][0].toUpperCase(); av.style.background = corAvatar(nomeTxt);
+        const nome = document.createElement('span'); nome.className = 'pl-nome'; nome.textContent = nomeTxt;
+        if (l.eu) { const v = document.createElement('small'); v.textContent = 'você'; nome.append(v); }
+        const pts = document.createElement('span'); pts.className = 'pl-pts'; pts.textContent = `${l.acertos}/${dados.total}`;
+        const m = document.createElement('span'); m.className = 'pl-m'; m.textContent = fmtTempo(l.tempo);
+        li.append(pos, av, nome, pts, m); return li;
+      }));
+    }
+    async function atualizar() {
+      try { const r = await fetch(API + '?eu=' + encodeURIComponent(id), { cache: 'no-store' }); if (!r.ok) throw 0; dados = await r.json(); render(); }
+      catch (e) { if (!dados) $q('quizEstado').textContent = 'Os resultados da comunidade não puderam ser carregados agora.'; }
+    }
+    function comunidade(i) {
+      if (!dados || !dados.pessoas) return '';
+      return `<span class="comunidade-q">${pct(dados.porPergunta[i], dados.pessoas)}% das pessoas acertaram esta afirmação.</span>`;
+    }
+    async function postar(corpo) {
+      const r = await fetch(API, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ id, ...corpo }) });
+      const d = await r.json().catch(() => ({}));
+      if (!r.ok) throw new Error(d.erro || 'Não foi possível salvar agora.');
+      return d;
+    }
+    function mensagemFinal(d) {
+      const comp = $q('quizComparacao');
+      if (comp && d.eu && d.eu.tentativas === 1 && d.eu.acimaDe != null) comp.textContent = `Você acertou mais que ${d.eu.acimaDe}% das pessoas que já fizeram o quiz.`;
+      if (d.eu && d.eu.nome) msg.textContent = d.novo ? `Salvo no placar como ${d.eu.nome}: você está em ${d.eu.posicao}º.` : `Sua melhor marca no placar continua ${d.eu.melhor}/${d.total} (${d.eu.posicao}º lugar).`;
+      else msg.textContent = '';
+      form.hidden = !!(d.eu && d.eu.nome);
+    }
+    async function enviar(esc, tempo) {
+      msg.textContent = ''; form.hidden = true;
+      const apelido = ler('placar-apelido', '');
+      try {
+        const d = await postar({ escolhas: esc, tempo_ms: Math.max(3000, tempo), ...(apelido ? { nome: apelido } : {}) });
+        dados = d; render(); mensagemFinal(d);
+      } catch (e) { msg.textContent = e.message; }
+    }
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+      const botao = form.querySelector('button'), nome = $q('apelidoQuiz').value.trim(); botao.disabled = true;
+      try { const d = await postar({ nome }); gravar('placar-apelido', nome); dados = d; render(); mensagemFinal({ ...d, novo: true }); }
+      catch (err) { msg.textContent = err.message; }
+      botao.disabled = false;
+    });
+    atualizar();
+    setInterval(() => { if (document.visibilityState === 'visible') atualizar(); }, 60000);
+    return { enviar, comunidade };
+  })();
   mostrarPergunta();
 
   /* =========================================================

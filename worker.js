@@ -1,7 +1,14 @@
-// API do placar de líderes do minijogo "Missão: limpar o oceano".
-// O resto do site é servido direto dos assets; só /api/* passa por aqui.
+// API do site "Microplásticos e Saúde". O resto do site é servido direto dos
+// assets; só /api/* passa por aqui.
+// Placar do minijogo "Missão: limpar o oceano":
 //   GET  /api/placar?eu=<id>  → top 10 (marca "eu" na linha do próprio jogador)
 //   POST /api/placar          → { id, nome, pontos, dist, plastico }
+// Quiz "Verdadeiro ou falso?":
+//   GET  /api/quiz?eu=<id>    → estatísticas de todos + top 10 do placar do quiz
+//   POST /api/quiz            → { id, escolhas: [bool x 6], tempo_ms, nome? }  registra uma tentativa
+//   POST /api/quiz            → { id, nome }                                    só põe/troca o apelido
+// A correção é feita aqui, com o gabarito abaixo; o navegador manda só as escolhas.
+// As estatísticas usam a primeira tentativa de cada pessoa; o placar, a melhor.
 
 const MAX_PONTOS = 200000, MAX_DIST = 100000, MAX_PLASTICO = 10000;
 const INTERVALO_MIN_MS = 8000; // entre dois envios do mesmo jogador
@@ -9,6 +16,9 @@ const ENVIOS_POR_HORA = 40;    // por endereço IP
 // palavras inteiras e começos de palavra barrados no apelido (comparação sem acento)
 const PROIBIDAS = ['porra', 'caralho', 'buceta', 'puta', 'puto', 'merda', 'viado', 'fdp', 'cuzao', 'piroca', 'xoxota', 'hitler', 'nazi', 'nazista'];
 const PREFIXOS_PROIBIDOS = ['arrombad', 'vagabund', 'filhadaput', 'filhodaput'];
+// gabarito do quiz, na mesma ordem das afirmações em extensionista 4/index.html (PERGUNTAS)
+const GABARITO = [false, true, false, true, true, true];
+const QUIZ_TEMPO_MIN_MS = 3000, QUIZ_TEMPO_MAX_MS = 3600e3;
 
 let tabelasProntas = false;
 async function preparar(db) {
@@ -20,6 +30,12 @@ async function preparar(db) {
     db.prepare('CREATE INDEX IF NOT EXISTS placar_pontos ON placar (pontos DESC)'),
     db.prepare('CREATE TABLE IF NOT EXISTS envios (ip TEXT NOT NULL, em INTEGER NOT NULL)'),
     db.prepare('CREATE INDEX IF NOT EXISTS envios_ip ON envios (ip, em)'),
+    db.prepare(`CREATE TABLE IF NOT EXISTS quiz (
+      id TEXT PRIMARY KEY, nome TEXT,
+      primeira TEXT NOT NULL, primeira_acertos INTEGER NOT NULL, em_primeira INTEGER NOT NULL,
+      melhor_acertos INTEGER NOT NULL, melhor_tempo INTEGER NOT NULL, em_melhor INTEGER NOT NULL,
+      tentativas INTEGER NOT NULL, ultimo_envio INTEGER NOT NULL)`),
+    db.prepare('CREATE INDEX IF NOT EXISTS quiz_placar ON quiz (melhor_acertos DESC, melhor_tempo ASC)'),
   ]);
   tabelasProntas = true;
 }
@@ -46,6 +62,11 @@ async function hashIp(ip) {
   return [...new Uint8Array(d)].slice(0, 12).map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
+async function excedeuLimite(db, ip, agora) {
+  const r = await db.prepare('SELECT COUNT(*) AS n FROM envios WHERE ip = ? AND em > ?').bind(ip, agora - 3600e3).first();
+  return !!r && r.n >= ENVIOS_POR_HORA;
+}
+
 async function top10(db, eu) {
   const { results } = await db.prepare('SELECT id, nome, pontos, dist FROM placar ORDER BY pontos DESC, em ASC LIMIT 10').all();
   return results.map(r => ({ nome: r.nome, pontos: r.pontos, dist: r.dist, eu: !!eu && r.id === eu }));
@@ -69,8 +90,7 @@ async function enviar(req, db) {
 
   const agora = Date.now();
   const ip = await hashIp(req.headers.get('cf-connecting-ip') || 'local');
-  const recentes = await db.prepare('SELECT COUNT(*) AS n FROM envios WHERE ip = ? AND em > ?').bind(ip, agora - 3600e3).first();
-  if (recentes && recentes.n >= ENVIOS_POR_HORA) return json({ erro: 'Muitos envios seguidos. Tente de novo mais tarde.' }, 429);
+  if (await excedeuLimite(db, ip, agora)) return json({ erro: 'Muitos envios seguidos. Tente de novo mais tarde.' }, 429);
 
   const atual = await db.prepare('SELECT pontos, ultimo_envio FROM placar WHERE id = ?').bind(id).first();
   if (atual && agora - atual.ultimo_envio < INTERVALO_MIN_MS) return json({ erro: 'Espere alguns segundos para enviar de novo.' }, 429);
@@ -94,15 +114,105 @@ async function enviar(req, db) {
   return json({ novo, melhor, posicao: await posicaoDe(db, melhor) });
 }
 
+/* ---------- quiz ---------- */
+
+const idValido = id => typeof id === 'string' && /^[a-f0-9-]{20,40}$/.test(id);
+
+async function quizResumo(db, eu) {
+  const geral = await db.prepare(`SELECT COUNT(*) AS pessoas, AVG(primeira_acertos) AS media,
+      SUM(CASE WHEN primeira_acertos = ? THEN 1 ELSE 0 END) AS gabaritaram FROM quiz`).bind(GABARITO.length).first();
+  const pessoas = geral ? geral.pessoas : 0;
+  const { results: dist } = await db.prepare('SELECT primeira_acertos AS a, COUNT(*) AS n FROM quiz GROUP BY primeira_acertos').all();
+  const distribuicao = GABARITO.map(() => 0).concat(0);
+  for (const r of dist) if (r.a >= 0 && r.a <= GABARITO.length) distribuicao[r.a] = r.n;
+  // acertos por afirmação: soma do caractere i de "primeira" ("1" = acertou)
+  const colunas = GABARITO.map((_, i) => `SUM(CASE WHEN substr(primeira, ${i + 1}, 1) = '1' THEN 1 ELSE 0 END) AS p${i}`).join(', ');
+  const porQ = await db.prepare(`SELECT ${colunas} FROM quiz`).first();
+  const porPergunta = GABARITO.map((_, i) => (porQ && porQ['p' + i]) || 0);
+  const { results: top } = await db.prepare(`SELECT id, nome, melhor_acertos, melhor_tempo FROM quiz WHERE nome IS NOT NULL
+      ORDER BY melhor_acertos DESC, melhor_tempo ASC, em_melhor ASC LIMIT 10`).all();
+  let euInfo = null;
+  if (idValido(eu)) {
+    const m = await db.prepare('SELECT nome, primeira_acertos, melhor_acertos, melhor_tempo, em_melhor, tentativas FROM quiz WHERE id = ?').bind(eu).first();
+    if (m) {
+      const pos = await db.prepare(`SELECT COUNT(*) AS n FROM quiz WHERE nome IS NOT NULL AND (melhor_acertos > ?1
+          OR (melhor_acertos = ?1 AND (melhor_tempo < ?2 OR (melhor_tempo = ?2 AND em_melhor < ?3))))`).bind(m.melhor_acertos, m.melhor_tempo, m.em_melhor).first();
+      const abaixo = await db.prepare('SELECT COUNT(*) AS n FROM quiz WHERE primeira_acertos < ?').bind(m.primeira_acertos).first();
+      euInfo = { nome: m.nome, primeira: m.primeira_acertos, melhor: m.melhor_acertos, tempo: m.melhor_tempo, tentativas: m.tentativas,
+        posicao: m.nome ? (pos ? pos.n : 0) + 1 : null, acimaDe: pessoas > 1 ? Math.round(((abaixo ? abaixo.n : 0) / (pessoas - 1)) * 100) : null };
+    }
+  }
+  return {
+    total: GABARITO.length, pessoas, media: geral && geral.media != null ? Math.round(geral.media * 10) / 10 : null,
+    gabaritaram: geral ? geral.gabaritaram || 0 : 0, distribuicao, porPergunta,
+    top: top.map(r => ({ nome: r.nome, acertos: r.melhor_acertos, tempo: r.melhor_tempo, eu: !!eu && r.id === eu })),
+    eu: euInfo,
+  };
+}
+
+async function quizEnviar(req, db) {
+  let corpo;
+  try { corpo = await req.json(); } catch { return json({ erro: 'Dados inválidos.' }, 400); }
+  const { id, escolhas, tempo_ms: tempo } = corpo || {};
+  if (!idValido(id)) return json({ erro: 'Jogador inválido.' }, 400);
+  let nome = null;
+  if (corpo.nome != null && corpo.nome !== '') {
+    nome = limparNome(corpo.nome);
+    if (!nome) return json({ erro: 'Escolha um apelido de 2 a 20 letras, sem palavrões.' }, 400);
+  }
+  const agora = Date.now();
+  const atual = await db.prepare('SELECT * FROM quiz WHERE id = ?').bind(id).first();
+
+  // só o apelido
+  if (escolhas === undefined) {
+    if (!nome) return json({ erro: 'Escolha um apelido de 2 a 20 letras, sem palavrões.' }, 400);
+    if (!atual) return json({ erro: 'Faça o quiz antes de entrar no placar.' }, 400);
+    await db.prepare('UPDATE quiz SET nome = ? WHERE id = ?').bind(nome, id).run();
+    return json({ ok: true, ...(await quizResumo(db, id)) });
+  }
+
+  if (!Array.isArray(escolhas) || escolhas.length !== GABARITO.length || !escolhas.every(e => typeof e === 'boolean')) return json({ erro: 'Respostas inválidas.' }, 400);
+  if (!Number.isInteger(tempo) || tempo < QUIZ_TEMPO_MIN_MS || tempo > QUIZ_TEMPO_MAX_MS) return json({ erro: 'Tempo inválido.' }, 400);
+  const ip = await hashIp(req.headers.get('cf-connecting-ip') || 'local');
+  if (await excedeuLimite(db, ip, agora)) return json({ erro: 'Muitos envios seguidos. Tente de novo mais tarde.' }, 429);
+  if (atual && agora - atual.ultimo_envio < INTERVALO_MIN_MS) return json({ erro: 'Espere alguns segundos para enviar de novo.' }, 429);
+
+  const bits = escolhas.map((e, i) => (e === GABARITO[i] ? '1' : '0')).join('');
+  const acertos = [...bits].filter(b => b === '1').length;
+  const passos = [db.prepare('INSERT INTO envios (ip, em) VALUES (?, ?)').bind(ip, agora)];
+  let novo;
+  if (!atual) {
+    novo = true;
+    passos.push(db.prepare(`INSERT INTO quiz (id, nome, primeira, primeira_acertos, em_primeira, melhor_acertos, melhor_tempo, em_melhor, tentativas, ultimo_envio)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1, ?)`).bind(id, nome, bits, acertos, agora, acertos, tempo, agora, agora));
+  } else {
+    novo = acertos > atual.melhor_acertos || (acertos === atual.melhor_acertos && tempo < atual.melhor_tempo);
+    passos.push(novo
+      ? db.prepare('UPDATE quiz SET nome = COALESCE(?, nome), melhor_acertos = ?, melhor_tempo = ?, em_melhor = ?, tentativas = tentativas + 1, ultimo_envio = ? WHERE id = ?')
+          .bind(nome, acertos, tempo, agora, agora, id)
+      : db.prepare('UPDATE quiz SET nome = COALESCE(?, nome), tentativas = tentativas + 1, ultimo_envio = ? WHERE id = ?').bind(nome, agora, id));
+  }
+  passos.push(db.prepare('DELETE FROM envios WHERE em < ?').bind(agora - 86400e3));
+  await db.batch(passos);
+  return json({ ok: true, acertos, acertou: [...bits].map(b => b === '1'), novo, ...(await quizResumo(db, id)) });
+}
+
 export default {
   async fetch(req, env) {
     const url = new URL(req.url);
-    if (url.pathname !== '/api/placar') return env.ASSETS.fetch(req);
+    const rota = url.pathname;
+    if (rota !== '/api/placar' && rota !== '/api/quiz') return env.ASSETS.fetch(req);
     if (!env.DB) return json({ erro: 'Placar indisponível.' }, 503);
     try {
       await preparar(env.DB);
-      if (req.method === 'GET') return json({ top: await top10(env.DB, url.searchParams.get('eu')) });
-      if (req.method === 'POST') return await enviar(req, env.DB);
+      const eu = url.searchParams.get('eu');
+      if (rota === '/api/quiz') {
+        if (req.method === 'GET') return json(await quizResumo(env.DB, eu));
+        if (req.method === 'POST') return await quizEnviar(req, env.DB);
+      } else {
+        if (req.method === 'GET') return json({ top: await top10(env.DB, eu) });
+        if (req.method === 'POST') return await enviar(req, env.DB);
+      }
       return json({ erro: 'Método não permitido.' }, 405);
     } catch (e) {
       console.error(e);
