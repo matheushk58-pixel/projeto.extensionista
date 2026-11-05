@@ -419,6 +419,8 @@
   .quiz-perguntas .qp-barra i { display: block; height: 100%; background: var(--verde); border-radius: 5px; }
   .quiz-perguntas b { text-align: right; font-variant-numeric: tabular-nums; }
   .quiz-placar-tit { margin: 0 0 10px; }
+  .quiz-perguntas-tit { font-family: var(--display); font-weight: 600; margin: 4px 0 2px; }
+  .quiz-perguntas-tit[hidden] { display: none; }
   .nota-quiz { font-size: .88rem; color: var(--tinta-suave); margin-top: 12px; }
   #quizMsg { margin: 12px 0 0; }
   @media (max-width: 560px) {
@@ -1008,10 +1010,11 @@
         <p><strong id="qzMedia">–</strong><span id="qzMediaRot">acertos em média</span></p>
         <p><strong id="qzGabarito">–</strong><span>gabaritaram</span></p>
       </div>
-      <ol class="quiz-perguntas" id="quizPerguntas" aria-label="Quantas pessoas acertaram cada afirmação"></ol>
+      <p class="quiz-perguntas-tit" id="quizPerguntasTit" hidden>As afirmações que mais confundem</p>
+      <ol class="quiz-perguntas" id="quizPerguntas" aria-label="Afirmações com menor taxa de acerto"></ol>
       <h3 class="sub quiz-placar-tit">Placar do quiz</h3>
       <ol class="lista-placar" id="quizPlacar" aria-label="Melhores resultados do quiz: acertos e tempo"></ol>
-      <p class="nota-quiz">O placar ordena por acertos e, no empate, por quem respondeu mais rápido. Cada resultado conta nas estatísticas de forma anônima (vale a primeira tentativa); o apelido só aparece se você escolher entrar no placar.</p>
+      <p class="nota-quiz">Cada rodada sorteia 16 das 32 afirmações, em ordem aleatória. O placar ordena por acertos e, no empate, por quem respondeu mais rápido. Cada resultado conta nas estatísticas de forma anônima (vale a primeira tentativa); o apelido só aparece se você escolher entrar no placar.</p>
     </div>
   </div>
 </section>
@@ -3407,7 +3410,8 @@ addEventListener('DOMContentLoaded', () => {
   /* =========================================================
      Quiz
      ========================================================= */
-  // A ordem e as respostas (r) precisam bater com GABARITO em worker.js, que corrige no servidor.
+  // Banco de afirmações: a posição e a resposta (r) de cada uma precisam bater com GABARITO em
+  // worker.js, que corrige no servidor. Cada rodada sorteia RODADA afirmações, em ordem aleatória.
   const PERGUNTAS = [
     { a: 'Microplásticos são pedaços de plástico menores que 5 milímetros.', r: true, ex: 'É a definição usada pelos órgãos ambientais: menos de 5 mm, menores que um grão de arroz. Abaixo de 1 micrômetro, viram nanoplásticos.', ref: 'r-noaa', num: 22, fonte: 'NOAA, 2023' },
     { a: 'A maior parte dos microplásticos já é fabricada pequena, como as microesferas de cosméticos.', r: false, ex: 'A maior parte é secundária: vem da quebra de garrafas, sacolas e redes de pesca e do desgaste de pneus e de roupas sintéticas.', ref: 'r-pnuma', num: 3, fonte: 'PNUMA, 2021' },
@@ -3425,20 +3429,37 @@ addEventListener('DOMContentLoaded', () => {
     { a: 'Pesquisadores da USP encontraram microplásticos no bulbo olfatório, região do cérebro logo acima do nariz.', r: true, ex: 'Foram encontradas partículas em 8 de 15 pessoas analisadas em autópsias em São Paulo. O nariz pode ser uma porta de entrada.', ref: 'r-amato2024', num: 17, fonte: 'Amato-Lourenço et al., 2024' },
     { a: 'Já está provado que microplásticos causam infarto.', r: false, ex: 'O estudo publicado no NEJM mostrou associação entre plástico nas artérias e mais eventos cardiovasculares, mas um estudo observacional não prova causa.', ref: 'r-marfella', num: 16, fonte: 'Marfella et al., 2024' },
     { a: 'A OMS já concluiu que os microplásticos fazem mal à saúde em qualquer quantidade.', r: false, ex: 'Em 2022, a OMS concluiu que os dados disponíveis ainda não bastam para uma avaliação completa do risco à saúde humana.', ref: 'r-oms2022', num: 2, fonte: 'OMS, 2022' },
+    { a: 'O desgaste de pneus é uma das fontes de microplásticos.', r: true, ex: 'Os microplásticos secundários vêm da quebra de objetos maiores e do desgaste de pneus e de roupas sintéticas.', ref: 'r-pnuma', num: 3, fonte: 'PNUMA, 2021' },
+    { a: 'Os oceanos recebem plástico apenas de navios e da pesca.', r: false, ex: 'O plástico também chega aos oceanos pelos rios, pelos esgotos e pelo vento.', ref: 'r-pnuma-esgoto', num: 23, fonte: 'PNUMA, s.d.' },
+    { a: 'Só em 2010, milhões de toneladas de resíduos plásticos chegaram ao mar vindos de países costeiros.', r: true, ex: 'A estimativa é de 4,8 a 12,7 milhões de toneladas em um único ano.', ref: 'r-jambeck', num: 5, fonte: 'Jambeck et al., 2015' },
+    { a: 'Todo o plástico que chega ao mar fica boiando na superfície.', r: false, ex: 'Uma parte flutua, mas outra afunda e se acumula nos sedimentos, onde vivem organismos que se alimentam filtrando o fundo.', ref: 'r-pnuma-esgoto', num: 23, fonte: 'PNUMA, s.d.' },
+    { a: 'Tartarugas marinhas ingerem detritos plásticos em quase todas as regiões estudadas.', r: true, ex: 'Uma análise global mostrou ingestão em quase todas as regiões, com risco crescente para as tartarugas-verdes e de-couro.', ref: 'r-schuyler', num: 21, fonte: 'Schuyler et al., 2014' },
+    { a: 'Mexilhões e outros animais filtradores retêm partículas de plástico da água.', r: true, ex: 'Cada vez que o mexilhão se abre, ele filtra a água e retém as partículas que passam por ali.', ref: 'r-wright', num: 8, fonte: 'Wright, Thompson e Galloway, 2013' },
+    { a: 'Engolir plástico pode dar aos animais marinhos uma falsa sensação de saciedade.', r: true, ex: 'As partículas ocupam o trato digestivo e reduzem a energia disponível para crescer e se reproduzir.', ref: 'r-xu', num: 24, fonte: 'Xu et al., 2020' },
+    { a: 'Bactérias não conseguem viver sobre fragmentos de plástico no mar.', r: false, ex: 'Bactérias colonizam os fragmentos e formam um biofilme, que pode levar espécies para novos ambientes.', ref: 'r-gesamp', num: 9, fonte: 'GESAMP, 2015' },
+    { a: 'Respirar também é uma forma de microplásticos entrarem no corpo.', r: true, ex: 'Somando o que é inalado, a estimativa passa de 74 mil partículas por ano, contra 39 mil a 52 mil só pela comida.', ref: 'r-cox', num: 11, fonte: 'Cox et al., 2019' },
+    { a: 'Quanto menor a partícula de plástico, menos ela consegue avançar dentro do corpo.', r: false, ex: 'É o contrário: as menores podem chegar mais longe. Mesmo assim, só uma pequena fração atravessa o intestino.', ref: 'r-efsa', num: 19, fonte: 'EFSA, 2016' },
+    { a: 'Entre os plásticos achados no sangue humano estava o PET, material das garrafas.', r: true, ex: 'Os polímeros mais comuns foram PET, polietileno e poliestireno, em 22 doadores saudáveis.', ref: 'r-leslie', num: 15, fonte: 'Leslie et al., 2022' },
+    { a: 'No estudo da placenta, os fragmentos apareceram só no lado materno, nunca no lado fetal.', r: false, ex: 'Foram encontrados fragmentos no lado materno, no lado fetal e nas membranas.', ref: 'r-ragusa', num: 13, fonte: 'Ragusa et al., 2021' },
+    { a: 'Um estudo encontrou mais plástico em cérebros analisados em 2024 do que em 2016.', r: true, ex: 'A concentração de plástico no cérebro foi cerca de 50% maior em 2024 do que em 2016.', ref: 'r-nihart', num: 18, fonte: 'Nihart et al., 2025' },
+    { a: 'O cérebro tinha menos plástico que o fígado e os rins.', r: false, ex: 'O tecido cerebral tinha de 7 a 30 vezes mais plástico que o fígado e os rins.', ref: 'r-nihart', num: 18, fonte: 'Nihart et al., 2025' },
+    { a: 'Nas placas de gordura das artérias, o plástico mais encontrado foi o polietileno.', r: true, ex: 'Em placas retiradas da carótida, 58% dos pacientes tinham polietileno.', ref: 'r-marfella', num: 16, fonte: 'Marfella et al., 2024' },
+    { a: 'Já existem métodos padronizados para medir qualquer partícula de plástico no corpo humano.', r: false, ex: 'Faltam métodos padronizados, principalmente para partículas abaixo de 10 µm, e o próprio laboratório pode contaminar as amostras.', ref: 'r-oms2022', num: 2, fonte: 'OMS, 2022' },
   ];
-  let atual = 0, acertos = 0, escolhas = [], inicioQuiz = 0, tempoQuiz = 0;
-  // a ordem das afirmações é sorteada a cada tentativa; "escolhas" fica na ordem
-  // original (a do gabarito no servidor), pelo índice em PERGUNTAS
+  const RODADA = 16;
+  let atual = 0, acertos = 0, escolhas = {}, inicioQuiz = 0, tempoQuiz = 0;
+  // a cada tentativa sorteia RODADA afirmações do banco, em ordem aleatória;
+  // "escolhas" guarda a resposta pelo índice da afirmação em PERGUNTAS
   const embaralhar = n => { const o = [...Array(n).keys()]; for (let i = n - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [o[i], o[j]] = [o[j], o[i]]; } return o; };
-  let ordem = embaralhar(PERGUNTAS.length);
+  let ordem = embaralhar(PERGUNTAS.length).slice(0, RODADA);
   const prog = document.getElementById('quizProgresso');
-  PERGUNTAS.forEach(() => prog.appendChild(document.createElement('i')));
+  for (let i = 0; i < RODADA; i++) prog.appendChild(document.createElement('i'));
   const resp = [...document.querySelectorAll('#respostas button')];
   const retorno = document.getElementById('retorno'), acao = document.getElementById('quizAcao');
   function mostrarPergunta() {
-    if (atual === 0) { escolhas = []; inicioQuiz = performance.now(); ordem = embaralhar(PERGUNTAS.length); }
+    if (atual === 0) { escolhas = {}; inicioQuiz = performance.now(); ordem = embaralhar(PERGUNTAS.length).slice(0, RODADA); }
     const q = PERGUNTAS[ordem[atual]];
-    document.getElementById('quizContador').textContent = `Afirmação ${atual + 1} de ${PERGUNTAS.length}`;
+    document.getElementById('quizContador').textContent = `Afirmação ${atual + 1} de ${RODADA}`;
     document.getElementById('afirmacao').textContent = q.a;
     [...prog.children].forEach((b, i) => b.classList.toggle('atual', i === atual));
     resp.forEach(b => { b.disabled = false; b.classList.remove('escolhida'); });
@@ -3449,26 +3470,26 @@ addEventListener('DOMContentLoaded', () => {
     const iq = ordem[atual], q = PERGUNTAS[iq], certo = (b.dataset.r === 'true') === q.r;
     if (certo) acertos++;
     escolhas[iq] = b.dataset.r === 'true';
-    if (atual === PERGUNTAS.length - 1) tempoQuiz = Math.round(performance.now() - inicioQuiz);
+    if (atual === RODADA - 1) tempoQuiz = Math.round(performance.now() - inicioQuiz);
     resp.forEach(o => o.disabled = true); b.classList.add('escolhida');
     prog.children[atual].classList.remove('atual');
     prog.children[atual].classList.add(certo ? 'certo' : 'errado');
     retorno.className = `retorno visivel ${certo ? 'certo' : 'errado'}`;
     retorno.innerHTML = `<b>${certo ? 'Isso mesmo.' : 'Não é bem assim.'} A afirmação é ${q.r ? 'verdadeira' : 'falsa'}.</b><p>${q.ex}</p><p class="quiz-fonte">Fonte: <a href="#${q.ref}">${q.fonte}</a> (referência ${q.num})</p>${quizPlacar.comunidade(iq)}`;
-    acao.textContent = atual < PERGUNTAS.length - 1 ? 'Próxima afirmação' : 'Ver resultado';
+    acao.textContent = atual < RODADA - 1 ? 'Próxima afirmação' : 'Ver resultado';
     acao.classList.add('visivel'); acao.focus({ preventScroll: true });
   }));
   acao.addEventListener('click', () => {
     if (atual === -1) { atual = 0; acertos = 0; [...prog.children].forEach(i => i.className = ''); mostrarPergunta(); document.getElementById('afirmacao').focus({ preventScroll: true }); return; }
     atual++;
-    if (atual < PERGUNTAS.length) { mostrarPergunta(); document.getElementById('afirmacao').focus({ preventScroll: true }); return; }
+    if (atual < RODADA) { mostrarPergunta(); document.getElementById('afirmacao').focus({ preventScroll: true }); return; }
     document.getElementById('quizContador').textContent = 'Resultado';
-    document.getElementById('afirmacao').textContent = `Você acertou ${acertos} de ${PERGUNTAS.length}.`;
+    document.getElementById('afirmacao').textContent = `Você acertou ${acertos} de ${RODADA}.`;
     document.getElementById('respostas').style.display = 'none';
-    retorno.className = 'retorno visivel ' + (acertos >= Math.ceil(PERGUNTAS.length * .7) ? 'certo' : 'errado');
-    retorno.innerHTML = `<p>${acertos === PERGUNTAS.length ? 'Gabaritou. Que tal compartilhar o que aprendeu?' : 'Releia as seções acima e tente de novo.'}</p><p class="comunidade-q" id="quizComparacao"></p>`;
+    retorno.className = 'retorno visivel ' + (acertos >= Math.ceil(RODADA * .7) ? 'certo' : 'errado');
+    retorno.innerHTML = `<p>${acertos === RODADA ? 'Gabaritou. Que tal compartilhar o que aprendeu?' : 'Releia as seções acima e tente de novo.'}</p><p class="comunidade-q" id="quizComparacao"></p>`;
     acao.textContent = 'Refazer o quiz'; atual = -1;
-    quizPlacar.enviar(escolhas.slice(), tempoQuiz);
+    quizPlacar.enviar({ ...escolhas }, tempoQuiz);
   });
 
   /* Placar e estatísticas do quiz: /api/quiz (worker.js). A correção é feita no
@@ -3493,8 +3514,12 @@ addEventListener('DOMContentLoaded', () => {
       $q('qzMedia').textContent = dados.media == null ? '–' : String(dados.media).replace('.', ',');
       $q('qzMediaRot').textContent = `acertos em média, de ${dados.total}`;
       $q('qzGabarito').textContent = pct(dados.gabaritaram, n) + '%';
-      $q('quizPerguntas').replaceChildren(...(n ? PERGUNTAS.map((q, i) => {
-        const li = document.createElement('li'), p = pct(dados.porPergunta[i], n);
+      // as 5 afirmações com menor taxa de acerto (entre as que já apareceram)
+      const piores = PERGUNTAS.map((q, i) => ({ q, i, v: dados.vistas[i] || 0 })).filter(x => x.v > 0)
+        .sort((a, b) => dados.porPergunta[a.i] / a.v - dados.porPergunta[b.i] / b.v).slice(0, 5);
+      $q('quizPerguntasTit').hidden = !piores.length;
+      $q('quizPerguntas').replaceChildren(...(n ? piores.map(({ q, i, v: vistas }) => {
+        const li = document.createElement('li'), p = pct(dados.porPergunta[i], vistas);
         const t = document.createElement('span'); t.className = 'qp-txt'; t.textContent = q.a; t.title = q.a;
         const bar = document.createElement('span'); bar.className = 'qp-barra'; bar.setAttribute('aria-hidden', 'true');
         const fill = document.createElement('i'); fill.style.width = p + '%'; bar.append(fill);
@@ -3521,7 +3546,9 @@ addEventListener('DOMContentLoaded', () => {
     }
     function comunidade(i) {
       if (!dados || !dados.pessoas) return '';
-      return `<span class="comunidade-q">${pct(dados.porPergunta[i], dados.pessoas)}% das pessoas acertaram esta afirmação.</span>`;
+      const v = dados.vistas[i] || 0;
+      if (!v) return '<span class="comunidade-q">Você é a primeira pessoa a responder esta afirmação.</span>';
+      return `<span class="comunidade-q">${pct(dados.porPergunta[i], v)}% de quem respondeu esta afirmação acertou.</span>`;
     }
     async function postar(corpo) {
       const r = await fetch(API, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ id, ...corpo }) });

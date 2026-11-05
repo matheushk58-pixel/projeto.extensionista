@@ -5,9 +5,11 @@
 //   POST /api/placar          → { id, nome, pontos, dist, plastico }
 // Quiz "Verdadeiro ou falso?":
 //   GET  /api/quiz?eu=<id>    → estatísticas de todos + top 10 do placar do quiz
-//   POST /api/quiz            → { id, escolhas: [bool x 16], tempo_ms, nome? }  registra uma tentativa
+//   POST /api/quiz            → { id, escolhas: { "<índice>": bool, ... x16 }, tempo_ms, nome? }  registra uma tentativa
 //   POST /api/quiz            → { id, nome }                                    só põe/troca o apelido
-// A correção é feita aqui, com o gabarito abaixo; o navegador manda só as escolhas.
+// Cada tentativa tem 16 afirmações sorteadas do banco de 32. A correção é feita aqui, com o
+// gabarito abaixo; o navegador manda só as escolhas, indexadas pela posição no banco.
+// Em "primeira" cada posição do banco vira '1' (acertou), '0' (errou) ou '-' (não apareceu).
 // As estatísticas usam a primeira tentativa de cada pessoa; o placar, a melhor.
 
 const MAX_PONTOS = 200000, MAX_DIST = 100000, MAX_PLASTICO = 10000;
@@ -16,10 +18,11 @@ const ENVIOS_POR_HORA = 40;    // por endereço IP
 // palavras inteiras e começos de palavra barrados no apelido (comparação sem acento)
 const PROIBIDAS = ['porra', 'caralho', 'buceta', 'puta', 'puto', 'merda', 'viado', 'fdp', 'cuzao', 'piroca', 'xoxota', 'hitler', 'nazi', 'nazista'];
 const PREFIXOS_PROIBIDOS = ['arrombad', 'vagabund', 'filhadaput', 'filhodaput'];
-// gabarito do quiz, na mesma ordem das afirmações em extensionista 4/index.html (PERGUNTAS).
+// gabarito do banco de afirmações do quiz, na mesma ordem de extensionista 4/index.html (PERGUNTAS).
 // Se as afirmações mudarem, troque também TABELA_QUIZ para começar estatísticas novas.
-const TABELA_QUIZ = 'quiz_v2';
-const GABARITO = [true, false, true, false, true, false, true, false, true, true, true, true, false, true, false, false];
+const TABELA_QUIZ = 'quiz_v3';
+const GABARITO = [true, false, true, false, true, false, true, false, true, true, true, true, false, true, false, false, true, false, true, false, true, true, true, false, true, false, true, false, true, false, true, false];
+const RODADA = 16; // afirmações sorteadas por tentativa
 const QUIZ_TEMPO_MIN_MS = 3000, QUIZ_TEMPO_MAX_MS = 3600e3;
 
 let tabelasProntas = false;
@@ -122,15 +125,17 @@ const idValido = id => typeof id === 'string' && /^[a-f0-9-]{20,40}$/.test(id);
 
 async function quizResumo(db, eu) {
   const geral = await db.prepare(`SELECT COUNT(*) AS pessoas, AVG(primeira_acertos) AS media,
-      SUM(CASE WHEN primeira_acertos = ? THEN 1 ELSE 0 END) AS gabaritaram FROM ${TABELA_QUIZ}`).bind(GABARITO.length).first();
+      SUM(CASE WHEN primeira_acertos = ? THEN 1 ELSE 0 END) AS gabaritaram FROM ${TABELA_QUIZ}`).bind(RODADA).first();
   const pessoas = geral ? geral.pessoas : 0;
   const { results: dist } = await db.prepare(`SELECT primeira_acertos AS a, COUNT(*) AS n FROM ${TABELA_QUIZ} GROUP BY primeira_acertos`).all();
-  const distribuicao = GABARITO.map(() => 0).concat(0);
-  for (const r of dist) if (r.a >= 0 && r.a <= GABARITO.length) distribuicao[r.a] = r.n;
+  const distribuicao = Array(RODADA + 1).fill(0);
+  for (const r of dist) if (r.a >= 0 && r.a <= RODADA) distribuicao[r.a] = r.n;
   // acertos por afirmação: soma do caractere i de "primeira" ("1" = acertou)
-  const colunas = GABARITO.map((_, i) => `SUM(CASE WHEN substr(primeira, ${i + 1}, 1) = '1' THEN 1 ELSE 0 END) AS p${i}`).join(', ');
+  const colunas = GABARITO.map((_, i) => `SUM(CASE WHEN substr(primeira, ${i + 1}, 1) = '1' THEN 1 ELSE 0 END) AS p${i},
+      SUM(CASE WHEN substr(primeira, ${i + 1}, 1) IN ('0', '1') THEN 1 ELSE 0 END) AS v${i}`).join(', ');
   const porQ = await db.prepare(`SELECT ${colunas} FROM ${TABELA_QUIZ}`).first();
   const porPergunta = GABARITO.map((_, i) => (porQ && porQ['p' + i]) || 0);
+  const vistas = GABARITO.map((_, i) => (porQ && porQ['v' + i]) || 0);
   const { results: top } = await db.prepare(`SELECT id, nome, melhor_acertos, melhor_tempo FROM ${TABELA_QUIZ} WHERE nome IS NOT NULL
       ORDER BY melhor_acertos DESC, melhor_tempo ASC, em_melhor ASC LIMIT 10`).all();
   let euInfo = null;
@@ -145,8 +150,8 @@ async function quizResumo(db, eu) {
     }
   }
   return {
-    total: GABARITO.length, pessoas, media: geral && geral.media != null ? Math.round(geral.media * 10) / 10 : null,
-    gabaritaram: geral ? geral.gabaritaram || 0 : 0, distribuicao, porPergunta,
+    total: RODADA, banco: GABARITO.length, pessoas, media: geral && geral.media != null ? Math.round(geral.media * 10) / 10 : null,
+    gabaritaram: geral ? geral.gabaritaram || 0 : 0, distribuicao, porPergunta, vistas,
     top: top.map(r => ({ nome: r.nome, acertos: r.melhor_acertos, tempo: r.melhor_tempo, eu: !!eu && r.id === eu })),
     eu: euInfo,
   };
@@ -173,13 +178,14 @@ async function quizEnviar(req, db) {
     return json({ ok: true, ...(await quizResumo(db, id)) });
   }
 
-  if (!Array.isArray(escolhas) || escolhas.length !== GABARITO.length || !escolhas.every(e => typeof e === 'boolean')) return json({ erro: 'Respostas inválidas.' }, 400);
+  const pares = escolhas && typeof escolhas === 'object' && !Array.isArray(escolhas) ? Object.entries(escolhas) : [];
+  if (pares.length !== RODADA || !pares.every(([k, v]) => /^(0|[1-9]\d?)$/.test(k) && +k < GABARITO.length && typeof v === 'boolean')) return json({ erro: 'Respostas inválidas.' }, 400);
   if (!Number.isInteger(tempo) || tempo < QUIZ_TEMPO_MIN_MS || tempo > QUIZ_TEMPO_MAX_MS) return json({ erro: 'Tempo inválido.' }, 400);
   const ip = await hashIp(req.headers.get('cf-connecting-ip') || 'local');
   if (await excedeuLimite(db, ip, agora)) return json({ erro: 'Muitos envios seguidos. Tente de novo mais tarde.' }, 429);
   if (atual && agora - atual.ultimo_envio < INTERVALO_MIN_MS) return json({ erro: 'Espere alguns segundos para enviar de novo.' }, 429);
 
-  const bits = escolhas.map((e, i) => (e === GABARITO[i] ? '1' : '0')).join('');
+  const bits = GABARITO.map((g, i) => (String(i) in escolhas ? (escolhas[i] === g ? '1' : '0') : '-')).join('');
   const acertos = [...bits].filter(b => b === '1').length;
   const passos = [db.prepare('INSERT INTO envios (ip, em) VALUES (?, ?)').bind(ip, agora)];
   let novo;
@@ -196,7 +202,7 @@ async function quizEnviar(req, db) {
   }
   passos.push(db.prepare('DELETE FROM envios WHERE em < ?').bind(agora - 86400e3));
   await db.batch(passos);
-  return json({ ok: true, acertos, acertou: [...bits].map(b => b === '1'), novo, ...(await quizResumo(db, id)) });
+  return json({ ok: true, acertos, novo, ...(await quizResumo(db, id)) });
 }
 
 export default {
