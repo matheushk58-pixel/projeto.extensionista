@@ -65,6 +65,7 @@ const EQUIPE = [
   "Matheus Henrique Quintino Julio", "Rafael Sobreira Feitoza", "João Fabrício Sivero", "Fabiana Bernadino da Costa Rodrigues",
   "Sara dos Santos Rocha", "Maiara Rosa da Silva", "Eduardo Talhoni Ribeiro", "Emily Janaína Santos Silva",
   "Maria Letícia Lima Madrid", "Victoria Gabriely Oliveira Santos", "Ana Clara Silva Dantas", "Ana Lívia de Freitas Rocha",
+  "Rafaela do Prado Diogo",
 ];
 
 export const Equipe: React.FC = () => {
@@ -74,7 +75,7 @@ export const Equipe: React.FC = () => {
       <Titulo>Equipe</Titulo>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "0 72px" }}>
         {EQUIPE.map((n, i) => (
-          <p key={n} style={{ margin: 0, fontFamily: FONTES.display, fontSize: 46, lineHeight: 1.2, color: COR.tinta, padding: "16px 0", borderBottom: `2px solid ${COR.filtro3}`, ...surge(f, 10 + i * 4, 16, 20) }}>{n}</p>
+          <p key={n} style={{ margin: 0, fontFamily: FONTES.display, fontSize: 42, lineHeight: 1.2, color: COR.tinta, padding: "13px 0", borderBottom: `2px solid ${COR.filtro3}`, ...surge(f, 10 + i * 4, 16, 20) }}>{n}</p>
         ))}
       </div>
       <P estilo={{ opacity: prog(f, 70, 20) }}>Universidade Nove de Julho · São Paulo, 2026</P>
