@@ -419,10 +419,6 @@
   .quiz-perguntas .qp-barra i { display: block; height: 100%; background: var(--verde); border-radius: 5px; }
   .quiz-perguntas b { text-align: right; font-variant-numeric: tabular-nums; }
   .quiz-placar-tit { margin: 0 0 10px; }
-  .placares-vivo { border-top: 1px solid var(--linha); }
-  .vivo-grade { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 22px; }
-  .vivo-quadro { width: 100%; height: 650px; border: 0; border-radius: 22px; background: #0B1D25; }
-  @media (max-width: 860px) { .vivo-grade { grid-template-columns: 1fr; } .vivo-quadro { height: 650px; } }
   .quiz-perguntas-tit { font-family: var(--display); font-weight: 600; margin: 4px 0 2px; }
   .quiz-perguntas-tit[hidden] { display: none; }
   .nota-quiz { font-size: .88rem; color: var(--tinta-suave); margin-top: 12px; }
@@ -740,7 +736,6 @@
       <li><a href="#corpo">Corpo humano</a></li>
       <li><a href="#quiz">Quiz</a></li>
       <li><a href="#jogo">Jogo</a></li>
-      <li><a href="#placares">Placares</a></li>
       <li><a href="#acoes">O que fazer</a></li>
       <li><a href="#resultados">Pesquisa</a></li>
       <li><a href="#referencias">Referências</a></li>
@@ -1153,19 +1148,6 @@
       </div>
       <ol class="lista-placar" id="placarLista" data-placar-lista aria-label="Melhores pontuações"></ol>
     </div>
-  </div>
-</section>
-
-<!-- ================= PLACARES AO VIVO ================= -->
-<section class="placares-vivo" id="placares">
-  <div class="envoltorio">
-    <h2 class="sec-titulo">Placares ao vivo</h2>
-    <div class="prosa"><p>Dois placares rodando ao mesmo tempo: o do quiz e o da Missão: limpar o oceano. Eles se atualizam sozinhos, sem precisar recarregar a página.</p></div>
-    <div class="vivo-grade">
-      <iframe class="vivo-quadro" title="Placar ao vivo do quiz" src="placares.html?so=quiz&compacto=1" loading="lazy"></iframe>
-      <iframe class="vivo-quadro" title="Placar ao vivo da Missão: limpar o oceano" src="placares.html?so=missao&compacto=1" loading="lazy"></iframe>
-    </div>
-    <p class="nota-quiz"><a href="placares.html">Abrir os dois placares em uma página só</a>, para projetar.</p>
   </div>
 </section>
 
