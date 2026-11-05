@@ -3748,7 +3748,14 @@ addEventListener('DOMContentLoaded', () => {
   }
   abas.forEach(t => t.addEventListener('click', () => mostrarModo(t.dataset.modoTab)));
   mostrarPergunta();
-  mostrarModo('quiz');
+  // links diretos: #game abre a aba do game; #quiz abre o quiz (os QR codes apontam para cá)
+  function abrirPelaUrl() {
+    const alvo = location.hash === '#game' ? 'game' : 'quiz';
+    mostrarModo(alvo);
+    if (location.hash === '#game' || location.hash === '#quiz') { const sec = document.getElementById('quiz'); sec && sec.scrollIntoView({ block: 'start' }); }
+  }
+  abrirPelaUrl();
+  addEventListener('hashchange', () => { if (location.hash === '#game' || location.hash === '#quiz') abrirPelaUrl(); });
 
   /* =========================================================
      Lista de ações
