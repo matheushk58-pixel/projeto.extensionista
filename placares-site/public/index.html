@@ -102,11 +102,22 @@
   @keyframes pulsa { 70% { box-shadow: 0 0 0 .8em rgba(85,224,143,0); } 100% { box-shadow: 0 0 0 0 rgba(85,224,143,0); } }
   a:focus-visible, button:focus-visible { outline: 3px solid var(--pet); outline-offset: 3px; }
 
+  /* ---- página combinada: duas sessões, uma por tela, com encaixe na rolagem ---- */
+  html.sessoes { scroll-snap-type: y mandatory; scroll-behavior: smooth; height: auto; }
+  html.sessoes body { overflow: visible; height: auto; }
+  body.sessoes .palco { height: auto; }
+  body.sessoes .faixa { height: 100vh; scroll-snap-align: start; }
+  .troca { position: fixed; z-index: 6; top: max(1.6vh, env(safe-area-inset-top, 0px)); right: max(1.6vw, env(safe-area-inset-right, 0px)); display: flex; gap: .4em; padding: .35em; border-radius: 999px; background: rgba(20,8,16,.55); backdrop-filter: blur(6px); }
+  .troca a { color: var(--perola); text-decoration: none; font-family: var(--titulo); font-weight: 800; font-stretch: 115%; font-variation-settings: 'wdth' 115, 'wght' 800; font-size: clamp(.85rem, 1.2vw, 1.1rem); padding: .45em 1.1em; border-radius: 999px; transition: background-color .3s, color .3s; }
+  .troca a[aria-current="true"] { background: var(--pet); color: #2A0A18; }
+
   /* ---- celular e telas verticais: uma faixa embaixo da outra, rolagem normal ---- */
   @media (max-aspect-ratio: 1/1), (max-width: 900px) {
     body { overflow: auto; height: auto; }
     .palco { grid-template-columns: 1fr; height: auto; }
     .faixa { padding: 5vh 5vw 4vh; overflow: visible; }
+    body.sessoes .faixa { height: auto; scroll-snap-align: none; }
+    html.sessoes { scroll-snap-type: none; }
     .janela { overflow: visible; margin: 0; padding: 0; -webkit-mask-image: none; mask-image: none; }
     .lista.rola { animation: none; }
     .lista li { font-size: 1rem; padding: 10px 14px; }
@@ -122,6 +133,10 @@
 </style>
 </head>
 <body>
+<nav class="troca" id="troca" aria-label="Escolher placar" hidden>
+  <a href="#fQuiz" data-alvo="fQuiz" aria-current="true">Quiz</a>
+  <a href="#fMissao" data-alvo="fMissao">Missão</a>
+</nav>
 <main class="palco">
   <section class="faixa quiz" id="fQuiz" aria-labelledby="tQuiz">
     <canvas class="particulas" aria-hidden="true"></canvas>
@@ -155,6 +170,13 @@
 (() => {
   const params = new URLSearchParams(location.search);
   const so = window.PLACAR_SO || params.get('so');
+  if (!so) {
+    document.documentElement.classList.add('sessoes'); document.body.classList.add('so', 'sessoes');
+    const troca = document.getElementById('troca'); troca.hidden = false;
+    const links = [...troca.querySelectorAll('a')];
+    const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) links.forEach(a => a.setAttribute('aria-current', String(a.dataset.alvo === e.target.id))); }), { threshold: .55 });
+    ['fQuiz', 'fMissao'].forEach(id => io.observe(document.getElementById(id)));
+  }
   if (so === 'quiz' || so === 'missao') { document.body.classList.add('so'); document.getElementById(so === 'quiz' ? 'fMissao' : 'fQuiz').hidden = true; }
   const reduz = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const ATUALIZA_MS = 6000, LIMITE = 50, SEG_POR_LINHA = 2.4;

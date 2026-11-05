@@ -1,0 +1,18 @@
+{
+  // Site independente dos placares ao vivo (Quiz e Missão: limpar o oceano).
+  // Projeto próprio na Cloudflare, com endereço próprio. A única ligação com o site
+  // principal é o banco D1 "placar-microplasticos", que este projeto só LÊ.
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "placares-microplasticos",
+  "main": "worker.js",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS",
+    "run_worker_first": ["/api/*"]
+  },
+  "d1_databases": [
+    { "binding": "DB", "database_name": "placar-microplasticos", "database_id": "4687d5e6-01e5-490e-bb5c-8f1ec5614400" }
+  ],
+  "observability": { "enabled": true }
+}
