@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Placar do dia · Quiz Microplásticos e Saúde</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&display=swap" rel="stylesheet">
+<style>
+  /* Tela do stand: fica aberta no notebook durante a apresentação e se atualiza sozinha.
+     Dados: GET /api/quiz/dia (worker.js). Use ?data=AAAA-MM-DD para ver outro dia. */
+  :root {
+    --fundo: #0B1D25; --fundo-2: #112B36; --fundo-3: #18394A; --linha: #24434E;
+    --texto: #E8EFEC; --texto-suave: #9DB0B7; --pe: #D9366B; --pp: #6FD0EA; --pet: #E3A821; --verde: #3FBF74;
+    --display: 'Bricolage Grotesque', system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body { background: var(--fundo); color: var(--texto); font-family: var(--display); overflow: hidden;
+    background-image: radial-gradient(circle at 12% 18%, rgba(111,208,234,.10), transparent 40%), radial-gradient(circle at 88% 85%, rgba(217,54,107,.10), transparent 42%); }
+  .tela { height: 100vh; display: grid; grid-template-columns: minmax(300px, 34vw) 1fr; grid-template-rows: auto 1fr auto; gap: 2.2vh 3vw; padding: 3.5vh 3.5vw; }
+  header { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; gap: 2vw; }
+  header h1 { font-weight: 800; font-size: clamp(1.6rem, 3.6vw, 3.4rem); letter-spacing: -.02em; line-height: 1; }
+  header h1 span { color: var(--pp); }
+  .ao-vivo { display: inline-flex; align-items: center; gap: .6em; font-size: clamp(.9rem, 1.3vw, 1.2rem); color: var(--texto-suave); white-space: nowrap; }
+  .ao-vivo i { width: .7em; height: .7em; border-radius: 50%; background: var(--verde); box-shadow: 0 0 0 0 rgba(63,191,116,.6); animation: pulsa 1.8s infinite; }
+  .ao-vivo.off i { background: var(--pet); animation: none; }
+  @keyframes pulsa { 70% { box-shadow: 0 0 0 .7em rgba(63,191,116,0); } 100% { box-shadow: 0 0 0 0 rgba(63,191,116,0); } }
+
+  .chamada { display: flex; flex-direction: column; justify-content: center; gap: 2vh; min-height: 0; overflow: hidden; }
+  .qr { background: #fff; border-radius: 22px; padding: 4%; width: min(100%, 44vh); aspect-ratio: 1; box-shadow: 0 1.5vh 5vh rgba(0,0,0,.35); }
+  .qr svg { width: 100%; height: 100%; display: block; }
+  .chamada h2 { font-weight: 800; font-size: clamp(1.4rem, 2.7vw, 2.6rem); line-height: 1.05; letter-spacing: -.02em; }
+  .chamada p { color: var(--texto-suave); font-size: clamp(1rem, 1.5vw, 1.4rem); line-height: 1.35; }
+  .chamada p b { color: var(--texto); }
+
+  .placar { display: flex; flex-direction: column; min-height: 0; }
+  .placar-topo { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 1.4vh; }
+  .placar-topo h2 { font-size: clamp(1.2rem, 2vw, 1.9rem); font-weight: 700; }
+  .placar-topo span { color: var(--texto-suave); font-size: clamp(.85rem, 1.2vw, 1.1rem); }
+  ol { list-style: none; display: grid; grid-template-rows: repeat(10, 1fr); gap: .8vh; flex: 1; min-height: 0; }
+  li { display: grid; grid-template-columns: 3.2em 2.4em 1fr auto 4.6em; align-items: center; gap: 1.1vw; padding: 0 1.4vw; border-radius: 14px;
+    background: var(--fundo-2); font-size: clamp(1rem, 1.9vw, 1.8rem); min-height: 0; transition: background-color .6s, transform .6s; }
+  li.vazia { background: transparent; border: 2px dashed var(--linha); color: var(--texto-suave); grid-template-columns: 3.2em 1fr; font-size: clamp(.9rem, 1.5vw, 1.4rem); }
+  li.destaque { background: var(--fundo-3); animation: brilho 2.4s ease-out 2; }
+  @keyframes brilho { 0% { box-shadow: 0 0 0 0 rgba(227,168,33,.0); } 25% { box-shadow: 0 0 0 4px rgba(227,168,33,.9); transform: scale(1.015); } 100% { box-shadow: 0 0 0 0 rgba(227,168,33,0); transform: none; } }
+  .pos { font-weight: 800; color: var(--texto-suave); font-variant-numeric: tabular-nums; }
+  li:nth-child(1) .pos { color: #F2C14E; } li:nth-child(2) .pos { color: #C7D3D8; } li:nth-child(3) .pos { color: #E0915A; }
+  .av { width: 2.1em; height: 2.1em; border-radius: 50%; display: grid; place-items: center; font-weight: 800; font-size: .8em; color: #fff; }
+  .nome { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .pts { font-weight: 800; font-variant-numeric: tabular-nums; }
+  .pts small { font-weight: 400; color: var(--texto-suave); font-size: .6em; }
+  .tempo { color: var(--texto-suave); text-align: right; font-variant-numeric: tabular-nums; font-size: .8em; }
+
+  footer { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(3, auto) 1fr; gap: 3vw; align-items: end; }
+  .num strong { display: block; font-weight: 800; font-size: clamp(1.6rem, 3.4vw, 3.2rem); line-height: 1; font-variant-numeric: tabular-nums; }
+  .num span { color: var(--texto-suave); font-size: clamp(.8rem, 1.15vw, 1.05rem); }
+  .curiosidade { justify-self: end; max-width: 42vw; text-align: right; color: var(--texto-suave); font-size: clamp(.85rem, 1.25vw, 1.15rem); line-height: 1.35; transition: opacity .6s; }
+  .curiosidade b { color: var(--pp); }
+
+  .aviso { position: fixed; left: 50%; top: 4vh; transform: translate(-50%, calc(-100% - 6vh)); background: var(--pet); color: #1B1405; font-weight: 800;
+    font-size: clamp(1.1rem, 2.2vw, 2rem); padding: 1.6vh 2.6vw; border-radius: 999px; box-shadow: 0 1vh 4vh rgba(0,0,0,.4); transition: transform .5s cubic-bezier(.2,.9,.3,1.2); white-space: nowrap; z-index: 5; }
+  .aviso.visivel { transform: translate(-50%, 0); }
+  .controles { position: fixed; right: 1.2vw; bottom: 1.2vh; display: flex; gap: 8px; opacity: 0; transition: opacity .4s; }
+  body.mexeu .controles { opacity: 1; }
+  .controles button { font: inherit; font-size: .9rem; background: var(--fundo-3); color: var(--texto); border: 1px solid var(--linha); border-radius: 999px; padding: 8px 14px; cursor: pointer; }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+  @media (max-aspect-ratio: 1/1) {
+    body { overflow: auto; } .tela { height: auto; grid-template-columns: 1fr; } .qr { width: min(70vw, 360px); } ol { grid-template-rows: none; } li { min-height: 52px; }
+    footer { grid-template-columns: repeat(3, 1fr); } .curiosidade { grid-column: 1 / -1; justify-self: start; text-align: left; max-width: none; }
+  }
+</style>
+</head>
+<body>
+<div class="tela">
+  <header>
+    <h1>Placar do dia <span>· Quiz Microplásticos e Saúde</span></h1>
+    <p class="ao-vivo" id="aoVivo"><i></i><span id="estado">Ao vivo</span></p>
+  </header>
+
+  <section class="chamada" aria-label="Como participar">
+    <div class="qr"><svg role="img" aria-label="QR code para o quiz" viewBox="0 0 37 37" class="segno"><path class="qrline" stroke="#0f2733" d="M0 0.5h7m2 0h3m3 0h2m1 0h2m1 0h3m1 0h3m2 0h7m-37 1h1m5 0h1m5 0h2m3 0h2m1 0h1m2 0h1m2 0h3m1 0h1m5 0h1m-37 1h1m1 0h3m1 0h1m2 0h4m1 0h2m1 0h1m2 0h1m1 0h2m2 0h1m3 0h1m1 0h3m1 0h1m-37 1h1m1 0h3m1 0h1m5 0h1m2 0h2m1 0h2m2 0h2m2 0h2m2 0h1m1 0h3m1 0h1m-37 1h1m1 0h3m1 0h1m3 0h1m2 0h3m1 0h1m5 0h1m1 0h3m2 0h1m1 0h3m1 0h1m-37 1h1m5 0h1m1 0h2m1 0h1m3 0h1m3 0h3m2 0h2m1 0h2m1 0h1m5 0h1m-37 1h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7m-27 1h5m2 0h2m2 0h1m2 0h1m1 0h1m-27 1h1m2 0h1m1 0h2m1 0h1m1 0h2m1 0h2m1 0h1m3 0h3m2 0h3m1 0h1m1 0h1m-32 1h1m1 0h2m1 0h1m1 0h1m1 0h1m1 0h2m1 0h5m1 0h1m3 0h2m2 0h3m3 0h1m1 0h1m-36 1h4m1 0h1m1 0h3m1 0h1m1 0h2m1 0h3m5 0h1m4 0h2m1 0h4m-37 1h6m2 0h1m1 0h2m1 0h2m1 0h1m2 0h5m1 0h1m1 0h1m-27 1h1m1 0h2m1 0h4m3 0h5m3 0h1m2 0h2m1 0h5m1 0h1m1 0h2m-35 1h1m2 0h1m6 0h1m1 0h1m4 0h3m2 0h3m3 0h2m2 0h3m-37 1h2m3 0h3m1 0h4m5 0h1m4 0h1m1 0h2m1 0h1m1 0h3m1 0h1m1 0h1m-35 1h2m1 0h1m2 0h3m1 0h1m1 0h2m1 0h1m3 0h3m1 0h1m1 0h3m2 0h1m3 0h1m-35 1h1m3 0h1m2 0h3m1 0h4m1 0h1m2 0h1m1 0h1m4 0h4m1 0h4m-32 1h1m8 0h2m5 0h4m3 0h1m1 0h4m1 0h2m-35 1h1m2 0h2m1 0h1m2 0h2m1 0h1m2 0h1m3 0h2m3 0h1m3 0h2m3 0h2m-37 1h3m4 0h1m6 0h4m1 0h1m1 0h1m1 0h1m3 0h1m1 0h2m3 0h2m-36 1h1m1 0h1m2 0h4m1 0h3m1 0h1m1 0h1m4 0h1m2 0h3m3 0h1m1 0h1m2 0h1m-36 1h1m2 0h1m3 0h1m2 0h1m3 0h1m1 0h3m1 0h3m1 0h3m1 0h4m1 0h1m2 0h1m-33 1h4m2 0h1m1 0h1m5 0h2m1 0h1m4 0h1m1 0h3m4 0h2m-37 1h2m1 0h3m1 0h1m2 0h1m2 0h2m4 0h3m1 0h1m1 0h1m1 0h3m6 0h1m-37 1h2m1 0h1m2 0h1m3 0h4m2 0h1m1 0h1m1 0h3m1 0h2m2 0h4m1 0h1m1 0h1m-34 1h1m1 0h2m3 0h1m2 0h1m1 0h2m1 0h1m1 0h1m1 0h1m2 0h1m5 0h2m1 0h1m1 0h2m-37 1h1m2 0h1m2 0h2m1 0h2m3 0h4m2 0h1m2 0h2m1 0h1m5 0h2m2 0h1m-36 1h2m1 0h1m4 0h1m1 0h1m1 0h2m1 0h3m1 0h2m2 0h2m2 0h1m1 0h2m3 0h2m-37 1h2m3 0h3m1 0h3m2 0h4m3 0h3m3 0h6m1 0h2m-28 1h5m3 0h2m3 0h1m1 0h2m1 0h3m3 0h2m2 0h1m-37 1h7m4 0h1m5 0h1m2 0h1m1 0h1m1 0h1m1 0h3m1 0h1m1 0h2m2 0h1m-37 1h1m5 0h1m1 0h5m1 0h3m2 0h4m1 0h1m1 0h1m1 0h1m3 0h3m-35 1h1m1 0h3m1 0h1m4 0h1m5 0h1m1 0h1m1 0h2m1 0h3m1 0h6m1 0h2m-37 1h1m1 0h3m1 0h1m1 0h2m1 0h1m1 0h3m5 0h2m1 0h2m1 0h2m2 0h2m2 0h1m-36 1h1m1 0h3m1 0h1m3 0h5m1 0h1m2 0h2m4 0h1m2 0h1m2 0h3m1 0h2m-37 1h1m5 0h1m2 0h2m2 0h1m1 0h1m2 0h2m1 0h5m1 0h3m1 0h1m-32 1h7m1 0h1m3 0h3m1 0h2m2 0h6m2 0h1m4 0h1m1 0h2"/></svg></div>
+    <h2>Aponte a câmera e entre no placar</h2>
+    <p><b>16 afirmações de verdadeiro ou falso</b>, sorteadas de um banco de 32, cada uma com a fonte científica. Leva uns 2 minutos.</p>
+  </section>
+
+  <section class="placar" aria-label="Placar do dia">
+    <div class="placar-topo"><h2>Top 10 de hoje</h2><span id="dataTxt"></span></div>
+    <ol id="lista" aria-live="polite"></ol>
+  </section>
+
+  <footer>
+    <p class="num"><strong id="nPessoas">0</strong><span>pessoas fizeram o quiz hoje</span></p>
+    <p class="num"><strong id="nTent">0</strong><span>tentativas</span></p>
+    <p class="num"><strong id="nMedia">–</strong><span>acertos em média, de 16</span></p>
+    <p class="curiosidade" id="curiosidade"></p>
+  </footer>
+</div>
+<div class="aviso" id="aviso" role="status"></div>
+<div class="controles"><button type="button" id="btnCheia">Tela cheia</button></div>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const params = new URLSearchParams(location.search);
+  const API = '/api/quiz/dia' + (params.get('data') ? '?data=' + encodeURIComponent(params.get('data')) : '');
+  const ATUALIZA_MS = 5000;
+  const CURIOSIDADES = [
+    'Pelo menos <b>5,25 trilhões</b> de partículas de plástico flutuam nos oceanos.',
+    'Cerca de <b>1 em cada 4 peixes</b> vendidos em mercados tinha detritos de origem humana.',
+    'Pesquisadores da USP acharam plástico em <b>13 de 20</b> amostras de pulmão.',
+    'Um litro de água engarrafada tinha, em média, <b>240 mil</b> partículas de plástico.',
+    'Uma carga de roupas de acrílico pode soltar <b>700 mil fibras</b> na lavagem.',
+    'Já acharam microplásticos na <b>placenta</b>, no <b>sangue</b> e no <b>cérebro</b>.',
+  ];
+  let anterior = null, ultimoTotal = null;
+  const fmtTempo = ms => { const s = Math.round(ms / 1000); return s < 60 ? s + ' s' : Math.floor(s / 60) + 'min' + String(s % 60).padStart(2, '0'); };
+  const corAvatar = nome => { let h = 0; for (const ch of nome) h = (h * 31 + ch.codePointAt(0)) % 360; return `hsl(${h} 55% 42%)`; };
+  const fmtData = d => { const [a, m, dd] = d.split('-'); return `${dd}/${m}/${a}`; };
+
+  let timerAviso = null; const fila = [];
+  function avisar(txt) { fila.push(txt); if (!timerAviso) proximoAviso(); }
+  function proximoAviso() {
+    const txt = fila.shift(); const el = $('aviso');
+    if (!txt) { timerAviso = null; return; }
+    el.textContent = txt; el.classList.add('visivel');
+    timerAviso = setTimeout(() => { el.classList.remove('visivel'); timerAviso = setTimeout(proximoAviso, 600); }, 3800);
+  }
+
+  function render(d) {
+    $('dataTxt').textContent = fmtData(d.data);
+    $('nPessoas').textContent = d.pessoas.toLocaleString('pt-BR');
+    $('nTent').textContent = d.tentativas.toLocaleString('pt-BR');
+    $('nMedia').textContent = d.media == null ? '–' : String(d.media).replace('.', ',');
+    const posAntes = anterior ? Object.fromEntries(anterior.top.map((t, i) => [t.chave, { i, acertos: t.acertos, tempo: t.tempo }])) : null;
+    const destaques = new Set();
+    if (posAntes) d.top.forEach((t, i) => {
+      const a = posAntes[t.chave];
+      if (!a) { destaques.add(t.chave); avisar(`${t.nome} entrou no placar em ${i + 1}º!`); }
+      else if (i < a.i) { destaques.add(t.chave); avisar(`${t.nome} subiu para ${i + 1}º!`); }
+      else if (t.acertos !== a.acertos || t.tempo !== a.tempo) destaques.add(t.chave);
+    });
+    if (ultimoTotal != null && d.tentativas > ultimoTotal && !destaques.size) avisar('Mais uma pessoa fez o quiz!');
+    ultimoTotal = d.tentativas;
+    const itens = d.top.map((t, i) => {
+      const li = document.createElement('li'); if (destaques.has(t.chave)) li.className = 'destaque';
+      const pos = document.createElement('span'); pos.className = 'pos'; pos.textContent = (i + 1) + 'º';
+      const av = document.createElement('span'); av.className = 'av'; av.setAttribute('aria-hidden', 'true'); av.textContent = [...t.nome][0].toUpperCase(); av.style.background = corAvatar(t.nome);
+      const nome = document.createElement('span'); nome.className = 'nome'; nome.textContent = t.nome;
+      const pts = document.createElement('span'); pts.className = 'pts'; pts.innerHTML = `${t.acertos}<small>/${d.total}</small>`;
+      const tp = document.createElement('span'); tp.className = 'tempo'; tp.textContent = fmtTempo(t.tempo);
+      li.append(pos, av, nome, pts, tp); return li;
+    });
+    const ocupadas = itens.length;
+    for (let i = ocupadas; i < 10; i++) {
+      const li = document.createElement('li'); li.className = 'vazia';
+      const pos = document.createElement('span'); pos.className = 'pos'; pos.textContent = (i + 1) + 'º';
+      const t = document.createElement('span'); t.textContent = i === ocupadas ? (i === 0 ? 'Seja a primeira pessoa no placar de hoje!' : 'Este lugar pode ser seu') : '';
+      li.append(pos, t); itens.push(li);
+    }
+    $('lista').replaceChildren(...itens);
+    anterior = d;
+  }
+
+  async function atualizar() {
+    try {
+      const r = await fetch(API, { cache: 'no-store' }); if (!r.ok) throw 0;
+      render(await r.json());
+      $('aoVivo').classList.remove('off'); $('estado').textContent = 'Ao vivo';
+    } catch (e) { $('aoVivo').classList.add('off'); $('estado').textContent = 'Sem conexão, tentando de novo…'; }
+  }
+  atualizar(); setInterval(atualizar, ATUALIZA_MS);
+
+  let ci = 0; const cur = $('curiosidade');
+  const trocar = () => { cur.style.opacity = 0; setTimeout(() => { cur.innerHTML = CURIOSIDADES[ci++ % CURIOSIDADES.length]; cur.style.opacity = 1; }, 600); };
+  trocar(); setInterval(trocar, 9000);
+
+  // mantém a tela ligada enquanto a página estiver aberta (quando o navegador permite)
+  let trava = null;
+  async function manterLigada() { try { if ('wakeLock' in navigator && document.visibilityState === 'visible') trava = await navigator.wakeLock.request('screen'); } catch (e) {} }
+  manterLigada(); document.addEventListener('visibilitychange', manterLigada);
+
+  $('btnCheia').addEventListener('click', () => { document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen().catch(() => {}); manterLigada(); });
+  let parado = null;
+  document.addEventListener('mousemove', () => { document.body.classList.add('mexeu'); clearTimeout(parado); parado = setTimeout(() => document.body.classList.remove('mexeu'), 2500); });
+})();
+</script>
+</body>
+</html>

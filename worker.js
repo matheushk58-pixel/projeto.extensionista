@@ -7,6 +7,7 @@
 //   GET  /api/quiz?eu=<id>    → estatísticas de todos + top 10 do placar do quiz
 //   POST /api/quiz            → { id, escolhas: { "<índice>": bool, ... x16 }, tempo_ms, nome? }  registra uma tentativa
 //   POST /api/quiz            → { id, nome }                                    só põe/troca o apelido
+//   GET  /api/quiz/dia?data=AAAA-MM-DD → placar do dia (horário de Brasília; sem data = hoje)
 // Cada tentativa tem 16 afirmações sorteadas do banco de 32. A correção é feita aqui, com o
 // gabarito abaixo; o navegador manda só as escolhas, indexadas pela posição no banco.
 // Em "primeira" cada posição do banco vira '1' (acertou), '0' (errou) ou '-' (não apareceu).
@@ -41,6 +42,9 @@ async function preparar(db) {
       melhor_acertos INTEGER NOT NULL, melhor_tempo INTEGER NOT NULL, em_melhor INTEGER NOT NULL,
       tentativas INTEGER NOT NULL, ultimo_envio INTEGER NOT NULL)`),
     db.prepare(`CREATE INDEX IF NOT EXISTS ${TABELA_QUIZ}_placar ON ${TABELA_QUIZ} (melhor_acertos DESC, melhor_tempo ASC)`),
+    // todas as tentativas, com horário, para o placar do dia
+    db.prepare('CREATE TABLE IF NOT EXISTS quiz_tentativas (id TEXT NOT NULL, acertos INTEGER NOT NULL, tempo INTEGER NOT NULL, em INTEGER NOT NULL)'),
+    db.prepare('CREATE INDEX IF NOT EXISTS quiz_tentativas_em ON quiz_tentativas (em)'),
   ]);
   tabelasProntas = true;
 }
@@ -200,21 +204,54 @@ async function quizEnviar(req, db) {
           .bind(nome, acertos, tempo, agora, agora, id)
       : db.prepare(`UPDATE ${TABELA_QUIZ} SET nome = COALESCE(?, nome), tentativas = tentativas + 1, ultimo_envio = ? WHERE id = ?`).bind(nome, agora, id));
   }
+  passos.push(db.prepare('INSERT INTO quiz_tentativas (id, acertos, tempo, em) VALUES (?, ?, ?, ?)').bind(id, acertos, tempo, agora));
   passos.push(db.prepare('DELETE FROM envios WHERE em < ?').bind(agora - 86400e3));
   await db.batch(passos);
   return json({ ok: true, acertos, novo, ...(await quizResumo(db, id)) });
+}
+
+/* ---------- placar do dia (tela do stand) ---------- */
+
+const FUSO_MS = -3 * 3600e3; // horário de Brasília (sem horário de verão desde 2019)
+
+function limitesDoDia(data) {
+  let ini;
+  if (typeof data === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(data)) ini = Date.parse(data + 'T00:00:00Z') - FUSO_MS;
+  if (!Number.isFinite(ini)) { const local = Date.now() + FUSO_MS; ini = local - (local % 86400e3) - FUSO_MS; }
+  return { ini, fim: ini + 86400e3, data: new Date(ini + FUSO_MS).toISOString().slice(0, 10) };
+}
+
+async function quizDia(db, data) {
+  const { ini, fim, data: dia } = limitesDoDia(data);
+  const geral = await db.prepare(`SELECT COUNT(*) AS tentativas, COUNT(DISTINCT id) AS pessoas, AVG(acertos) AS media
+      FROM quiz_tentativas WHERE em >= ? AND em < ?`).bind(ini, fim).first();
+  // melhor tentativa de cada pessoa no dia (mais acertos, depois menor tempo, depois a mais antiga)
+  const { results: top } = await db.prepare(`SELECT t.id, q.nome, t.acertos, t.tempo, t.em FROM (
+        SELECT id, acertos, tempo, em, ROW_NUMBER() OVER (PARTITION BY id ORDER BY acertos DESC, tempo ASC, em ASC) AS n
+        FROM quiz_tentativas WHERE em >= ? AND em < ?) t
+      JOIN ${TABELA_QUIZ} q ON q.id = t.id
+      WHERE t.n = 1 AND q.nome IS NOT NULL
+      ORDER BY t.acertos DESC, t.tempo ASC, t.em ASC LIMIT 10`).bind(ini, fim).all();
+  return {
+    data: dia, total: RODADA, tentativas: geral ? geral.tentativas : 0, pessoas: geral ? geral.pessoas : 0,
+    media: geral && geral.media != null ? Math.round(geral.media * 10) / 10 : null,
+    // a chave curta do id deixa a tela do stand perceber quem entrou ou subiu sem expor o id
+    top: await Promise.all(top.map(async r => ({ chave: (await hashIp('quiz:' + r.id)).slice(0, 10), nome: r.nome, acertos: r.acertos, tempo: r.tempo, em: r.em }))),
+  };
 }
 
 export default {
   async fetch(req, env) {
     const url = new URL(req.url);
     const rota = url.pathname;
-    if (rota !== '/api/placar' && rota !== '/api/quiz') return env.ASSETS.fetch(req);
+    if (rota !== '/api/placar' && rota !== '/api/quiz' && rota !== '/api/quiz/dia') return env.ASSETS.fetch(req);
     if (!env.DB) return json({ erro: 'Placar indisponível.' }, 503);
     try {
       await preparar(env.DB);
       const eu = url.searchParams.get('eu');
-      if (rota === '/api/quiz') {
+      if (rota === '/api/quiz/dia') {
+        if (req.method === 'GET') return json(await quizDia(env.DB, url.searchParams.get('data')));
+      } else if (rota === '/api/quiz') {
         if (req.method === 'GET') return json(await quizResumo(env.DB, eu));
         if (req.method === 'POST') return await quizEnviar(req, env.DB);
       } else {
