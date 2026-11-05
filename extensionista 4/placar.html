@@ -63,10 +63,27 @@
   .aviso { position: fixed; left: 50%; top: 4vh; transform: translate(-50%, calc(-100% - 6vh)); background: var(--pet); color: #1B1405; font-weight: 800;
     font-size: clamp(1.1rem, 2.2vw, 2rem); padding: 1.6vh 2.6vw; border-radius: 999px; box-shadow: 0 1vh 4vh rgba(0,0,0,.4); transition: transform .5s cubic-bezier(.2,.9,.3,1.2); white-space: nowrap; z-index: 5; }
   .aviso.visivel { transform: translate(-50%, 0); }
-  .controles { position: fixed; right: 1.2vw; bottom: 1.2vh; display: flex; gap: 8px; opacity: 0; transition: opacity .4s; }
+  .controles { position: fixed; z-index: 6; right: 1.2vw; bottom: 1.2vh; display: flex; gap: 8px; opacity: 0; transition: opacity .4s; }
   body.mexeu .controles { opacity: 1; }
   .controles button { font: inherit; font-size: .9rem; background: var(--fundo-3); color: var(--texto); border: 1px solid var(--linha); border-radius: 999px; padding: 8px 14px; cursor: pointer; }
-  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+  /* fundo do mar: bolhas e fragmentos de plástico à deriva (canvas atrás de tudo) */
+  #mar { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
+  .tela { position: relative; z-index: 1; }
+  /* bolhas que saem da linha de quem entrou ou subiu */
+  .bolha { position: fixed; z-index: 4; pointer-events: none; border-radius: 50%; border: 2px solid rgba(111,208,234,.85);
+    background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.55), rgba(111,208,234,.12) 60%); animation: sobe var(--d, 1.6s) ease-out forwards; }
+  @keyframes sobe { 0% { transform: translate(0, 0) scale(.4); opacity: 0; } 15% { opacity: 1; } 100% { transform: translate(var(--dx, 0), var(--dy, -220px)) scale(1); opacity: 0; } }
+  /* onda que atravessa a tela quando alguém assume o 1º lugar */
+  .onda { position: fixed; left: 0; right: 0; bottom: -40vh; height: 40vh; z-index: 3; pointer-events: none;
+    background: linear-gradient(180deg, rgba(111,208,234,0) 0%, rgba(111,208,234,.22) 35%, rgba(28,156,192,.35) 100%);
+    border-radius: 50% 50% 0 0 / 18% 18% 0 0; animation: onda 2.6s ease-in-out forwards; }
+  @keyframes onda { 0% { transform: translateY(0); } 45% { transform: translateY(-120vh); } 100% { transform: translateY(-160vh); opacity: 0; } }
+  .aviso.primeiro { background: linear-gradient(90deg, #F2C14E, #E3A821); }
+  .som { position: fixed; z-index: 6; left: 50%; top: 50%; transform: translate(-50%, -50%); font: inherit; font-weight: 800;
+    font-size: clamp(1.1rem, 2vw, 1.6rem); padding: 2.2vh 3vw; border-radius: 999px; border: 0; cursor: pointer;
+    background: var(--pp); color: #06222C; box-shadow: 0 1vh 5vh rgba(0,0,0,.5); }
+  .som[hidden] { display: none; }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } .bolha, .onda { display: none; } }
   @media (max-aspect-ratio: 1/1) {
     body { overflow: auto; } .tela { height: auto; grid-template-columns: 1fr; } .qr { width: min(70vw, 360px); } ol { grid-template-rows: none; } li { min-height: 52px; }
     footer { grid-template-columns: repeat(3, 1fr); } .curiosidade { grid-column: 1 / -1; justify-self: start; text-align: left; max-width: none; }
@@ -74,6 +91,7 @@
 </style>
 </head>
 <body>
+<canvas id="mar" aria-hidden="true"></canvas>
 <div class="tela">
   <header>
     <h1>Placar do dia <span>· Quiz Microplásticos e Saúde</span></h1>
@@ -99,7 +117,8 @@
   </footer>
 </div>
 <div class="aviso" id="aviso" role="status"></div>
-<div class="controles"><button type="button" id="btnCheia">Tela cheia</button></div>
+<button type="button" class="som" id="btnSom">🔊 Ligar o som e começar</button>
+<div class="controles"><button type="button" id="btnMudo">🔊 Som ligado</button><button type="button" id="btnCheia">Tela cheia</button></div>
 
 <script>
 (() => {
@@ -120,12 +139,66 @@
   const corAvatar = nome => { let h = 0; for (const ch of nome) h = (h * 31 + ch.codePointAt(0)) % 360; return `hsl(${h} 55% 42%)`; };
   const fmtData = d => { const [a, m, dd] = d.split('-'); return `${dd}/${m}/${a}`; };
 
+  const reduz = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------- sons (Web Audio, sem arquivos) ---------- */
+  let audio = null, mudo = false;
+  function ligarSom() {
+    try { audio = audio || new (window.AudioContext || window.webkitAudioContext)(); audio.resume(); } catch (e) {}
+  }
+  // um "bloop" de bolha: senoide que sobe de tom e some rápido
+  function bloop(t0, f0 = 320, f1 = 900, vol = .22, dur = .18) {
+    const o = audio.createOscillator(), g = audio.createGain();
+    o.type = 'sine'; o.frequency.setValueAtTime(f0, t0); o.frequency.exponentialRampToValueAtTime(f1, t0 + dur);
+    g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(vol, t0 + .02); g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur + .05);
+    o.connect(g).connect(audio.destination); o.start(t0); o.stop(t0 + dur + .08);
+  }
+  // nota com timbre de sino (fundamental + harmônico suave)
+  function nota(t0, f, dur = .45, vol = .18) {
+    [[f, vol], [f * 2, vol * .3]].forEach(([fr, v]) => {
+      const o = audio.createOscillator(), g = audio.createGain();
+      o.type = 'triangle'; o.frequency.value = fr;
+      g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(v, t0 + .015); g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+      o.connect(g).connect(audio.destination); o.start(t0); o.stop(t0 + dur + .05);
+    });
+  }
+  function tocar(tipo) {
+    if (!audio || mudo || audio.state !== 'running') return;
+    const t = audio.currentTime + .02;
+    if (tipo === 'entrou') { bloop(t, 300, 700); bloop(t + .12, 380, 950); bloop(t + .24, 460, 1200); }
+    else if (tipo === 'subiu') { nota(t, 659.25); nota(t + .16, 987.77, .6); }
+    else if (tipo === 'primeiro') { [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => nota(t + i * .13, f, i === 3 ? .9 : .4, .2)); bloop(t + .6, 400, 1300, .15, .25); }
+    else bloop(t, 260, 520, .14, .16);
+  }
+
+  /* ---------- bolhas saindo de uma linha do placar e onda do 1º lugar ---------- */
+  function bolhasEm(el, n = 18) {
+    if (reduz || !el) return;
+    const r = el.getBoundingClientRect();
+    for (let i = 0; i < n; i++) {
+      const b = document.createElement('span'), tam = 8 + Math.random() * 22;
+      b.className = 'bolha';
+      b.style.width = b.style.height = tam + 'px';
+      b.style.left = (r.left + Math.random() * r.width) + 'px';
+      b.style.top = (r.top + r.height * (.3 + Math.random() * .5)) + 'px';
+      b.style.setProperty('--dx', (Math.random() * 80 - 40) + 'px');
+      b.style.setProperty('--dy', -(120 + Math.random() * 260) + 'px');
+      b.style.setProperty('--d', (1.2 + Math.random() * 1.2) + 's');
+      b.style.animationDelay = (Math.random() * .35) + 's';
+      document.body.appendChild(b); setTimeout(() => b.remove(), 3200);
+    }
+  }
+  function onda() { if (reduz) return; const o = document.createElement('div'); o.className = 'onda'; document.body.appendChild(o); setTimeout(() => o.remove(), 2800); }
+
   let timerAviso = null; const fila = [];
-  function avisar(txt) { fila.push(txt); if (!timerAviso) proximoAviso(); }
+  function avisar(txt, tipo = 'mais', chave = null) { fila.push({ txt, tipo, chave }); if (!timerAviso) proximoAviso(); }
   function proximoAviso() {
-    const txt = fila.shift(); const el = $('aviso');
-    if (!txt) { timerAviso = null; return; }
-    el.textContent = txt; el.classList.add('visivel');
+    const item = fila.shift(); const el = $('aviso');
+    if (!item) { timerAviso = null; return; }
+    el.textContent = item.txt; el.classList.toggle('primeiro', item.tipo === 'primeiro'); el.classList.add('visivel');
+    tocar(item.tipo);
+    if (item.chave) requestAnimationFrame(() => bolhasEm(document.querySelector(`[data-chave="${item.chave}"]`), item.tipo === 'primeiro' ? 34 : 18));
+    if (item.tipo === 'primeiro') onda();
     timerAviso = setTimeout(() => { el.classList.remove('visivel'); timerAviso = setTimeout(proximoAviso, 600); }, 3800);
   }
 
@@ -138,14 +211,14 @@
     const destaques = new Set();
     if (posAntes) d.top.forEach((t, i) => {
       const a = posAntes[t.chave];
-      if (!a) { destaques.add(t.chave); avisar(`${t.nome} entrou no placar em ${i + 1}º!`); }
-      else if (i < a.i) { destaques.add(t.chave); avisar(`${t.nome} subiu para ${i + 1}º!`); }
+      if (!a) { destaques.add(t.chave); avisar(i === 0 ? `${t.nome} chegou direto ao 1º lugar!` : `${t.nome} entrou no placar em ${i + 1}º!`, i === 0 ? 'primeiro' : 'entrou', t.chave); }
+      else if (i < a.i) { destaques.add(t.chave); avisar(i === 0 ? `${t.nome} assumiu o 1º lugar!` : `${t.nome} subiu para ${i + 1}º!`, i === 0 ? 'primeiro' : 'subiu', t.chave); }
       else if (t.acertos !== a.acertos || t.tempo !== a.tempo) destaques.add(t.chave);
     });
-    if (ultimoTotal != null && d.tentativas > ultimoTotal && !destaques.size) avisar('Mais uma pessoa fez o quiz!');
+    if (ultimoTotal != null && d.tentativas > ultimoTotal && !destaques.size) avisar('Mais uma pessoa fez o quiz!', 'mais');
     ultimoTotal = d.tentativas;
     const itens = d.top.map((t, i) => {
-      const li = document.createElement('li'); if (destaques.has(t.chave)) li.className = 'destaque';
+      const li = document.createElement('li'); li.dataset.chave = t.chave; if (destaques.has(t.chave)) li.className = 'destaque';
       const pos = document.createElement('span'); pos.className = 'pos'; pos.textContent = (i + 1) + 'º';
       const av = document.createElement('span'); av.className = 'av'; av.setAttribute('aria-hidden', 'true'); av.textContent = [...t.nome][0].toUpperCase(); av.style.background = corAvatar(t.nome);
       const nome = document.createElement('span'); nome.className = 'nome'; nome.textContent = t.nome;
@@ -173,6 +246,38 @@
   }
   atualizar(); setInterval(atualizar, ATUALIZA_MS);
 
+  /* ---------- fundo: bolhas subindo e fragmentos de plástico à deriva ---------- */
+  (() => {
+    const cv = $('mar'), ctx = cv.getContext('2d'); let W, H, dpr;
+    const cores = ['#D9366B', '#6FD0EA', '#E3A821', '#3FBF74'];
+    const ajusta = () => { dpr = Math.min(devicePixelRatio || 1, 2); W = cv.width = innerWidth * dpr; H = cv.height = innerHeight * dpr; };
+    ajusta(); addEventListener('resize', ajusta);
+    const bolhas = Array.from({ length: 26 }, () => ({ x: Math.random(), y: Math.random(), r: 2 + Math.random() * 7, v: .00025 + Math.random() * .0006, f: Math.random() * 6 }));
+    const frag = Array.from({ length: 34 }, () => ({ x: Math.random(), y: Math.random(), s: 2 + Math.random() * 5, a: Math.random() * 6.3, va: (Math.random() - .5) * .01,
+      vx: (Math.random() - .5) * .00012, vy: (Math.random() - .5) * .00008, c: cores[Math.floor(Math.random() * cores.length)], k: Math.floor(Math.random() * 3) }));
+    function quadro(t) {
+      ctx.clearRect(0, 0, W, H);
+      for (const p of frag) {
+        if (!reduz) { p.x = (p.x + p.vx + 1) % 1; p.y = (p.y + p.vy + Math.sin(t / 3000 + p.a) * .00004 + 1) % 1; p.a += p.va; }
+        ctx.save(); ctx.translate(p.x * W, p.y * H); ctx.rotate(p.a); ctx.globalAlpha = .42; ctx.fillStyle = ctx.strokeStyle = p.c;
+        const s = p.s * dpr;
+        if (p.k === 0) ctx.fillRect(-s, -s / 2, s * 2, s);                       // fragmento
+        else if (p.k === 1) { ctx.lineWidth = dpr; ctx.beginPath(); ctx.moveTo(-s * 2, 0); ctx.quadraticCurveTo(0, s, s * 2, 0); ctx.stroke(); } // fibra
+        else { ctx.beginPath(); ctx.arc(0, 0, s * .7, 0, 6.3); ctx.fill(); }     // microesfera
+        ctx.restore();
+      }
+      ctx.globalAlpha = 1;
+      for (const b of bolhas) {
+        if (!reduz) { b.y -= b.v; if (b.y < -.05) { b.y = 1.05; b.x = Math.random(); } }
+        const x = (b.x + Math.sin(t / 1400 + b.f) * .006) * W, y = b.y * H, r = b.r * dpr;
+        ctx.beginPath(); ctx.arc(x, y, r, 0, 6.3); ctx.strokeStyle = 'rgba(111,208,234,.5)'; ctx.lineWidth = dpr; ctx.stroke();
+        ctx.beginPath(); ctx.arc(x - r * .35, y - r * .35, r * .25, 0, 6.3); ctx.fillStyle = 'rgba(255,255,255,.35)'; ctx.fill();
+      }
+      if (!reduz) requestAnimationFrame(quadro);
+    }
+    requestAnimationFrame(quadro);
+  })();
+
   let ci = 0; const cur = $('curiosidade');
   const trocar = () => { cur.style.opacity = 0; setTimeout(() => { cur.innerHTML = CURIOSIDADES[ci++ % CURIOSIDADES.length]; cur.style.opacity = 1; }, 600); };
   trocar(); setInterval(trocar, 9000);
@@ -182,6 +287,13 @@
   async function manterLigada() { try { if ('wakeLock' in navigator && document.visibilityState === 'visible') trava = await navigator.wakeLock.request('screen'); } catch (e) {} }
   manterLigada(); document.addEventListener('visibilitychange', manterLigada);
 
+  function atualizaMudo() { $('btnMudo').textContent = mudo ? '🔇 Som desligado' : '🔊 Som ligado'; }
+  $('btnSom').addEventListener('click', () => {
+    ligarSom(); $('btnSom').hidden = true; manterLigada();
+    document.documentElement.requestFullscreen?.().catch(() => {});
+    setTimeout(() => tocar('entrou'), 150);
+  });
+  $('btnMudo').addEventListener('click', () => { ligarSom(); mudo = !mudo; atualizaMudo(); if (!mudo) tocar('mais'); });
   $('btnCheia').addEventListener('click', () => { document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen().catch(() => {}); manterLigada(); });
   let parado = null;
   document.addEventListener('mousemove', () => { document.body.classList.add('mexeu'); clearTimeout(parado); parado = setTimeout(() => document.body.classList.remove('mexeu'), 2500); });
