@@ -76,8 +76,11 @@ async function excedeuLimite(db, ip, agora) {
   return !!r && r.n >= ENVIOS_POR_HORA;
 }
 
-async function top10(db, eu) {
-  const { results } = await db.prepare('SELECT id, nome, pontos, dist FROM placar ORDER BY pontos DESC, em ASC LIMIT 10').all();
+// ?limite=N (até 50) devolve mais posições; o padrão é 10
+const limiteDe = v => { const n = parseInt(v, 10); return Number.isFinite(n) ? Math.min(Math.max(n, 1), 50) : 10; };
+
+async function top10(db, eu, limite = 10) {
+  const { results } = await db.prepare('SELECT id, nome, pontos, dist FROM placar ORDER BY pontos DESC, em ASC LIMIT ?').bind(limite).all();
   return results.map(r => ({ nome: r.nome, pontos: r.pontos, dist: r.dist, eu: !!eu && r.id === eu }));
 }
 
@@ -127,7 +130,7 @@ async function enviar(req, db) {
 
 const idValido = id => typeof id === 'string' && /^[a-f0-9-]{20,40}$/.test(id);
 
-async function quizResumo(db, eu) {
+async function quizResumo(db, eu, limite = 10) {
   const geral = await db.prepare(`SELECT COUNT(*) AS pessoas, AVG(primeira_acertos) AS media,
       SUM(CASE WHEN primeira_acertos = ? THEN 1 ELSE 0 END) AS gabaritaram FROM ${TABELA_QUIZ}`).bind(RODADA).first();
   const pessoas = geral ? geral.pessoas : 0;
@@ -141,7 +144,7 @@ async function quizResumo(db, eu) {
   const porPergunta = GABARITO.map((_, i) => (porQ && porQ['p' + i]) || 0);
   const vistas = GABARITO.map((_, i) => (porQ && porQ['v' + i]) || 0);
   const { results: top } = await db.prepare(`SELECT id, nome, melhor_acertos, melhor_tempo FROM ${TABELA_QUIZ} WHERE nome IS NOT NULL
-      ORDER BY melhor_acertos DESC, melhor_tempo ASC, em_melhor ASC LIMIT 10`).all();
+      ORDER BY melhor_acertos DESC, melhor_tempo ASC, em_melhor ASC LIMIT ?`).bind(limite).all();
   let euInfo = null;
   if (idValido(eu)) {
     const m = await db.prepare(`SELECT nome, primeira_acertos, melhor_acertos, melhor_tempo, em_melhor, tentativas FROM ${TABELA_QUIZ} WHERE id = ?`).bind(eu).first();
@@ -249,13 +252,14 @@ export default {
     try {
       await preparar(env.DB);
       const eu = url.searchParams.get('eu');
+      const limite = limiteDe(url.searchParams.get('limite'));
       if (rota === '/api/quiz/dia') {
         if (req.method === 'GET') return json(await quizDia(env.DB, url.searchParams.get('data')));
       } else if (rota === '/api/quiz') {
-        if (req.method === 'GET') return json(await quizResumo(env.DB, eu));
+        if (req.method === 'GET') return json(await quizResumo(env.DB, eu, limite));
         if (req.method === 'POST') return await quizEnviar(req, env.DB);
       } else {
-        if (req.method === 'GET') return json({ top: await top10(env.DB, eu) });
+        if (req.method === 'GET') return json({ top: await top10(env.DB, eu, limite) });
         if (req.method === 'POST') return await enviar(req, env.DB);
       }
       return json({ erro: 'Método não permitido.' }, 405);

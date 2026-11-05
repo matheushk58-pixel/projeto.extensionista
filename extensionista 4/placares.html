@@ -7,127 +7,265 @@
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Anybody:wdth,wght@50..150,400..900&family=Figtree:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
-  /* Placares ao vivo: quiz (/api/quiz) e Missão: limpar o oceano (/api/placar).
-     ?so=quiz ou ?so=missao mostra só um painel; ?compacto=1 tira o cabeçalho (para embutir no site). */
-  :root { --fundo: #0B1D25; --fundo-2: #112B36; --fundo-3: #18394A; --linha: #24434E; --texto: #E8EFEC; --texto-suave: #9DB0B7;
-    --pe: #D9366B; --pp: #6FD0EA; --pet: #E3A821; --verde: #3FBF74; --display: 'Bricolage Grotesque', system-ui, sans-serif; }
+  /* Placares ao vivo, em página própria: só lê o banco, por /api/quiz e /api/placar (até 50 posições).
+     Identidade: as cores dos plásticos. Rosa = polietileno (Quiz), petróleo = polipropileno (Missão), âmbar = PET (destaque).
+     ?so=quiz ou ?so=missao mostra um placar só, em tela inteira. */
+  :root {
+    --pe: #C92A5E; --pe-fundo: #A81F4C; --pp: #0A6F8F; --pp-fundo: #07566F; --pet: #F2B01E; --perola: #FFF4EC;
+    --tinta-pe: #2A0A18; --tinta-pp: #04283A;
+    --titulo: 'Anybody', 'Arial Black', system-ui, sans-serif; --texto: 'Figtree', system-ui, sans-serif;
+  }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  html, body { min-height: 100%; }
-  body { background: var(--fundo); color: var(--texto); font-family: var(--display); padding: 3vh 3vw;
-    background-image: radial-gradient(circle at 10% 10%, rgba(111,208,234,.08), transparent 40%), radial-gradient(circle at 90% 90%, rgba(217,54,107,.08), transparent 42%); }
-  body.compacto { padding: 16px; }
-  header { display: flex; justify-content: space-between; align-items: center; gap: 2vw; margin-bottom: 3vh; flex-wrap: wrap; }
-  body.compacto header { display: none; }
-  h1 { font-weight: 800; font-size: clamp(1.6rem, 3.4vw, 3rem); letter-spacing: -.02em; }
-  .ao-vivo { display: inline-flex; align-items: center; gap: .6em; color: var(--texto-suave); font-size: clamp(.9rem, 1.2vw, 1.1rem); }
-  .ao-vivo i { width: .7em; height: .7em; border-radius: 50%; background: var(--verde); box-shadow: 0 0 0 0 rgba(63,191,116,.6); animation: pulsa 1.8s infinite; }
-  .ao-vivo.off i { background: var(--pet); animation: none; }
-  @keyframes pulsa { 70% { box-shadow: 0 0 0 .7em rgba(63,191,116,0); } 100% { box-shadow: 0 0 0 0 rgba(63,191,116,0); } }
-  .colunas { display: grid; grid-template-columns: 1fr 1fr; gap: 3vw; }
-  body.so .colunas { grid-template-columns: 1fr; }
-  @media (max-width: 760px) { .colunas { grid-template-columns: 1fr; } }
-  .painel { background: var(--fundo-2); border-radius: 22px; padding: 2.4vh 2vw; border-top: 6px solid var(--c); }
-  body.compacto .painel { padding: 16px 18px; }
-  .painel.quiz { --c: var(--pe); } .painel.missao { --c: var(--pp); }
-  .painel h2 { font-weight: 800; font-size: clamp(1.3rem, 2.4vw, 2.3rem); letter-spacing: -.01em; display: flex; align-items: center; gap: .6em; flex-wrap: wrap; }
-  .painel h2 .ao-vivo { font-size: .5em; font-weight: 400; }
-  .painel .sub { color: var(--texto-suave); font-size: clamp(.9rem, 1.2vw, 1.1rem); margin: 4px 0 1.6vh; }
-  .painel .num { color: var(--texto-suave); font-size: clamp(.9rem, 1.2vw, 1.1rem); margin-bottom: 1.6vh; }
-  .painel .num b { color: var(--texto); font-size: 1.3em; }
-  ol { list-style: none; display: grid; gap: .9vh; }
-  li { display: grid; grid-template-columns: 3em 2.2em 1fr auto 4.4em; align-items: center; gap: .9vw; padding: .9vh 1.2vw; border-radius: 14px; background: var(--fundo-3);
-    font-size: clamp(1rem, 1.7vw, 1.6rem); }
-  body.compacto li { padding: 8px 12px; gap: 10px; font-size: 1rem; }
-  li.vazio { background: transparent; border: 2px dashed var(--linha); color: var(--texto-suave); grid-template-columns: 3em 1fr; font-size: clamp(.9rem, 1.3vw, 1.3rem); }
-  body.compacto li.vazio { font-size: .95rem; }
-  li.novo { animation: brilho 2.4s ease-out 2; }
-  @keyframes brilho { 0% { box-shadow: 0 0 0 0 rgba(227,168,33,0); } 25% { box-shadow: 0 0 0 4px rgba(227,168,33,.9); } 100% { box-shadow: 0 0 0 0 rgba(227,168,33,0); } }
-  .pos { font-weight: 800; color: var(--texto-suave); font-variant-numeric: tabular-nums; }
-  li:nth-child(1) .pos { color: #F2C14E; } li:nth-child(2) .pos { color: #C7D3D8; } li:nth-child(3) .pos { color: #E0915A; }
-  .av { width: 2em; height: 2em; border-radius: 50%; display: grid; place-items: center; font-weight: 800; font-size: .8em; color: #fff; }
-  .nome { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .pts { font-weight: 800; font-variant-numeric: tabular-nums; text-align: right; }
-  .pts small { font-weight: 400; color: var(--texto-suave); font-size: .6em; }
-  .tempo { color: var(--texto-suave); text-align: right; font-variant-numeric: tabular-nums; font-size: .8em; }
-  @media (max-width: 420px) { li { grid-template-columns: 2.4em 2em 1fr auto; } .tempo { display: none; } }
-  body.compacto li { grid-template-columns: 2.6em 2em 1fr auto 3.6em; }
-  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+  html, body { height: 100%; }
+  body { font-family: var(--texto); color: var(--perola); background: var(--pe-fundo); overflow: hidden; }
+  button, a { font: inherit; }
+
+  .palco { position: relative; display: grid; grid-template-columns: 1fr 1fr; height: 100vh; }
+  body.so .palco { grid-template-columns: 1fr; }
+  body.so .faixa[hidden] { display: none; }
+
+  /* ---- uma faixa por placar: um campo de cor inteiro ---- */
+  .faixa { position: relative; display: flex; flex-direction: column; min-height: 0; padding: 3.2vh 3vw 0; overflow: hidden; isolation: isolate; }
+  .faixa.quiz { background: radial-gradient(120% 80% at 20% 0%, var(--pe) 0%, var(--pe-fundo) 70%); --tinta: var(--tinta-pe); --linha: rgba(42,10,24,.42); }
+  .faixa.missao { background: radial-gradient(120% 80% at 80% 0%, var(--pp) 0%, var(--pp-fundo) 70%); --tinta: var(--tinta-pp); --linha: rgba(4,40,58,.45); }
+  .faixa::after { content: ""; position: absolute; inset: 0 auto 0 0; width: 4px; background: rgba(255,255,255,.18); }
+  .faixa.quiz::after { display: none; }
+
+  .particulas { position: absolute; inset: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
+
+  /* ---- título: a letra é o cartaz ---- */
+  .topo { display: grid; gap: 1vh; margin-bottom: 1.6vh; }
+  h2 { font-family: var(--titulo); font-weight: 900; font-stretch: 150%; font-variation-settings: 'wdth' 150, 'wght' 900;
+    font-size: clamp(3rem, min(9.6vw, 14.5vh), 9.4rem); line-height: .86; letter-spacing: -.02em; color: var(--perola); text-shadow: 0 .05em 0 var(--tinta); animation: entra 1.1s cubic-bezier(.2,.9,.2,1) both; }
+  .faixa.missao h2 { animation-delay: .18s; }
+  @keyframes entra { from { transform: translateY(40%) scale(.92); opacity: 0; filter: blur(12px); } to { transform: none; opacity: 1; filter: none; } }
+  .nome-completo { font-family: var(--titulo); font-weight: 700; font-stretch: 120%; font-variation-settings: 'wdth' 120, 'wght' 700; font-size: clamp(1rem, 1.7vw, 1.6rem); }
+  .regra { font-size: clamp(.85rem, 1.15vw, 1.1rem); opacity: .9; max-width: 38em; }
+  .medidor { display: flex; align-items: baseline; gap: .6em; font-size: clamp(.9rem, 1.2vw, 1.15rem); }
+  .medidor b { font-family: var(--titulo); font-weight: 900; font-stretch: 130%; font-variation-settings: 'wdth' 130, 'wght' 900; font-size: 2.3em; line-height: 1; color: var(--pet); font-variant-numeric: tabular-nums; }
+
+  /* ---- pódio: três partículas que flutuam ---- */
+  .podio { list-style: none; display: grid; grid-template-columns: 1fr 1.28fr 1fr; align-items: end; gap: 1.2vw; margin: 1vh 0 1.8vh; min-height: 0; }
+  .podio li { display: grid; justify-items: center; gap: .6vh; text-align: center; min-width: 0; }
+  .bola { position: relative; display: grid; place-items: center; border-radius: 50%; width: 100%; aspect-ratio: 1; max-width: 14.5vh; animation: boia 5.5s ease-in-out infinite; }
+  .podio li:nth-child(1) .bola { animation-delay: -1.8s; } .podio li:nth-child(3) .bola { animation-delay: -3.4s; }
+  .podio li:nth-child(2) .bola { max-width: 19vh; animation-duration: 6.4s; }
+  @keyframes boia { 0%,100% { transform: translateY(0) rotate(-1.5deg); } 50% { transform: translateY(-1.4vh) rotate(1.5deg); } }
+  .bola.ouro { background: radial-gradient(circle at 32% 28%, #FFE08A, var(--pet) 55%, #C98700); box-shadow: 0 0 0 .7vh rgba(242,176,30,.28), 0 2vh 4vh rgba(0,0,0,.3); }
+  .bola.prata { background: radial-gradient(circle at 32% 28%, #fff, #DCE6EA 55%, #A8B8BF); box-shadow: 0 2vh 4vh rgba(0,0,0,.28); }
+  .bola.bronze { background: radial-gradient(circle at 32% 28%, #FFD1B0, #E59A62 55%, #B26429); box-shadow: 0 2vh 4vh rgba(0,0,0,.28); }
+  .bola.livre { background: transparent; border: .5vh dashed rgba(255,244,236,.55); box-shadow: none; }
+  .bola .num { font-family: var(--titulo); font-weight: 900; font-stretch: 150%; font-variation-settings: 'wdth' 150, 'wght' 900; font-size: clamp(2rem, 5.4vh, 6rem); color: var(--tinta); line-height: 1; }
+  .bola.livre .num { color: rgba(255,244,236,.7); }
+  .podio li:nth-child(2) .bola .num { font-size: clamp(2.6rem, 7.6vh, 8rem); }
+  .bola.ouro::after { content: ""; position: absolute; inset: -.9vh; border-radius: 50%; border: .3vh solid rgba(242,176,30,.65); animation: onda-ouro 2.8s ease-out infinite; }
+  @keyframes onda-ouro { from { transform: scale(.92); opacity: .9; } to { transform: scale(1.22); opacity: 0; } }
+  .quem { font-family: var(--titulo); font-weight: 800; font-stretch: 110%; font-variation-settings: 'wdth' 110, 'wght' 800; font-size: clamp(.95rem, 1.8vw, 1.7rem); max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .podio li:nth-child(2) .quem { font-size: clamp(1.1rem, 2.3vw, 2.2rem); }
+  .nota { font-variant-numeric: tabular-nums; font-weight: 800; font-size: clamp(1rem, 1.7vw, 1.6rem); color: var(--pet); }
+  .nota small { font-weight: 600; color: var(--perola); opacity: .85; font-size: .66em; }
+
+  /* ---- do 4º ao 50º: rola sozinho, como créditos ---- */
+  .janela { position: relative; flex: 1; min-height: 0; overflow: hidden; margin: 0 -3vw; padding: 0 3vw;
+    -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 5%, #000 92%, transparent 100%); mask-image: linear-gradient(180deg, transparent 0, #000 5%, #000 92%, transparent 100%); }
+  .lista { list-style: none; }
+  .lista.rola { animation: rola var(--dur, 60s) linear infinite; }
+  .janela:hover .lista.rola { animation-play-state: paused; }
+  @keyframes rola { from { transform: translateY(0); } to { transform: translateY(-50%); } }
+  .lista li { display: grid; grid-template-columns: 2.6em 1.6em 1fr auto 4.2em; align-items: center; gap: 1vw; margin-bottom: .9vh; padding: 1.1vh 1.3vw; border-radius: 999px;
+    background: rgba(255,244,236,.12); border: 1px solid rgba(255,244,236,.16); font-size: clamp(.95rem, 1.55vw, 1.5rem); }
+  .lista li.novo { animation: novo 3s ease-out 2; }
+  @keyframes novo { 0%,100% { background: rgba(255,244,236,.12); transform: none; } 20% { background: var(--pet); color: var(--tinta); transform: scale(1.03); } }
+  .lista .pos { font-family: var(--titulo); font-weight: 900; font-stretch: 130%; font-variation-settings: 'wdth' 130, 'wght' 900; font-variant-numeric: tabular-nums; text-align: right; }
+  .lista .quem { font-family: var(--texto); font-weight: 800; font-stretch: normal; font-variation-settings: normal; font-size: 1em; }
+  .lista .nota { font-size: 1em; color: var(--perola); }
+  .lista .extra { text-align: right; opacity: .85; font-variant-numeric: tabular-nums; font-size: .82em; }
+  .lista li.vazio { background: transparent; border: 2px dashed rgba(255,244,236,.35); color: rgba(255,244,236,.78); grid-template-columns: 2.6em 1fr; }
+  .glifo { width: 1.3em; height: 1.3em; }
+
+  /* ---- aviso de quem acabou de entrar ---- */
+  .aviso { position: absolute; z-index: 5; left: 50%; top: 2.2vh; transform: translate(-50%, -220%); background: var(--pet); color: var(--tinta); font-family: var(--titulo); font-weight: 800; font-stretch: 115%;
+    font-variation-settings: 'wdth' 115, 'wght' 800; font-size: clamp(1rem, 2vw, 1.8rem); padding: 1.2vh 2.2vw; border-radius: 999px; white-space: nowrap; box-shadow: 0 1.4vh 3vh rgba(0,0,0,.35);
+    transition: transform .55s cubic-bezier(.2,.9,.3,1.25); }
+  .aviso.visivel { transform: translate(-50%, 0); }
+
+  .estado { position: fixed; z-index: 6; left: 50%; bottom: 1.4vh; transform: translateX(-50%); display: inline-flex; align-items: center; gap: .6em; padding: .5em 1em; border-radius: 999px;
+    background: rgba(20,8,16,.62); font-size: clamp(.8rem, 1vw, 1rem); font-weight: 600; backdrop-filter: blur(6px); }
+  .estado i { width: .7em; height: .7em; border-radius: 50%; background: #55E08F; box-shadow: 0 0 0 0 rgba(85,224,143,.7); animation: pulsa 1.8s infinite; }
+  .estado.off i { background: var(--pet); animation: none; }
+  @keyframes pulsa { 70% { box-shadow: 0 0 0 .8em rgba(85,224,143,0); } 100% { box-shadow: 0 0 0 0 rgba(85,224,143,0); } }
+  a:focus-visible, button:focus-visible { outline: 3px solid var(--pet); outline-offset: 3px; }
+
+  /* ---- celular e telas verticais: uma faixa embaixo da outra, rolagem normal ---- */
+  @media (max-aspect-ratio: 1/1), (max-width: 900px) {
+    body { overflow: auto; height: auto; }
+    .palco { grid-template-columns: 1fr; height: auto; }
+    .faixa { padding: 5vh 5vw 4vh; overflow: visible; }
+    .janela { overflow: visible; margin: 0; padding: 0; -webkit-mask-image: none; mask-image: none; }
+    .lista.rola { animation: none; }
+    .lista li { font-size: 1rem; padding: 10px 14px; }
+    .lista li[aria-hidden="true"] { display: none; }
+    h2 { font-size: clamp(3.4rem, 17vw, 6rem); }
+    .bola { max-width: 22vw; } .podio li:nth-child(2) .bola { max-width: 29vw; }
+    .faixa::after { inset: auto 0 0 0; width: auto; height: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    .janela { overflow-y: auto; } .lista li[aria-hidden="true"] { display: none; }
+  }
 </style>
 </head>
 <body>
-<header>
-  <h1>Placares ao vivo</h1>
-  <p class="ao-vivo" id="aoVivo"><i></i><span id="estado">Ao vivo</span></p>
-</header>
-<main class="colunas">
-  <section class="painel quiz" id="pQuiz" aria-labelledby="tQuiz">
-    <h2 id="tQuiz">Quiz <span class="ao-vivo" id="aoVivoQuiz"><i></i><span>ao vivo</span></span></h2>
-    <p class="sub">Verdadeiro ou falso · acertos de 16, e no empate quem foi mais rápido</p>
-    <p class="num"><b id="nQuiz">0</b> pessoas no placar</p>
-    <ol id="listaQuiz" aria-label="Placar do quiz"></ol>
+<main class="palco">
+  <section class="faixa quiz" id="fQuiz" aria-labelledby="tQuiz">
+    <canvas class="particulas" aria-hidden="true"></canvas>
+    <div class="aviso" role="status" aria-live="polite"></div>
+    <header class="topo">
+      <h2 id="tQuiz">Quiz</h2>
+      <p class="nome-completo">Verdadeiro ou falso sobre microplásticos</p>
+      <p class="regra">16 afirmações. Vale quem acerta mais; no empate, quem responde mais rápido.</p>
+      <p class="medidor"><b data-conta>0</b> pessoas no placar</p>
+    </header>
+    <ol class="podio" aria-label="Três primeiros do quiz"></ol>
+    <div class="janela"><ol class="lista" aria-label="Do 4º ao 50º lugar do quiz"></ol></div>
   </section>
-  <section class="painel missao" id="pMissao" aria-labelledby="tMissao">
-    <h2 id="tMissao">Missão: limpar o oceano <span class="ao-vivo" id="aoVivoMissao"><i></i><span>ao vivo</span></span></h2>
-    <p class="sub">Minijogo · pontos, e a distância percorrida em metros</p>
-    <p class="num"><b id="nMissao">0</b> jogadores no top 10</p>
-    <ol id="listaMissao" aria-label="Placar da missão"></ol>
+
+  <section class="faixa missao" id="fMissao" aria-labelledby="tMissao">
+    <canvas class="particulas" aria-hidden="true"></canvas>
+    <div class="aviso" role="status" aria-live="polite"></div>
+    <header class="topo">
+      <h2 id="tMissao">Missão</h2>
+      <p class="nome-completo">Limpar o oceano</p>
+      <p class="regra">Recolha o plástico e vá o mais longe que puder. Vale quem faz mais pontos.</p>
+      <p class="medidor"><b data-conta>0</b> jogadores no placar</p>
+    </header>
+    <ol class="podio" aria-label="Três primeiros da missão"></ol>
+    <div class="janela"><ol class="lista" aria-label="Do 4º ao 50º lugar da missão"></ol></div>
   </section>
 </main>
+<p class="estado" id="estado"><i></i><span>Ao vivo</span></p>
 
 <script>
 (() => {
   const params = new URLSearchParams(location.search);
   const so = params.get('so');
-  if (params.get('compacto')) document.body.classList.add('compacto');
-  if (so === 'quiz' || so === 'missao') { document.body.classList.add('so'); document.getElementById(so === 'quiz' ? 'pMissao' : 'pQuiz').hidden = true; }
-  const ATUALIZA_MS = 6000;
-  const corAvatar = nome => { let h = 0; for (const ch of nome) h = (h * 31 + ch.codePointAt(0)) % 360; return `hsl(${h} 55% 42%)`; };
-  const fmtTempo = ms => { const s = Math.round(ms / 1000); return s < 60 ? s + ' s' : Math.floor(s / 60) + 'min' + String(s % 60).padStart(2, '0'); };
-  const vistos = { quiz: new Set(), missao: new Set() }, primeira = { quiz: true, missao: true };
+  if (so === 'quiz' || so === 'missao') { document.body.classList.add('so'); document.getElementById(so === 'quiz' ? 'fMissao' : 'fQuiz').hidden = true; }
+  const reduz = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const ATUALIZA_MS = 6000, LIMITE = 50, SEG_POR_LINHA = 2.4;
+  const NS = 'http://www.w3.org/2000/svg';
 
-  // linha de cada placar: quiz = acertos/16 e tempo; missão = pontos e metros
-  const colunasDe = {
-    quiz: { lista: 'listaQuiz', n: 'nQuiz', pontos: (t, d) => `${t.acertos}<small>/${d.total}</small>`, extra: t => fmtTempo(t.tempo), chave: t => `${t.nome}|${t.acertos}|${t.tempo}` },
-    missao: { lista: 'listaMissao', n: 'nMissao', pontos: t => (+t.pontos || 0).toLocaleString('pt-BR'), extra: t => (+t.dist || 0) + ' m', chave: t => `${t.nome}|${t.pontos}` },
+  const fmtTempo = ms => { const s = Math.round(ms / 1000); return s < 60 ? s + ' s' : Math.floor(s / 60) + 'min' + String(s % 60).padStart(2, '0'); };
+  // cada placar mostra a sua medida: quiz = acertos de 16 e tempo; missão = pontos e metros
+  const modos = {
+    quiz: { rota: '/api/quiz?limite=' + LIMITE, faixa: 'fQuiz', nota: (t, d) => `${t.acertos}<small>/${d.total}</small>`, extra: t => fmtTempo(t.tempo), chave: t => `${t.nome}|${t.acertos}|${t.tempo}`, total: d => d.pessoas, vazioTxt: 'Este lugar pode ser seu', podioVazio: 'Quem vai ser?' },
+    missao: { rota: '/api/placar?limite=' + LIMITE, faixa: 'fMissao', nota: t => (+t.pontos || 0).toLocaleString('pt-BR'), extra: t => (+t.dist || 0) + ' m', chave: t => `${t.nome}|${t.pontos}`, total: d => d.top.length, vazioTxt: 'Este lugar pode ser seu', podioVazio: 'Quem vai ser?' },
   };
-  function render(modo, dados) {
-    const c = colunasDe[modo], lista = document.getElementById(c.lista);
-    document.getElementById(c.n).textContent = (modo === 'quiz' ? dados.pessoas : dados.top.length).toLocaleString('pt-BR');
-    const itens = dados.top.map((t, i) => {
-      const li = document.createElement('li'), k = c.chave(t);
-      if (!primeira[modo] && !vistos[modo].has(k)) li.className = 'novo';
-      const pos = document.createElement('span'); pos.className = 'pos'; pos.textContent = (i + 1) + 'º';
-      const nome = t.nome || 'Participante';
-      const av = document.createElement('span'); av.className = 'av'; av.setAttribute('aria-hidden', 'true'); av.textContent = [...nome][0].toUpperCase(); av.style.background = corAvatar(nome);
-      const n = document.createElement('span'); n.className = 'nome'; n.textContent = nome;
-      const pts = document.createElement('span'); pts.className = 'pts'; pts.innerHTML = c.pontos(t, dados);
-      const ex = document.createElement('span'); ex.className = 'tempo'; ex.textContent = c.extra(t);
-      li.append(pos, av, n, pts, ex); return li;
-    });
-    for (let i = itens.length; i < 10; i++) {
-      const li = document.createElement('li'); li.className = 'vazio';
-      const pos = document.createElement('span'); pos.className = 'pos'; pos.textContent = (i + 1) + 'º';
-      const t = document.createElement('span'); t.textContent = i === itens.length ? (i === 0 ? 'Ainda ninguém no placar' : 'Este lugar pode ser seu') : '';
-      li.append(pos, t); itens.push(li);
-    }
-    lista.replaceChildren(...itens);
-    vistos[modo] = new Set(dados.top.map(c.chave)); primeira[modo] = false;
+  const estado = { quiz: { vistos: new Set(), primeira: true, assinatura: '' }, missao: { vistos: new Set(), primeira: true, assinatura: '' } };
+
+  // pequenas partículas de plástico como marcador de cada linha: fragmento, fibra ou microesfera
+  function glifo(i) {
+    const s = document.createElementNS(NS, 'svg'); s.setAttribute('viewBox', '0 0 20 20'); s.setAttribute('class', 'glifo'); s.setAttribute('aria-hidden', 'true');
+    const f = document.createElementNS(NS, i % 3 === 0 ? 'rect' : i % 3 === 1 ? 'path' : 'circle');
+    if (i % 3 === 0) { f.setAttribute('x', 3); f.setAttribute('y', 6); f.setAttribute('width', 14); f.setAttribute('height', 8); f.setAttribute('rx', 2); f.setAttribute('transform', 'rotate(-18 10 10)'); f.setAttribute('fill', '#F2B01E'); }
+    else if (i % 3 === 1) { f.setAttribute('d', 'M2 13 Q10 3 18 9'); f.setAttribute('fill', 'none'); f.setAttribute('stroke', '#FFF4EC'); f.setAttribute('stroke-width', 3); f.setAttribute('stroke-linecap', 'round'); }
+    else { f.setAttribute('cx', 10); f.setAttribute('cy', 10); f.setAttribute('r', 6); f.setAttribute('fill', '#FFF4EC'); }
+    s.append(f); return s;
   }
-  const rotas = { quiz: '/api/quiz', missao: '/api/placar' };
+  const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
+
+  function linha(m, t, d, pos, novo) {
+    const li = el('li', novo ? 'novo' : ''); li.append(el('span', 'pos', pos + 'º'), glifo(pos));
+    li.append(el('span', 'quem', t.nome || 'Participante'));
+    const n = el('span', 'nota'); n.innerHTML = m.nota(t, d); li.append(n, el('span', 'extra', m.extra(t))); return li;
+  }
+
+  function renderPodio(m, ol, top, d) {
+    const classes = ['ouro', 'prata', 'bronze'], ordem = [1, 0, 2]; // prata, ouro, bronze: o 1º no meio
+    ol.replaceChildren(...ordem.map(i => {
+      const t = top[i], li = el('li'), bola = el('div', 'bola ' + (t ? classes[i] : 'livre'));
+      bola.append(el('span', 'num', (i + 1) + 'º'));
+      li.append(bola);
+      li.append(el('span', 'quem', t ? (t.nome || 'Participante') : m.podioVazio));
+      if (t) { const n = el('span', 'nota'); n.innerHTML = m.nota(t, d) + (m === modos.quiz ? '' : '<small> pts</small>'); li.append(n); }
+      return li;
+    }));
+  }
+
+  function renderLista(m, lista, top, d, nomeModo) {
+    const st = estado[nomeModo], resto = top.slice(3);
+    const itens = resto.map((t, i) => linha(m, t, d, i + 4, !st.primeira && !st.vistos.has(m.chave(t))));
+    if (top.length < 10) for (let i = Math.max(top.length, 3); i < 10; i++) { const li = el('li', 'vazio'); li.append(el('span', 'pos', (i + 1) + 'º'), el('span', 'quem', i === Math.max(top.length, 3) ? m.vazioTxt : '')); itens.push(li); }
+    lista.className = 'lista'; lista.style.removeProperty('--dur');
+    lista.replaceChildren(...itens);
+    // se não cabe na janela, repete a lista e rola sozinha
+    const janela = lista.parentElement;
+    if (!reduz && itens.length && lista.scrollHeight > janela.clientHeight + 4 && getComputedStyle(janela).overflow === 'hidden') {
+      itens.forEach(li => { const c = li.cloneNode(true); c.setAttribute('aria-hidden', 'true'); lista.append(c); });
+      lista.style.setProperty('--dur', Math.max(20, itens.length * SEG_POR_LINHA) + 's'); lista.classList.add('rola');
+    }
+  }
+
+  const timers = new WeakMap();
+  function avisar(faixa, txt) {
+    const a = faixa.querySelector('.aviso'); a.textContent = txt; a.classList.add('visivel');
+    clearTimeout(timers.get(a)); timers.set(a, setTimeout(() => a.classList.remove('visivel'), 4200));
+  }
+  const contas = new WeakMap();
+  function contar(b, ate) {
+    const de = contas.get(b) ?? 0; contas.set(b, ate);
+    if (reduz || de === ate) { b.textContent = ate.toLocaleString('pt-BR'); return; }
+    const t0 = performance.now(), dur = 900;
+    (function passo(t) { const k = Math.min(1, (t - t0) / dur); b.textContent = Math.round(de + (ate - de) * (1 - Math.pow(1 - k, 3))).toLocaleString('pt-BR'); if (k < 1) requestAnimationFrame(passo); })(t0);
+  }
+
+  function render(nomeModo, d) {
+    const m = modos[nomeModo], faixa = document.getElementById(m.faixa), st = estado[nomeModo];
+    const assinatura = JSON.stringify(d.top.map(m.chave));
+    contar(faixa.querySelector('[data-conta]'), m.total(d));
+    if (assinatura === st.assinatura) return; // nada mudou: não mexe na rolagem
+    if (!st.primeira) d.top.forEach((t, i) => { if (!st.vistos.has(m.chave(t)) && i < 10) avisar(faixa, `${t.nome || 'Alguém'} entrou em ${i + 1}º lugar`); });
+    renderPodio(m, faixa.querySelector('.podio'), d.top, d);
+    renderLista(m, faixa.querySelector('.lista'), d.top, d, nomeModo);
+    st.vistos = new Set(d.top.map(m.chave)); st.primeira = false; st.assinatura = assinatura;
+  }
+
   async function atualizar() {
     let ok = true;
-    for (const modo of ['quiz', 'missao']) {
-      if (so && so !== modo) continue;
-      try { const r = await fetch(rotas[modo], { cache: 'no-store' }); if (!r.ok) throw 0; render(modo, await r.json()); }
-      catch (e) { ok = false; }
-      document.getElementById(modo === 'quiz' ? 'aoVivoQuiz' : 'aoVivoMissao').classList.toggle('off', !ok);
+    for (const nomeModo of Object.keys(modos)) {
+      if (so && so !== nomeModo) continue;
+      try { const r = await fetch(modos[nomeModo].rota, { cache: 'no-store' }); if (!r.ok) throw 0; render(nomeModo, await r.json()); } catch (e) { ok = false; }
     }
-    document.getElementById('aoVivo').classList.toggle('off', !ok);
-    document.getElementById('estado').textContent = ok ? 'Ao vivo' : 'Sem conexão, tentando de novo…';
+    const e = document.getElementById('estado'); e.classList.toggle('off', !ok); e.querySelector('span').textContent = ok ? 'Ao vivo' : 'Sem conexão, tentando de novo…';
   }
   atualizar(); setInterval(atualizar, ATUALIZA_MS);
+  addEventListener('resize', () => { for (const k of Object.keys(estado)) estado[k].assinatura = ''; atualizar(); });
+
+  // fundo: fragmentos, fibras e microesferas de plástico à deriva, uma tela por faixa
+  document.querySelectorAll('.particulas').forEach(cv => {
+    const ctx = cv.getContext('2d'); let W, H, dpr;
+    const ajusta = () => { dpr = Math.min(devicePixelRatio || 1, 2); W = cv.width = cv.clientWidth * dpr; H = cv.height = cv.clientHeight * dpr; };
+    ajusta(); addEventListener('resize', ajusta);
+    if (window.ResizeObserver) new ResizeObserver(ajusta).observe(cv.parentElement);
+    const cores = ['#F2B01E', '#FFF4EC', '#FFF4EC', '#2A0A18'];
+    const ps = Array.from({ length: 38 }, () => ({ x: Math.random(), y: Math.random(), s: 3 + Math.random() * 9, a: Math.random() * 6.3, va: (Math.random() - .5) * .008,
+      vx: (Math.random() - .5) * .00016, vy: -.00004 - Math.random() * .00012, c: cores[Math.floor(Math.random() * cores.length)], k: Math.floor(Math.random() * 3) }));
+    function quadro() {
+      ctx.clearRect(0, 0, W, H);
+      for (const p of ps) {
+        if (!reduz) { p.x = (p.x + p.vx + 1) % 1; p.y = (p.y + p.vy + 1) % 1; p.a += p.va; }
+        ctx.save(); ctx.translate(p.x * W, p.y * H); ctx.rotate(p.a); ctx.globalAlpha = p.c === '#2A0A18' ? .16 : .3; ctx.fillStyle = ctx.strokeStyle = p.c;
+        const s = p.s * dpr;
+        if (p.k === 0) ctx.fillRect(-s, -s / 2, s * 2, s);
+        else if (p.k === 1) { ctx.lineWidth = 2 * dpr; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(-s * 2, 0); ctx.quadraticCurveTo(0, s * 1.2, s * 2, 0); ctx.stroke(); }
+        else { ctx.beginPath(); ctx.arc(0, 0, s * .6, 0, 6.3); ctx.fill(); }
+        ctx.restore();
+      }
+      if (!reduz) requestAnimationFrame(quadro);
+    }
+    quadro();
+  });
 })();
 </script>
 </body>
