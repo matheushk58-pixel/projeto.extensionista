@@ -406,6 +406,8 @@
   .quiz-apelido { margin: 22px 0 0; max-width: 560px; }
   .quiz-apelido .quiz-acao { margin-top: 0; }
   .quiz-apelido[hidden] { display: none; }
+  .quiz-fonte { font-family: var(--display); font-size: .9rem; margin-top: 8px; }
+  .quiz-fonte a { color: var(--pp-texto); }
   .comunidade-q { display: block; margin-top: 8px; font-family: var(--display); font-size: .92rem; color: var(--tinta-suave); }
   .quiz-comunidade { margin-top: 48px; max-width: 760px; }
   .quiz-numeros p { margin: 0; }
@@ -1003,7 +1005,7 @@
       </div>
       <div class="placar quiz-numeros" id="quizNumeros" hidden>
         <p><strong id="qzPessoas">–</strong><span>pessoas fizeram o quiz</span></p>
-        <p><strong id="qzMedia">–</strong><span>acertos em média, de 6</span></p>
+        <p><strong id="qzMedia">–</strong><span id="qzMediaRot">acertos em média</span></p>
         <p><strong id="qzGabarito">–</strong><span>gabaritaram</span></p>
       </div>
       <ol class="quiz-perguntas" id="quizPerguntas" aria-label="Quantas pessoas acertaram cada afirmação"></ol>
@@ -3405,13 +3407,24 @@ addEventListener('DOMContentLoaded', () => {
   /* =========================================================
      Quiz
      ========================================================= */
+  // A ordem e as respostas (r) precisam bater com GABARITO em worker.js, que corrige no servidor.
   const PERGUNTAS = [
-    { a: 'Microplásticos só existem no oceano.', r: false, ex: 'Eles estão também em rios, no solo, no ar e na água de torneira e engarrafada.', ref: 'r-oms2019', num: 10 },
-    { a: 'Já foram encontrados microplásticos na placenta humana.', r: true, ex: 'Em 2021, pesquisadores italianos encontraram fragmentos em 4 de 6 placentas analisadas.', ref: 'r-ragusa', num: 13 },
-    { a: 'Já está provado que microplásticos causam infarto.', r: false, ex: 'O estudo publicado no NEJM mostrou associação entre plástico nas artérias e mais eventos cardiovasculares, mas um estudo observacional não prova causa.', ref: 'r-marfella', num: 16 },
-    { a: 'Quem bebe só água engarrafada tende a ingerir mais microplásticos do que quem bebe água da torneira.', r: true, ex: 'A estimativa é de cerca de 90 mil partículas a mais por ano para quem bebe só água engarrafada.', ref: 'r-cox', num: 11 },
-    { a: 'Lavar roupas sintéticas libera microfibras de plástico.', r: true, ex: 'Uma carga de 6 kg de roupas de acrílico pode liberar cerca de 700 mil fibras.', ref: 'r-napper', num: 20 },
-    { a: 'Pesquisadores brasileiros encontraram microplásticos no pulmão humano.', r: true, ex: 'A equipe da USP encontrou partículas em 13 de 20 amostras de pulmão de moradores de São Paulo.', ref: 'r-amato2021', num: 14 },
+    { a: 'Microplásticos são pedaços de plástico menores que 5 milímetros.', r: true, ex: 'É a definição usada pelos órgãos ambientais: menos de 5 mm, menores que um grão de arroz. Abaixo de 1 micrômetro, viram nanoplásticos.', ref: 'r-noaa', num: 22, fonte: 'NOAA, 2023' },
+    { a: 'A maior parte dos microplásticos já é fabricada pequena, como as microesferas de cosméticos.', r: false, ex: 'A maior parte é secundária: vem da quebra de garrafas, sacolas e redes de pesca e do desgaste de pneus e de roupas sintéticas.', ref: 'r-pnuma', num: 3, fonte: 'PNUMA, 2021' },
+    { a: 'Lavar roupas sintéticas libera microfibras de plástico.', r: true, ex: 'Uma carga de 6 kg de roupas de acrílico pode liberar cerca de 700 mil fibras.', ref: 'r-napper', num: 20, fonte: 'Napper e Thompson, 2016' },
+    { a: 'Microplásticos só existem no oceano.', r: false, ex: 'Eles estão também em rios, no solo, no ar e na água de torneira e engarrafada.', ref: 'r-oms2019', num: 10, fonte: 'OMS, 2019' },
+    { a: 'Estima-se que pelo menos 5 trilhões de partículas de plástico flutuem nos oceanos.', r: true, ex: 'A estimativa mínima é de 5,25 trilhões de partículas flutuando na superfície dos oceanos.', ref: 'r-eriksen', num: 4, fonte: 'Eriksen et al., 2014' },
+    { a: 'O plâncton consegue diferenciar o plástico da comida e não o ingere.', r: false, ex: 'Experimentos mostraram que o zooplâncton, base da cadeia alimentar marinha, ingere microplásticos junto com o alimento.', ref: 'r-cole', num: 7, fonte: 'Cole et al., 2013' },
+    { a: 'Em mercados da Indonésia e dos EUA, cerca de 1 em cada 4 peixes vendidos continha detritos de origem humana.', r: true, ex: 'O estudo analisou peixes e mariscos vendidos para consumo e encontrou plástico e fibras têxteis no trato digestivo.', ref: 'r-rochman', num: 6, fonte: 'Rochman et al., 2015' },
+    { a: 'No mar, o plástico só causa dano físico e não carrega outros poluentes.', r: false, ex: 'A superfície do plástico atrai poluentes e metais da água, e o próprio plástico carrega aditivos como plastificantes e retardantes de chama.', ref: 'r-gesamp', num: 9, fonte: 'GESAMP, 2015' },
+    { a: 'Quem bebe só água engarrafada tende a ingerir mais microplásticos do que quem bebe água da torneira.', r: true, ex: 'A estimativa é de cerca de 90 mil partículas a mais por ano para quem bebe só água engarrafada.', ref: 'r-cox', num: 11, fonte: 'Cox et al., 2019' },
+    { a: 'Um litro de água engarrafada pode ter centenas de milhares de partículas de plástico.', r: true, ex: 'Em 2024, uma técnica nova de microscopia contou em média cerca de 240 mil partículas por litro, a maioria nanoplásticos.', ref: 'r-qian', num: 12, fonte: 'Qian et al., 2024' },
+    { a: 'Já foram encontrados microplásticos na placenta humana.', r: true, ex: 'Em 2021, pesquisadores italianos encontraram fragmentos em 4 de 6 placentas analisadas.', ref: 'r-ragusa', num: 13, fonte: 'Ragusa et al., 2021' },
+    { a: 'Pesquisadores brasileiros encontraram microplásticos no pulmão humano.', r: true, ex: 'A equipe da USP encontrou partículas em 13 de 20 amostras de pulmão de moradores de São Paulo.', ref: 'r-amato2021', num: 14, fonte: 'Amato-Lourenço et al., 2021' },
+    { a: 'Nunca foi encontrado plástico no sangue humano.', r: false, ex: 'Um estudo de 2022 detectou plástico no sangue de cerca de 3 em cada 4 doadores saudáveis.', ref: 'r-leslie', num: 15, fonte: 'Leslie et al., 2022' },
+    { a: 'Pesquisadores da USP encontraram microplásticos no bulbo olfatório, região do cérebro logo acima do nariz.', r: true, ex: 'Foram encontradas partículas em 8 de 15 pessoas analisadas em autópsias em São Paulo. O nariz pode ser uma porta de entrada.', ref: 'r-amato2024', num: 17, fonte: 'Amato-Lourenço et al., 2024' },
+    { a: 'Já está provado que microplásticos causam infarto.', r: false, ex: 'O estudo publicado no NEJM mostrou associação entre plástico nas artérias e mais eventos cardiovasculares, mas um estudo observacional não prova causa.', ref: 'r-marfella', num: 16, fonte: 'Marfella et al., 2024' },
+    { a: 'A OMS já concluiu que os microplásticos fazem mal à saúde em qualquer quantidade.', r: false, ex: 'Em 2022, a OMS concluiu que os dados disponíveis ainda não bastam para uma avaliação completa do risco à saúde humana.', ref: 'r-oms2022', num: 2, fonte: 'OMS, 2022' },
   ];
   let atual = 0, acertos = 0, escolhas = [], inicioQuiz = 0, tempoQuiz = 0;
   const prog = document.getElementById('quizProgresso');
@@ -3437,7 +3450,7 @@ addEventListener('DOMContentLoaded', () => {
     prog.children[atual].classList.remove('atual');
     prog.children[atual].classList.add(certo ? 'certo' : 'errado');
     retorno.className = `retorno visivel ${certo ? 'certo' : 'errado'}`;
-    retorno.innerHTML = `<b>${certo ? 'Isso mesmo.' : 'Não é bem assim.'} A afirmação é ${q.r ? 'verdadeira' : 'falsa'}.</b><p>${q.ex}<sup class="ref"><a href="#${q.ref}">${q.num}</a></sup></p>${quizPlacar.comunidade(atual)}`;
+    retorno.innerHTML = `<b>${certo ? 'Isso mesmo.' : 'Não é bem assim.'} A afirmação é ${q.r ? 'verdadeira' : 'falsa'}.</b><p>${q.ex}</p><p class="quiz-fonte">Fonte: <a href="#${q.ref}">${q.fonte}</a> (referência ${q.num})</p>${quizPlacar.comunidade(atual)}`;
     acao.textContent = atual < PERGUNTAS.length - 1 ? 'Próxima afirmação' : 'Ver resultado';
     acao.classList.add('visivel'); acao.focus({ preventScroll: true });
   }));
@@ -3448,7 +3461,7 @@ addEventListener('DOMContentLoaded', () => {
     document.getElementById('quizContador').textContent = 'Resultado';
     document.getElementById('afirmacao').textContent = `Você acertou ${acertos} de ${PERGUNTAS.length}.`;
     document.getElementById('respostas').style.display = 'none';
-    retorno.className = 'retorno visivel ' + (acertos >= 4 ? 'certo' : 'errado');
+    retorno.className = 'retorno visivel ' + (acertos >= Math.ceil(PERGUNTAS.length * .7) ? 'certo' : 'errado');
     retorno.innerHTML = `<p>${acertos === PERGUNTAS.length ? 'Gabaritou. Que tal compartilhar o que aprendeu?' : 'Releia as seções acima e tente de novo.'}</p><p class="comunidade-q" id="quizComparacao"></p>`;
     acao.textContent = 'Refazer o quiz'; atual = -1;
     quizPlacar.enviar(escolhas.slice(), tempoQuiz);
@@ -3474,6 +3487,7 @@ addEventListener('DOMContentLoaded', () => {
       $q('quizNumeros').hidden = !n;
       $q('qzPessoas').textContent = n.toLocaleString('pt-BR');
       $q('qzMedia').textContent = dados.media == null ? '–' : String(dados.media).replace('.', ',');
+      $q('qzMediaRot').textContent = `acertos em média, de ${dados.total}`;
       $q('qzGabarito').textContent = pct(dados.gabaritaram, n) + '%';
       $q('quizPerguntas').replaceChildren(...(n ? PERGUNTAS.map((q, i) => {
         const li = document.createElement('li'), p = pct(dados.porPergunta[i], n);
