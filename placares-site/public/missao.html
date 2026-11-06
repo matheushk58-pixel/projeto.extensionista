@@ -165,7 +165,7 @@
   const $ = id => document.getElementById(id);
   const fmtTempo = ms => { const s = Math.round(ms / 1000); return s < 60 ? s + ' s' : Math.floor(s / 60) + 'min' + String(s % 60).padStart(2, '0'); };
 
-  // cada placar mostra a sua medida: quiz = acertos de 16 e tempo; missão = pontos e metros
+  // cada placar mostra a sua medida: quiz = acertos de 5 e tempo; missão = pontos e metros
   const CFG = {
     quiz: { rota: '/api/quiz?limite=' + LIMITE, nota: (t, d) => `${t.acertos}<small>/${d.total}</small>`, extra: t => fmtTempo(t.tempo), chave: t => `${t.nome}|${t.acertos}|${t.tempo}`, total: d => d.pessoas, sufixoPodio: '' },
     missao: { rota: '/api/placar?limite=' + LIMITE, nota: t => (+t.pontos || 0).toLocaleString('pt-BR'), extra: t => (+t.dist || 0) + ' m', chave: t => `${t.nome}|${t.pontos}`, total: d => d.top.length, sufixoPodio: '<small> pts</small>' },

@@ -1014,7 +1014,7 @@
       <ol class="quiz-perguntas" id="quizPerguntas" aria-label="Afirmações com menor taxa de acerto"></ol>
       <h3 class="sub quiz-placar-tit">Placar do quiz</h3>
       <ol class="lista-placar" id="quizPlacar" aria-label="Melhores resultados do quiz: acertos e tempo"></ol>
-      <p class="nota-quiz">Cada rodada sorteia 16 das 32 afirmações, em ordem aleatória. O placar ordena por acertos e, no empate, por quem respondeu mais rápido. Cada resultado conta nas estatísticas de forma anônima (vale a primeira tentativa); o apelido só aparece se você escolher entrar no placar.</p>
+      <p class="nota-quiz">Cada rodada sorteia 5 das 32 afirmações, em ordem aleatória. O placar ordena por acertos e, no empate, por quem respondeu mais rápido. Cada resultado conta nas estatísticas de forma anônima (vale a primeira tentativa); o apelido só aparece se você escolher entrar no placar.</p>
     </div>
   </div>
 </section>
@@ -3446,7 +3446,7 @@ addEventListener('DOMContentLoaded', () => {
     { a: 'Nas placas de gordura das artérias, o plástico mais encontrado foi o polietileno.', r: true, ex: 'Em placas retiradas da carótida, 58% dos pacientes tinham polietileno.', ref: 'r-marfella', num: 16, fonte: 'Marfella et al., 2024' },
     { a: 'Já existem métodos padronizados para medir qualquer partícula de plástico no corpo humano.', r: false, ex: 'Faltam métodos padronizados, principalmente para partículas abaixo de 10 µm, e o próprio laboratório pode contaminar as amostras.', ref: 'r-oms2022', num: 2, fonte: 'OMS, 2022' },
   ];
-  const RODADA = 16;
+  const RODADA = 5;
   let atual = 0, acertos = 0, escolhas = {}, inicioQuiz = 0, tempoQuiz = 0;
   // a cada tentativa sorteia RODADA afirmações do banco, em ordem aleatória;
   // "escolhas" guarda a resposta pelo índice da afirmação em PERGUNTAS
