@@ -688,6 +688,16 @@
     .pesquisa-chamada { position: static; }
     .pesquisa-form iframe { height: 720px; }
   }
+  .cartao.reg { max-width: 400px; text-align: center; }
+  .reg-pontos { font-family: var(--display); margin: 0 0 6px; line-height: 1; }
+  .reg-pontos strong { font-weight: 800; font-size: clamp(3.2rem, 15vw, 4.8rem); letter-spacing: -.03em; color: var(--pp-texto); font-variant-numeric: tabular-nums; }
+  .reg-pontos small { font-size: 1.1rem; font-weight: 600; color: var(--tinta-suave); }
+  .reg-sub { font-size: .95rem; color: var(--tinta-suave); margin: 0 0 16px; min-height: 1.3em; }
+  .cartao.reg .form-apelido { text-align: left; margin-bottom: 8px; }
+  .cartao.reg .form-apelido-linha button { flex: 1 1 100%; }
+  .reg-erro { color: #B3261E; font-size: .9rem; margin: 2px 0 0; }
+  .reg-erro[hidden], #regAntes[hidden], #regDepois[hidden] { display: none; }
+  .cartao.reg .fim-acoes { justify-content: center; }
   .fim-pesquisa { font-family: var(--display); font-size: .92rem; margin: -4px 0 14px; }
   .fim-pesquisa a { color: var(--pp-texto); font-weight: 600; }
   .compromisso { margin-top: 32px; font-family: var(--display); font-size: 1.05rem; color: var(--tinta-suave); }
@@ -1103,6 +1113,31 @@
             <button class="btn-sec" type="button" data-acao="jogar">Reiniciar</button>
             <button class="btn-sec" type="button" data-acao="opcoes-pausa">Opções</button>
             <button class="btn-sec" type="button" data-acao="menu">Menu principal</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="tela" id="telaRegistro" hidden>
+        <div class="cartao reg" role="dialog" aria-labelledby="regTitulo">
+          <div id="regAntes">
+            <h3 id="regTitulo">Você fez</h3>
+            <p class="reg-pontos"><strong id="regPontos">0</strong> <small>pontos</small></p>
+            <p class="reg-sub" id="regSub"></p>
+            <form class="form-apelido" id="formRegistro">
+              <label for="apelidoReg">Escreva seu nome para entrar no placar</label>
+              <div class="form-apelido-linha"><input id="apelidoReg" name="apelido" maxlength="20" minlength="2" autocomplete="nickname" spellcheck="false" placeholder="Ex.: Tartaruga Veloz" required><button class="btn-jogo" type="submit">Entrar no placar</button></div>
+              <p class="reg-erro" id="regErro" role="alert" hidden></p>
+            </form>
+            <button class="link-btn" type="button" id="regPular">Agora não</button>
+          </div>
+          <div id="regDepois" hidden>
+            <h3>Você está no placar!</h3>
+            <p class="reg-pontos"><strong id="regLugar">1º</strong></p>
+            <p class="reg-sub" id="regMsg"></p>
+            <div class="fim-acoes">
+              <button class="btn-jogo" type="button" data-acao="jogar">Correr de novo</button>
+              <button class="btn-sec" type="button" id="regVer">Ver resultado</button>
+            </div>
           </div>
         </div>
       </div>
@@ -2420,7 +2455,7 @@ addEventListener('DOMContentLoaded', () => {
         if (!melhor || r.pontos > melhor.pontos) { melhor = r; gravar('placar-melhor', JSON.stringify(r)); }
         atualizar();
         const lugar = d.posicao <= 10 ? `: você está em ${d.posicao}º no placar!` : ` (${d.posicao}º lugar).`;
-        return { ok: true, msg: d.novo ? 'Nova melhor marca salva' + lugar : `Sua melhor marca no placar continua ${(+d.melhor).toLocaleString('pt-BR')} pontos.` };
+        return { ok: true, posicao: d.posicao, novo: !!d.novo, msg: d.novo ? 'Nova melhor marca salva' + lugar : `Sua melhor marca no placar continua ${(+d.melhor).toLocaleString('pt-BR')} pontos.` };
       } catch (e) { return { ok: false, msg: 'Não foi possível salvar no placar agora.' }; }
     }
 
@@ -2466,7 +2501,10 @@ addEventListener('DOMContentLoaded', () => {
 
     renderConta();
     new IntersectionObserver(([e], o) => { if (e.isIntersecting) { o.disconnect(); carregar(); } }, { rootMargin: '600px' }).observe(document.getElementById('arena'));
-    return { enviar };
+    // janelinha de fim de corrida: pergunta o nome e grava a marca
+    async function disponivelAgora() { await carregar(); return !!disponivel; }
+    const registrar = (r, nome) => salvar({ pontos: Math.floor(r.pontos), dist: Math.floor(r.dist), plastico: Math.floor(r.plastico) }, nome);
+    return { enviar, registrar, disponivelAgora, apelidoAtual: () => apelido };
   })();
 
   /* =========================================================
@@ -2734,7 +2772,7 @@ addEventListener('DOMContentLoaded', () => {
       hud: $('hud'), pontos: $('hudPontos'), plastico: $('hudPlastico'), multi: $('hudMulti'), multiN: $('hudMultiN'), combo: $('hudCombo'), dist: $('hudDist'),
       poder: $('hudPoder'), poderNome: $('poderNome'), poderBarra: $('poderBarra'),
       toast: $('toast'), centro: $('avisoCentro'), pausa: $('btnPausa'), flash: $('flash'),
-      menu: $('telaMenu'), telaPausa: $('telaPausa'), fim: $('telaFim'),
+      menu: $('telaMenu'), telaPausa: $('telaPausa'), fim: $('telaFim'), registro: $('telaRegistro'),
     };
     const MOTIVOS = {
       coral: 'Você bateu em um coral. Dica: troque de faixa com ← e →.',
@@ -2764,7 +2802,7 @@ addEventListener('DOMContentLoaded', () => {
     }
 
     /* ---------- telas e menus ---------- */
-    const telas = [ui.menu, ui.telaPausa, ui.fim];
+    const telas = [ui.menu, ui.telaPausa, ui.fim, ui.registro];
     function mostrarTela(tela, painel, focar = true) {
       telas.forEach(t => { t.hidden = t !== tela; });
       if (tela === ui.menu) {
@@ -3062,11 +3100,43 @@ addEventListener('DOMContentLoaded', () => {
       $('fimLicao').textContent = escapou === 0
         ? 'Nenhum pedaço escapou. No mar de verdade, o jeito mais eficaz de chegar nesse resultado é evitar que o plástico chegue à água.'
         : `${escapou} pedaços de plástico passaram por você. No mar de verdade, eles se quebrariam em microplásticos, e aí não dá mais para recolher. Evitar que o plástico chegue à água é o caminho mais eficaz.`;
-      mostrarTela(ui.fim);
       const fimPlacar = $('fimPlacar'); fimPlacar.textContent = '';
-      const mostrar = msg => { if (estado === 'fim') fimPlacar.textContent = msg; };
-      placar.enviar({ pontos: p, dist: Math.floor(dist), plastico }, mostrar).then(mostrar);
+      const marca = { pontos: p, dist: Math.floor(dist), plastico };
+      const resultadoCompleto = () => {
+        mostrarTela(ui.fim);
+        const mostrar = msg => { if (estado === 'fim') fimPlacar.textContent = msg; };
+        placar.enviar(marca, mostrar).then(mostrar);
+      };
+      if (p <= 0) { resultadoCompleto(); return; }
+      placar.disponivelAgora().then(ok => {
+        if (estado !== 'fim') return;
+        if (!ok) { resultadoCompleto(); return; }
+        abrirRegistro(marca, novo);
+      });
     }
+    function abrirRegistro(marca, novoRecorde) {
+      const form = $('formRegistro'), campo = $('apelidoReg'), erro = $('regErro'), botao = form.querySelector('button');
+      $('regPontos').textContent = marca.pontos.toLocaleString('pt-BR');
+      $('regSub').textContent = `${marca.dist} metros, ${marca.plastico} pedaços de plástico recolhidos` + (novoRecorde ? ' · novo recorde seu!' : '');
+      $('regAntes').hidden = false; $('regDepois').hidden = true; erro.hidden = true; botao.disabled = false;
+      campo.value = placar.apelidoAtual();
+      mostrarTela(ui.registro, null, false);
+      setTimeout(() => { campo.focus({ preventScroll: true }); campo.select(); }, 60);
+      form.onsubmit = async e => {
+        e.preventDefault(); e.stopPropagation();
+        botao.disabled = true; erro.hidden = true;
+        const res = await placar.registrar(marca, campo.value.trim());
+        if (!res.ok) { erro.textContent = res.msg; erro.hidden = false; botao.disabled = false; return; }
+        $('regLugar').textContent = res.posicao + 'º';
+        $('regMsg').textContent = res.novo ? 'Sua marca já aparece no placar ao vivo.' : res.msg;
+        $('regAntes').hidden = true; $('regDepois').hidden = false;
+        const jogar = ui.registro.querySelector('[data-acao="jogar"]'); setTimeout(() => jogar.focus({ preventScroll: true }), 30);
+      };
+      $('regPular').onclick = () => { mostrarTela(ui.fim); $('fimPlacar').textContent = 'Você não entrou no placar desta vez.'; };
+      $('regVer').onclick = () => mostrarTela(ui.fim);
+    }
+
+    ['keydown', 'keyup'].forEach(t => $('telaRegistro').addEventListener(t, e => e.stopPropagation()));
 
     /* ---------- controles ---------- */
     function mover(d) {
