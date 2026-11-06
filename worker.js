@@ -8,7 +8,7 @@
 //   POST /api/quiz            → { id, escolhas: { "<índice>": bool, ... x16 }, tempo_ms, nome? }  registra uma tentativa
 //   POST /api/quiz            → { id, nome }                                    só põe/troca o apelido
 //   GET  /api/quiz/dia?data=AAAA-MM-DD → placar do dia (horário de Brasília; sem data = hoje)
-// Cada tentativa tem 16 afirmações sorteadas do banco de 32. A correção é feita aqui, com o
+// Cada tentativa tem 5 afirmações sorteadas do banco de 32. A correção é feita aqui, com o
 // gabarito abaixo; o navegador manda só as escolhas, indexadas pela posição no banco.
 // Em "primeira" cada posição do banco vira '1' (acertou), '0' (errou) ou '-' (não apareceu).
 // As estatísticas usam a primeira tentativa de cada pessoa; o placar, a melhor.
@@ -23,7 +23,7 @@ const PREFIXOS_PROIBIDOS = ['arrombad', 'vagabund', 'filhadaput', 'filhodaput'];
 // Se as afirmações mudarem, troque também TABELA_QUIZ para começar estatísticas novas.
 const TABELA_QUIZ = 'quiz_v3';
 const GABARITO = [true, false, true, false, true, false, true, false, true, true, true, true, false, true, false, false, true, false, true, false, true, true, true, false, true, false, true, false, true, false, true, false];
-const RODADA = 16; // afirmações sorteadas por tentativa
+const RODADA = 5; // afirmações sorteadas por tentativa
 const QUIZ_TEMPO_MIN_MS = 3000, QUIZ_TEMPO_MAX_MS = 3600e3;
 
 let tabelasProntas = false;

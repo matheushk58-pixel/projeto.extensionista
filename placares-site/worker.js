@@ -4,7 +4,7 @@
 // N vai de 1 a 50 (padrão 10). Este projeto não escreve no banco e não cria tabelas.
 
 const TABELA_QUIZ = 'quiz_v3'; // a mesma tabela que o site principal grava (worker.js na raiz do repositório)
-const RODADA = 16;             // afirmações por rodada do quiz
+const RODADA = 5;              // afirmações por rodada do quiz
 
 const json = (dados, status = 200) => new Response(JSON.stringify(dados), {
   status,
