@@ -82,7 +82,10 @@
   .nota { font-family: var(--display); font-weight: 800; font-variant-numeric: tabular-nums; color: var(--acento-texto); }
   .podio .nota { font-size: clamp(1rem, 1.6vw, 1.45rem); }
   .nota small { font-weight: 600; color: var(--tinta-suave); font-size: .66em; }
-  .entrada { color: var(--tinta-suave); font-size: .95rem; border-top: 1px solid var(--linha); padding-top: 1.2vh; }
+  .entrada { display: flex; align-items: center; gap: clamp(.8rem, 1.6vw, 1.4rem); color: var(--tinta-suave); font-size: .95rem; border-top: 1px solid var(--linha); padding-top: 1.4vh; }
+  .entrada .chama { display: block; font-family: var(--display); font-weight: 800; font-size: 1.15rem; color: var(--tinta); margin-bottom: .2em; }
+  .qr { flex: none; display: block; background: #fff; padding: 7px; border-radius: 10px; border: 2px solid var(--tinta); width: clamp(104px, 19vh, 168px); aspect-ratio: 1; }
+  .qr svg { display: block; width: 100%; height: 100%; }
   .entrada b { color: var(--tinta); font-weight: 600; }
   .credito { color: var(--tinta-suave); font-size: .85rem; }
 
@@ -144,7 +147,10 @@
     <p class="regra">Recolha o plástico e vá o mais longe que puder. Vale quem faz mais pontos.</p>
     <p class="medidor"><b data-conta>0</b> jogadores no placar</p>
     <ol class="podio" aria-label="Três primeiros"></ol>
-    <p class="entrada">Para entrar no placar, abra <b>projeto-extensionista.qjperfumaria.workers.dev</b>, vá em Jogo e escolha um apelido no fim.</p>
+    <div class="entrada">
+      <a class="qr" href="https://projeto-extensionista.qjperfumaria.workers.dev/extensionista%204/#jogo" aria-label="QR code para abrir o jogo"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 39 39"><path fill="#fff" d="M0 0h39v39h-39z"/><path stroke="#0f2733" d="M1 1.5h7m2 0h1m4 0h3m1 0h2m1 0h3m1 0h3m2 0h7m-37 1h1m5 0h1m6 0h1m2 0h3m1 0h1m2 0h1m2 0h3m1 0h1m5 0h1m-37 1h1m1 0h3m1 0h1m2 0h2m1 0h1m1 0h1m2 0h1m1 0h2m1 0h2m2 0h1m3 0h1m1 0h3m1 0h1m-37 1h1m1 0h3m1 0h1m5 0h1m2 0h2m1 0h1m3 0h2m2 0h2m2 0h1m1 0h3m1 0h1m-37 1h1m1 0h3m1 0h1m2 0h2m2 0h3m7 0h1m1 0h3m2 0h1m1 0h3m1 0h1m-37 1h1m5 0h1m1 0h1m1 0h2m2 0h2m1 0h5m2 0h2m1 0h2m1 0h1m5 0h1m-37 1h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7m-27 1h5m2 0h2m2 0h1m2 0h1m1 0h1m-27 1h1m2 0h1m1 0h2m1 0h1m1 0h2m1 0h2m1 0h1m4 0h2m2 0h3m1 0h1m1 0h1m-32 1h1m1 0h1m2 0h1m2 0h2m1 0h2m2 0h3m2 0h1m3 0h2m2 0h3m3 0h1m1 0h1m-36 1h1m1 0h2m1 0h7m1 0h2m1 0h4m4 0h1m4 0h2m1 0h4m-37 1h2m1 0h3m2 0h1m1 0h2m1 0h2m1 0h1m3 0h4m1 0h1m1 0h1m-27 1h1m1 0h2m1 0h4m3 0h5m1 0h1m1 0h1m2 0h2m1 0h5m1 0h1m1 0h2m-35 1h1m1 0h2m6 0h1m1 0h1m4 0h3m2 0h3m3 0h2m2 0h3m-37 1h1m5 0h2m3 0h2m1 0h1m8 0h1m1 0h2m1 0h1m1 0h3m1 0h1m1 0h1m-35 1h2m1 0h1m2 0h1m3 0h1m1 0h2m1 0h2m2 0h3m1 0h1m1 0h3m2 0h1m3 0h1m-37 1h3m2 0h2m1 0h1m2 0h3m1 0h2m1 0h1m1 0h2m1 0h1m4 0h4m1 0h4m-36 1h1m6 0h1m1 0h1m4 0h1m5 0h4m3 0h1m1 0h4m1 0h2m-35 1h2m1 0h2m4 0h1m2 0h1m2 0h1m3 0h2m3 0h1m3 0h2m3 0h2m-37 1h2m1 0h1m4 0h1m2 0h1m2 0h4m1 0h1m1 0h1m1 0h1m3 0h1m1 0h2m3 0h2m-36 1h1m1 0h1m2 0h4m1 0h1m1 0h1m1 0h1m1 0h1m4 0h1m2 0h3m3 0h1m1 0h1m2 0h1m-36 1h1m2 0h1m3 0h1m2 0h1m3 0h1m1 0h3m1 0h3m1 0h3m1 0h4m1 0h1m2 0h1m-36 1h1m2 0h1m1 0h2m2 0h1m1 0h2m4 0h2m1 0h1m4 0h1m1 0h3m4 0h2m-34 1h2m2 0h1m2 0h1m3 0h1m4 0h3m1 0h1m1 0h1m1 0h3m6 0h1m-33 1h1m1 0h1m1 0h5m3 0h1m1 0h1m1 0h3m1 0h2m2 0h4m1 0h1m1 0h1m-33 1h3m3 0h2m4 0h1m1 0h1m1 0h1m1 0h1m2 0h1m5 0h2m1 0h1m1 0h2m-37 1h1m1 0h2m2 0h5m3 0h4m2 0h1m2 0h2m1 0h1m5 0h2m2 0h1m-36 1h1m2 0h1m4 0h1m3 0h2m1 0h3m1 0h2m2 0h2m2 0h1m1 0h2m3 0h2m-37 1h2m3 0h3m1 0h3m2 0h4m3 0h3m3 0h6m1 0h2m-28 1h1m1 0h3m3 0h2m3 0h1m1 0h2m1 0h3m3 0h2m2 0h1m-37 1h7m2 0h3m5 0h1m2 0h1m1 0h1m1 0h1m1 0h3m1 0h1m1 0h2m2 0h1m-37 1h1m5 0h1m1 0h6m1 0h2m2 0h4m1 0h1m1 0h1m1 0h1m3 0h3m-35 1h1m1 0h3m1 0h1m2 0h1m1 0h3m3 0h1m1 0h1m1 0h2m1 0h3m1 0h6m1 0h2m-37 1h1m1 0h3m1 0h1m1 0h3m2 0h3m5 0h2m1 0h2m1 0h2m2 0h2m2 0h1m-36 1h1m1 0h3m1 0h1m3 0h5m1 0h1m2 0h2m4 0h1m2 0h1m2 0h3m1 0h2m-37 1h1m5 0h1m2 0h5m1 0h1m2 0h2m1 0h5m1 0h3m1 0h1m-32 1h7m1 0h1m2 0h4m1 0h2m2 0h6m2 0h1m4 0h1m1 0h2"/></svg></a>
+      <p><strong class="chama">Jogue a Missão</strong>Aponte a câmera do celular, jogue e escolha um apelido no fim para entrar no placar.</p>
+    </div>
     <p class="credito">Grupo 4 · Curso de Farmácia · Universidade Nove de Julho · 2026</p>
   </section>
   <section class="janela" aria-label="Do 4º ao 50º lugar"><ol class="lista"></ol></section>
