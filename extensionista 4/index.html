@@ -3600,5 +3600,23 @@ addEventListener('DOMContentLoaded', () => {
   contar();
 });
 </script>
+<script>
+  // Links de QR (#jogo e #quiz): a página muda de altura enquanto carrega (fontes, vídeo, cena 3D),
+  // e o salto nativo para a âncora pode parar na seção errada. Realinha até a página assentar,
+  // e para assim que a pessoa mexe na tela.
+  (function () {
+    var id = (location.hash || '').slice(1);
+    if (id !== 'jogo' && id !== 'quiz') return;
+    var mexeu = false;
+    ['wheel', 'touchmove', 'keydown', 'mousedown'].forEach(function (e) { addEventListener(e, function () { mexeu = true; }, { passive: true, once: true }); });
+    function alinhar() {
+      var el = document.getElementById(id);
+      if (!el || mexeu) return;
+      if (Math.abs(el.getBoundingClientRect().top) > 4) el.scrollIntoView({ behavior: 'instant', block: 'start' });
+    }
+    [0, 300, 800, 1500, 2500, 4000].forEach(function (t) { setTimeout(alinhar, t); });
+    addEventListener('load', function () { alinhar(); setTimeout(alinhar, 500); });
+  })();
+</script>
 </body>
 </html>
