@@ -15,7 +15,7 @@
 
 const MAX_PONTOS = 200000, MAX_DIST = 100000, MAX_PLASTICO = 10000;
 const INTERVALO_MIN_MS = 8000; // entre dois envios do mesmo jogador
-const ENVIOS_POR_HORA = 300;   // por endereço IP (numa Wi-Fi compartilhada, como a de um stand, muita gente sai pelo mesmo IP)
+const ENVIOS_POR_HORA = 500;   // por endereço IP (numa Wi-Fi compartilhada, como a de um stand, muita gente sai pelo mesmo IP)
 // palavras inteiras e começos de palavra barrados no apelido (comparação sem acento)
 const PROIBIDAS = ['porra', 'caralho', 'buceta', 'puta', 'puto', 'merda', 'viado', 'fdp', 'cuzao', 'piroca', 'xoxota', 'hitler', 'nazi', 'nazista'];
 const PREFIXOS_PROIBIDOS = ['arrombad', 'vagabund', 'filhadaput', 'filhodaput'];
