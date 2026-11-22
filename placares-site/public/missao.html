@@ -52,8 +52,8 @@
 
   /* ---- palco: texto e pódio à esquerda, lista que rola à direita ---- */
   .palco { position: relative; z-index: 1; flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(300px, 5fr) 6fr; gap: clamp(20px, 4vw, 64px); padding: clamp(14px, 3vh, 36px) clamp(16px, 4vw, 40px) clamp(14px, 3vh, 30px); }
-  .lado { display: flex; flex-direction: column; min-height: 0; gap: clamp(6px, 1.6vh, 16px); }
-  h1 { font-family: var(--display); font-weight: 800; font-size: clamp(3.4rem, min(9vw, 17vh), 9rem); line-height: .94; letter-spacing: -.035em; animation: entra 1s var(--ease) both; }
+  .lado { display: flex; flex-direction: column; min-height: 0; gap: clamp(4px, 1.2vh, 14px); }
+  h1 { font-family: var(--display); font-weight: 800; font-size: clamp(3rem, min(9vw, 13vh), 8rem); line-height: .94; letter-spacing: -.035em; animation: entra 1s var(--ease) both; }
   @keyframes entra { from { transform: translateY(26%); opacity: 0; } to { transform: none; opacity: 1; } }
   .sub { font-family: var(--display); font-weight: 600; font-size: clamp(1.05rem, 2.1vh + .4vw, 1.5rem); line-height: 1.2; }
   .regra { color: var(--tinta-suave); font-size: clamp(.95rem, 1.7vh + .2vw, 1.15rem); max-width: 40ch; }
@@ -63,9 +63,9 @@
   /* pódio: as três cores de plástico, flutuando como partículas na amostra */
   .podio { list-style: none; display: grid; grid-template-columns: 1fr 1.25fr 1fr; align-items: end; gap: clamp(8px, 1.4vw, 20px); margin: auto 0 0; padding-top: 1vh; }
   .podio li { display: grid; justify-items: center; gap: .5vh; text-align: center; min-width: 0; }
-  .bola { position: relative; display: grid; place-items: center; width: 100%; aspect-ratio: 1; max-width: 15vh; border-radius: 50%; animation: boia 5.6s ease-in-out infinite; }
+  .bola { position: relative; display: grid; place-items: center; width: 100%; aspect-ratio: 1; max-width: 12.5vh; border-radius: 50%; animation: boia 5.6s ease-in-out infinite; }
   .podio li:nth-child(1) .bola { animation-delay: -1.8s; } .podio li:nth-child(3) .bola { animation-delay: -3.4s; }
-  .podio li:nth-child(2) .bola { max-width: 20vh; animation-duration: 6.4s; }
+  .podio li:nth-child(2) .bola { max-width: 16.5vh; animation-duration: 6.4s; }
   @keyframes boia { 0%,100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-1.3vh) rotate(2deg); } }
   .bola.ouro { background: radial-gradient(circle at 32% 28%, #FFD978, var(--pet) 60%, #BF8408); }
   .bola.prata { background: radial-gradient(circle at 32% 28%, #7FD3EA, var(--pp) 60%, #107391); }
@@ -84,7 +84,7 @@
   .nota small { font-weight: 600; color: var(--tinta-suave); font-size: .66em; }
   .entrada { display: flex; align-items: center; gap: clamp(.8rem, 1.6vw, 1.4rem); color: var(--tinta-suave); font-size: .95rem; border-top: 1px solid var(--linha); padding-top: 1.4vh; }
   .entrada .chama { display: block; font-family: var(--display); font-weight: 800; font-size: 1.15rem; color: var(--tinta); margin-bottom: .2em; }
-  .qr { flex: none; display: block; background: #fff; padding: 7px; border-radius: 10px; border: 2px solid var(--tinta); width: clamp(104px, 19vh, 168px); aspect-ratio: 1; }
+  .qr { flex: none; display: block; background: #fff; padding: 7px; border-radius: 10px; border: 2px solid var(--tinta); width: clamp(82px, 13.5vh, 128px); aspect-ratio: 1; }
   .qr svg { display: block; width: 100%; height: 100%; }
   .entrada b { color: var(--tinta); font-weight: 600; }
   .credito { color: var(--tinta-suave); font-size: .85rem; }
