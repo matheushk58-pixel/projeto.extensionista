@@ -2650,6 +2650,7 @@ addEventListener('DOMContentLoaded', () => {
       } else { g = peca(G.pedra, 0x3E5A66); g.scale.set(1.8, 1.1, 1.4); }
       rolante(g, x, y, LONGE + (i / 26) * faixaRolagem);
     }
+    const recife = [];
     const nB = 40, bolhas = new T.InstancedMesh(G.bolhinha, new T.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: .45 }), nB);
     const bd = [...Array(nB)].map(() => ({ x: (Math.random() - .5) * 16, y: Math.random() * 9, z: LONGE + Math.random() * faixaRolagem, s: 1 + Math.random() * 2 }));
     cena.add(bolhas);
@@ -2750,16 +2751,30 @@ addEventListener('DOMContentLoaded', () => {
       }
       return g;
     }
+    // membros afilados e articulados: tentáculos, patas e nadadeiras com a ponta mais fina
+    const afilados = new Map();
+    const afilado = (rTopo, rBase) => { const k = rTopo + '|' + rBase; if (!afilados.has(k)) afilados.set(k, new T.CylinderGeometry(rTopo, rBase, 1, 8, 1)); return afilados.get(k); };
+    function cadeia(cor, comp, n, r0, r1, contorno = false) {
+      const raiz = new T.Group(), segs = []; let pai = raiz;
+      for (let i = 0; i < n; i++) {
+        const a = r0 + (r1 - r0) * i / n, b = r0 + (r1 - r0) * (i + 1) / n, seg = new T.Group();
+        if (i) seg.position.y = -comp / n;
+        const m = peca(afilado(a, b), cor, { contorno, k: 1.18 }); m.scale.y = comp / n; m.position.y = -comp / n / 2; seg.add(m);
+        pai.add(seg); segs.push(seg); pai = seg;
+      }
+      return { raiz, segs, ponta: pai, passo: comp / n };
+    }
     function fazerObstaculo(tipo) {
       const g = new T.Group(); const o = { tipo, g, y0: 0, y1: 9, prof: 1.5, vz: 0, nasc: 0, f: Math.random() * 6 };
       if (tipo === 'coral') {
         const var_ = Math.floor(Math.random() * 4), cl = [[0xF07CA8, 0xFFB3CC], [0xF2A65A, 0xFFD3A0], [0x7A55C9, 0xB59BEA], [0xE05A4F, 0xFF9C8F]][Math.floor(Math.random() * 4)];
         const ram = (x, z, alt, inc, cor) => { const r = peca(G.poste, cor); r.scale.set(2.2, alt, 2.2); r.position.set(x, alt / 2, z); r.rotation.z = inc; g.add(r); return r; };
         if (var_ === 0) { // ramificado (chifre de veado)
-          const tronco = peca(G.coluna, cl[0]); tronco.scale.set(.55, 2.2, .55); tronco.position.y = 1.1; g.add(tronco);
-          [[-.55, -.5, 1.9], [.55, .5, 2.2], [-.25, .45, 2.5], [.4, -.4, 1.7]].forEach(([x, inc, alt], k) => {
-            const r = peca(G.poste, cl[k % 2], { k: 1.14 }); r.scale.set(5.5, alt, 5.5); r.position.set(x * .6, 1.3 + alt / 2 * Math.cos(inc), 0); r.rotation.z = -inc; g.add(r);
-            const t = peca(G.bola, cl[1]); t.scale.setScalar(.34); t.position.set(x * .6 - Math.sin(inc) * alt / 2 * .96, 1.3 + alt * Math.cos(inc) * .98, 0); g.add(t);
+          const tronco = peca(afilado(.26, .42), cl[0]); tronco.scale.y = 1.7; tronco.position.y = .85; g.add(tronco);
+          [[-.12, 1.3, -.7, 1.5], [.14, 1.5, .62, 1.6], [0, 1.8, -.25, 1.7], [.08, 2.0, .38, 1.3], [-.1, 1.0, .95, 1.1]].forEach(([x, y, inc, len], k) => {
+            const br = cadeia(cl[k % 2], len, 3, .17, .06); br.raiz.scale.y = -1; br.raiz.position.set(x, y, 0); br.raiz.rotation.z = inc; g.add(br.raiz);
+            br.segs[1].rotation.z = -inc * .35; br.segs[2].rotation.z = inc * .25;
+            const t = peca(G.bola, cl[1], { contorno: false }); t.scale.setScalar(.2); t.position.y = -br.passo * .6; br.ponta.add(t);
           });
         } else if (var_ === 1) { // cérebro, montes empilhados
           [[1.0, .9, 0, 1.0], [.78, 2.0, .05, .85], [.52, 2.9, -.05, .7]].forEach(([r, y, x, e]) => {
@@ -2767,9 +2782,12 @@ addEventListener('DOMContentLoaded', () => {
             const sulco = peca(G.aura, cl[1], { contorno: false }); sulco.scale.setScalar(r * 1.2); sulco.rotation.x = Math.PI / 2; sulco.position.set(x, y + r * .55, 0); g.add(sulco);
           });
         } else if (var_ === 2) { // tubos em cacho
-          [[-.55, 2.4, .26], [-.1, 3.6, .32], [.45, 2.9, .28], [.15, 1.9, .22], [-.3, 1.6, .2], [.62, 1.5, .2]].forEach(([x, alt, r], k) => {
-            const t = peca(G.coluna, cl[k % 2 ? 0 : 1]); t.scale.set(r * 1.7, alt, r * 1.7); t.position.set(x, alt / 2, (k % 3 - 1) * .25); g.add(t);
-            const boca = peca(G.aura, 0x2A1236, { contorno: false }); boca.scale.setScalar(r * 1.3); boca.rotation.x = Math.PI / 2; boca.position.set(x, alt + .02, (k % 3 - 1) * .25); g.add(boca);
+          const tub = [[0xE8A33C, 0xFFD27A], [0x8E5AD0, 0xC8A7F2], [0xE0645A, 0xFFA79C]][Math.floor(Math.random() * 3)];
+          [[-.55, 2.4, .3], [-.1, 3.6, .36], [.45, 2.9, .32], [.15, 1.9, .26], [-.3, 1.6, .24], [.62, 1.5, .24]].forEach(([x, alt, r], k) => {
+            const z = (k % 3 - 1) * .25;
+            const t = peca(afilado(r * 1.25, r), tub[0]); t.scale.y = alt; t.position.set(x, alt / 2, z); g.add(t);
+            const borda = peca(G.aura, tub[1], { contorno: false }); borda.scale.setScalar(r * 2.15); borda.rotation.x = Math.PI / 2; borda.position.set(x, alt, z); g.add(borda);
+            const boca = peca(G.bola, 0x2A1236, { contorno: false }); boca.scale.set(r * 2.1, .06, r * 2.1); boca.position.set(x, alt - .01, z); g.add(boca);
           });
         } else { // leque (gorgônia) em haste
           const haste = peca(G.poste, 0x5B3A1E); haste.scale.set(1.6, 1.4, 1.6); haste.position.y = .7; g.add(haste);
@@ -2784,35 +2802,40 @@ addEventListener('DOMContentLoaded', () => {
         if (Math.random() < .55) { const q = peca(G.pedra, cinza); q.scale.set(.42, .3, .38); q.position.set((Math.random() < .5 ? -1 : 1) * .62, .2, .25); q.rotation.y = Math.random() * 3; g.add(q); }
         if (Math.random() < .5) { const alga = peca(G.cone, 0x2EA36B, { k: 1.1 }); alga.scale.set(.22, .9, .22); alga.position.set(-.1, .95, 0); g.add(alga); }
       } else if (tipo === 'caranguejo') {
-        const cr = new T.Group(); g.add(cr);
-        const corpo = peca(G.bola, 0xE8553A); corpo.scale.set(1.5, .8, 1.1); corpo.position.y = .5; cr.add(corpo);
+        const cr = new T.Group(); g.add(cr), cor = 0xE8553A, esc = 0xC9422B;
+        const casco = peca(G.bola, cor); casco.scale.set(1.6, .62, 1.15); casco.position.y = .52; cr.add(casco);
+        const dorso = peca(G.bola, 0xF0694A, { contorno: false }); dorso.scale.set(1.25, .3, .85); dorso.position.y = .7; cr.add(dorso);
         for (const sx of [-1, 1]) {
-          const hs = peca(G.poste, 0xE8553A, { contorno: false }); hs.scale.set(1.6, .32, 1.6); hs.position.set(sx * .3, .98, .32); cr.add(hs);
-          const olho = K.olho(.15); olho.position.set(sx * .3, 1.18, .36); cr.add(olho);
+          const hs = peca(afilado(.05, .07), cor, { contorno: false }); hs.scale.y = .32; hs.position.set(sx * .3, .9, .42); cr.add(hs);
+          const olho = K.olho(.17); olho.position.set(sx * .3, 1.12, .46); cr.add(olho);
         }
         o.pinca = [];
         for (const sx of [-1, 1]) {
-          const piv = new T.Group(); piv.position.set(sx * .62, .6, .35); cr.add(piv);
-          const braco = peca(G.poste, 0xE8553A, { contorno: false }); braco.scale.set(2, .42, 2); braco.position.set(sx * .12, .2, .1); braco.rotation.z = -sx * .5; piv.add(braco);
-          const pin = peca(G.bola, 0xF0694A); pin.scale.set(.5, .42, .34); pin.position.set(sx * .3, .5, .15); piv.add(pin);
-          const dedo = peca(G.cone, 0xF0694A, { contorno: false }); dedo.scale.set(.2, .3, .12); dedo.position.set(sx * .3, .75, .15); piv.add(dedo);
-          o.pinca.push({ piv, sx });
+          const piv = new T.Group(); piv.position.set(sx * .72, .52, .42); cr.add(piv);
+          const braco = peca(afilado(.09, .12), cor); braco.scale.y = .55; braco.rotation.z = -sx * 1.0; braco.position.set(sx * .21, .14, .04); piv.add(braco);
+          const mao = new T.Group(); mao.position.set(sx * .46, .34, .06); piv.add(mao);
+          const palma = peca(G.bola, 0xF0694A); palma.scale.set(.5, .42, .34); mao.add(palma);
+          const fixo = peca(G.cone, 0xF0694A, { contorno: false }); fixo.scale.set(.18, .5, .12); fixo.position.set(sx * -.06, .38, 0); fixo.rotation.z = sx * .35; mao.add(fixo);
+          const movel = peca(G.cone, 0xF0694A, { contorno: false }); movel.scale.set(.16, .46, .12); movel.position.set(sx * .12, .36, 0); mao.add(movel);
+          o.pinca.push({ mao, movel, braco, sx });
         }
         o.pernas = [];
-        for (const sx of [-1, 1]) for (let k = 0; k < 3; k++) { const l = peca(G.poste, 0xC9422B, { contorno: false }); l.scale.set(1.4, .6, 1.4); l.position.set(sx * .8, .26, -.2 + k * .26); l.rotation.z = sx * 1.1; cr.add(l); o.pernas.push({ l, sx, k }); }
+        for (const sx of [-1, 1]) for (let k = 0; k < 4; k++) {
+          const l = cadeia(esc, .75, 2, .06, .035); l.raiz.position.set(sx * .85, .42, -.3 + k * .24); l.raiz.rotation.z = sx * 1.2; l.raiz.rotation.y = sx * (k - 1.5) * .12; cr.add(l.raiz); o.pernas.push({ l, sx, k });
+        }
         o.cr = cr; o.y1 = .95; o.prof = 1.0;
         o.anim = t => {
-          cr.position.x = Math.sin(t * 2.2 + o.f) * .32; cr.position.y = Math.abs(Math.sin(t * 8 + o.f)) * .05; cr.rotation.y = Math.cos(t * 2.2 + o.f) * .15;
-          o.pinca.forEach(c => { c.piv.rotation.z = c.sx * (.25 + Math.sin(t * 5 + o.f) * .3); });
-          o.pernas.forEach(c => { c.l.rotation.z = c.sx * (1.1 + Math.sin(t * 12 + c.k + (c.sx > 0 ? 1.5 : 0)) * .22); });
+          cr.position.x = Math.sin(t * 2.2 + o.f) * .32; cr.position.y = Math.abs(Math.sin(t * 9 + o.f)) * .04; cr.rotation.y = Math.cos(t * 2.2 + o.f) * .18;
+          o.pinca.forEach(c => { c.mao.rotation.z = c.sx * (-.2 + Math.sin(t * 4 + o.f) * .25); c.movel.rotation.z = c.sx * (-.1 + Math.sin(t * 8 + o.f) * .3 + .3); });
+          o.pernas.forEach(c => { const ph = t * 11 + c.k * 1.4 + (c.sx > 0 ? 1.6 : 0); c.l.segs[0].rotation.z = c.sx * Math.sin(ph) * .22; c.l.segs[1].rotation.z = c.sx * (.5 + Math.sin(ph + 1) * .3); });
         };
       } else if (tipo === 'estrela') {
-        const cor = [0xF08A3C, 0xE8553A, 0xF2C230][Math.floor(Math.random() * 3)], est = new T.Group(); est.position.y = .2; g.add(est);
-        const meio = peca(G.bola, cor); meio.scale.set(.7, .3, .7); meio.position.y = .08; est.add(meio);
+        const cor = [0xF08A3C, 0xE8553A, 0xE86AA0][Math.floor(Math.random() * 3)], est = new T.Group(); est.position.y = .2; g.add(est);
+        const meio = peca(G.bola, cor); meio.scale.set(.75, .36, .75); meio.position.y = .1; est.add(meio);
         for (let k = 0; k < 5; k++) {
           const piv = new T.Group(); piv.rotation.y = k * Math.PI * 2 / 5; est.add(piv);
-          const braco = peca(G.cone, cor); braco.rotation.z = -Math.PI / 2; braco.scale.set(.5, 1.15, .3); braco.position.set(.55, .08, 0); piv.add(braco);
-          const pinta = peca(G.bola, 0xFFE3B0, { contorno: false }); pinta.scale.set(.12, .08, .12); pinta.position.set(.5, .22, 0); piv.add(pinta);
+          const braco = peca(G.cone, cor); braco.rotation.z = -Math.PI / 2; braco.scale.set(.62, 1.25, .42); braco.position.set(.6, .1, 0); piv.add(braco);
+          for (let d = 0; d < 3; d++) { const pinta = peca(G.bola, 0xFFE3B0, { contorno: false }); pinta.scale.set(.1, .07, .1); pinta.position.set(.28 + d * .26, .3 - d * .045, 0); piv.add(pinta); }
         }
         o.est = est; o.y1 = .5; o.prof = 1.4;
         o.anim = t => { est.rotation.y = Math.sin(t * .8 + o.f) * .35; est.position.y = .2 + Math.sin(t * 2 + o.f) * .02; };
@@ -2829,51 +2852,58 @@ addEventListener('DOMContentLoaded', () => {
         o.ou = ou; o.y1 = 1.15; o.prof = 1.1;
         o.anim = t => { const e = 1 + Math.sin(t * 3 + o.f) * .06; ou.scale.setScalar(e); ou.rotation.y = Math.sin(t * .9 + o.f) * .3; };
       } else if (tipo === 'anemona') {
-        const base = peca(G.coluna, 0xC94F7C); base.scale.set(.9, .5, .9); base.position.y = .25; g.add(base);
+        const base = peca(G.coluna, 0xA8456B); base.scale.set(.95, .55, .95); base.position.y = .27; g.add(base);
+        const cor = [[0xF07CA8, 0xFFD3E3], [0xB57AE8, 0xE0C6FF], [0xF2A65A, 0xFFE0B8]][Math.floor(Math.random() * 3)];
         o.tent = [];
-        for (let k = 0; k < 20; k++) {
-          const a = k / 20 * Math.PI * 2, rr = .25 + (k % 2) * .2, piv = new T.Group(); piv.position.set(Math.cos(a) * rr, .45, Math.sin(a) * rr * .8); g.add(piv);
-          const ten = peca(G.poste, k % 2 ? 0xF07CA8 : 0xB57AE8, { contorno: false }); ten.scale.set(2.4, .5 + (k % 3) * .08, 2.4); ten.position.y = .27; piv.add(ten);
-          const ponta = peca(G.bola, k % 2 ? 0xFFD3E3 : 0xE0C6FF, { contorno: false }); ponta.scale.setScalar(.14); ponta.position.y = .52 + (k % 3) * .08; piv.add(ponta);
-          piv.rotation.z = Math.cos(a) * .35; piv.rotation.x = -Math.sin(a) * .35; o.tent.push({ piv, a });
-        }
-        const palhaco = fazerPeixe(K, { cor: 0xF57A1F, cauda: 0xF57A1F, listras: true }); palhaco.g.scale.setScalar(.2); palhaco.g.position.y = 1.05; g.add(palhaco.g); o.palhaco = palhaco;
+        [[10, .2], [14, .36], [18, .52]].forEach(([n, rr], ring) => { for (let k = 0; k < n; k++) {
+          const a = k / n * Math.PI * 2 + ring * .3, ten = cadeia(cor[k % 2 ? 0 : 1 - (ring % 2)], .62, 3, .055, .018); ten.raiz.position.set(Math.cos(a) * rr, .6 - ring * .02, Math.sin(a) * rr * .85); ten.raiz.rotation.z = Math.PI - 0; g.add(ten.raiz);
+          ten.raiz.rotation.set(0, 0, 0); ten.raiz.scale.y = -1; ten.raiz.rotation.z = Math.cos(a) * .5; ten.raiz.rotation.x = -Math.sin(a) * .5;
+          const ponta = peca(G.bola, cor[1], { contorno: false }); ponta.scale.setScalar(.11); ponta.position.y = ten.passo * -.55; ten.ponta.add(ponta); o.tent.push({ ten, a });
+        } });
+        const palhaco = fazerPeixe(K, { cor: 0xF57A1F, cauda: 0xF57A1F, listras: true }); palhaco.g.scale.setScalar(.2); palhaco.g.position.y = 1.1; g.add(palhaco.g); o.palhaco = palhaco;
         o.y1 = 1.2; o.prof = 1.3;
         o.anim = t => {
-          o.tent.forEach(c => { c.piv.rotation.z = Math.cos(c.a) * .35 + Math.sin(t * 2.4 + c.a * 2) * .22; c.piv.rotation.x = -Math.sin(c.a) * .35 + Math.cos(t * 2.1 + c.a * 2) * .22; });
-          const a = t * 1.6 + o.f; palhaco.g.position.set(Math.cos(a) * .6, 1.0 + Math.sin(a * 2) * .08, Math.sin(a) * .5); palhaco.g.rotation.y = -a - Math.PI / 2; palhaco.cauda.rotation.y = Math.sin(t * 14) * .5;
+          o.tent.forEach(c => { c.ten.raiz.rotation.z = Math.cos(c.a) * .5 + Math.sin(t * 2.4 + c.a * 2) * .2; c.ten.raiz.rotation.x = -Math.sin(c.a) * .5 + Math.cos(t * 2.1 + c.a * 2) * .2; c.ten.segs[1].rotation.z = Math.sin(t * 3 + c.a) * .3; c.ten.segs[2].rotation.x = Math.cos(t * 3.2 + c.a) * .3; });
+          const a = t * 1.6 + o.f; palhaco.g.position.set(Math.cos(a) * .65, 1.05 + Math.sin(a * 2) * .08, Math.sin(a) * .5); palhaco.g.rotation.y = -a - Math.PI / 2; palhaco.cauda.rotation.y = Math.sin(t * 14) * .5;
         };
       } else if (tipo === 'polvo') {
-        const cab = peca(G.bola, 0xE0553C); cab.scale.set(1.15, 1.4, 1.1); cab.position.y = 2.45; g.add(cab);
-        const manchas = peca(G.bola, 0xF08A6E, { contorno: false }); manchas.scale.set(.4, .3, .2); manchas.position.set(.25, 2.9, .5); g.add(manchas);
-        for (const sx of [-1, 1]) { const olho = K.olho(.3); olho.position.set(sx * .4, 2.3, .52); if (sx < 0) olho.scale.x = -1; g.add(olho); }
+        const cor = 0xE0553C, esc = 0xC9442D;
+        const manto = peca(G.bola, cor); manto.scale.set(1.0, 1.5, .95); manto.position.set(.08, 2.75, -.05); manto.rotation.z = -.18; g.add(manto);
+        for (const [x, y, z, r] of [[.3, 3.05, .35, .16], [-.1, 3.3, .3, .13], [.45, 2.7, .3, .12], [-.2, 2.8, .45, .1]]) { const m = peca(G.bola, 0xF4977D, { contorno: false }); m.scale.set(r * 2, r * 1.6, r * .8); m.position.set(x, y, z); g.add(m); }
+        const cab = peca(G.bola, cor); cab.scale.set(1.1, .95, 1.0); cab.position.y = 2.0; g.add(cab);
+        for (const sx of [-1, 1]) { const olho = K.olho(.34); olho.position.set(sx * .48, 2.1, .6); if (sx < 0) olho.scale.x = -1; g.add(olho); const ps = peca(G.bola, esc, { contorno: false }); ps.scale.set(.55, .16, .3); ps.position.set(sx * .48, 2.36, .55); g.add(ps); }
         o.tent = [];
         for (let k = 0; k < 8; k++) {
-          const a = k / 8 * Math.PI * 2, piv = new T.Group(); piv.position.set(Math.cos(a) * .5, 2.0, Math.sin(a) * .42); g.add(piv);
-          const t1 = peca(G.poste, k % 2 ? 0xE0553C : 0xC9442D, { contorno: false }); t1.scale.set(3, 1.0, 3); t1.position.y = -.5; piv.add(t1);
-          const seg = new T.Group(); seg.position.y = -1.0; piv.add(seg);
-          const t2 = peca(G.poste, k % 2 ? 0xE0553C : 0xC9442D, { contorno: false }); t2.scale.set(2.2, .9, 2.2); t2.position.y = -.45; seg.add(t2);
-          const pt = peca(G.bola, 0xF08A6E, { contorno: false }); pt.scale.setScalar(.12); pt.position.y = -.92; seg.add(pt);
-          piv.rotation.z = Math.cos(a) * .55; piv.rotation.x = -Math.sin(a) * .55; o.tent.push({ piv, seg, a });
+          const a = k / 8 * Math.PI * 2, tn = cadeia(k % 2 ? cor : esc, 2.0, 5, .2, .035, true);
+          tn.raiz.position.set(Math.cos(a) * .55, 1.7, Math.sin(a) * .5); g.add(tn.raiz);
+          for (let i = 0; i < 3; i++) { const v = peca(G.bola, 0xF9C4B3, { contorno: false }); v.scale.setScalar(.075); v.position.set(0, -tn.passo * .5, .13); tn.segs[i].add(v); }
+          o.tent.push({ tn, a });
         }
-        o.cab = cab; o.prof = 1.4;
+        o.prof = 1.4;
         o.anim = t => {
-          cab.scale.set(1.15 + Math.sin(t * 2.6 + o.f) * .05, 1.4 - Math.sin(t * 2.6 + o.f) * .06, 1.1);
-          o.tent.forEach(c => { c.piv.rotation.z = Math.cos(c.a) * .55 + Math.sin(t * 3 + c.a * 3) * .25; c.piv.rotation.x = -Math.sin(c.a) * .55 + Math.cos(t * 2.6 + c.a * 3) * .25; c.seg.rotation.z = Math.sin(t * 3.6 + c.a * 2) * .45; });
+          manto.scale.set(1.0 + Math.sin(t * 2.6 + o.f) * .04, 1.5 - Math.sin(t * 2.6 + o.f) * .06, .95);
+          o.tent.forEach(c => { const f = t * 2.8 + c.a * 3; c.tn.raiz.rotation.z = Math.cos(c.a) * .5 + Math.sin(f) * .16; c.tn.raiz.rotation.x = -Math.sin(c.a) * .5 + Math.cos(f) * .16;
+            c.tn.segs.forEach((sg, i) => { if (i) { sg.rotation.z = Math.sin(f + i * .9) * .28 * (i / 2); sg.rotation.x = Math.cos(f * 1.1 + i * .8) * .2 * (i / 2); } }); });
         };
       } else if (tipo === 'tartaruga') {
         const tu = new T.Group(); tu.position.y = 1.15; tu.rotation.y = -Math.PI / 2; g.add(tu);
-        const casco = peca(G.bola, 0x4E9E5E); casco.scale.set(2.2, .95, 1.8); tu.add(casco);
-        for (const [x, z] of [[0, 0], [.55, 0], [-.55, 0], [0, .5], [0, -.5]]) { const pl = peca(G.bola, 0x8FD18A, { contorno: false }); pl.scale.set(.6, .2, .55); pl.position.set(x, .45, z); tu.add(pl); }
-        const cabeca = peca(G.bola, 0xB5C96B); cabeca.scale.set(.6, .5, .5); cabeca.position.set(1.25, .1, 0); tu.add(cabeca);
-        for (const z of [-1, 1]) { const o2 = K.olho(.16); o2.position.set(1.42, .22, .2 * z); if (z < 0) o2.scale.z = -1; tu.add(o2); }
+        const verde = 0x4E9E5E, esc = 0x2F7A45;
+        const casco = new T.Mesh(G.cupula, cm(verde)); casco.scale.set(2.0, 1.15, 1.7); tu.add(casco);
+        const cc = new T.Mesh(G.cupula, contorno); cc.scale.setScalar(1.05); casco.add(cc);
+        const plastrao = peca(G.bola, 0xE8D9A0); plastrao.scale.set(2.5, .3, 2.1); plastrao.position.y = -.02; tu.add(plastrao);
+        const borda = peca(G.aura, esc, { contorno: false }); borda.rotation.x = Math.PI / 2; borda.position.y = .02; borda.scale.set(2.75, 2.3, 1.2); tu.add(borda);
+        for (const [x, z, y, e] of [[0, 0, .9, .5], [.5, 0, .78, .36], [-.5, 0, .78, .36], [0, .5, .72, .32], [0, -.5, .72, .32], [.85, 0, .4, .24], [-.85, 0, .4, .24]]) { const pl = peca(G.bola, 0x8FD18A, { contorno: false }); pl.scale.set(e * 1.5, .1, e * 1.3); pl.position.set(x, y - .02, z); pl.rotation.z = -x * .45; pl.rotation.x = z * .45; tu.add(pl); }
+        const pescoco = peca(afilado(.2, .26), 0xB5C96B); pescoco.scale.y = .6; pescoco.rotation.z = -Math.PI / 2; pescoco.position.set(1.4, .08, 0); tu.add(pescoco);
+        const cabeca = peca(G.bola, 0xB5C96B); cabeca.scale.set(.66, .5, .52); cabeca.position.set(1.72, .1, 0); tu.add(cabeca);
+        for (const z of [-1, 1]) { const o2 = K.olho(.17); o2.position.set(1.92, .24, .2 * z); if (z < 0) o2.scale.z = -1; tu.add(o2); }
         o.nad = [];
-        for (const [x, z] of [[.6, 1], [.6, -1], [-.7, 1], [-.7, -1]]) {
-          const piv = new T.Group(); piv.position.set(x, -.1, z * .8); tu.add(piv);
-          const nd = peca(G.bola, 0xB5C96B); nd.scale.set(.5 + (x > 0 ? .4 : -.15) , .12, 1.0 - (x > 0 ? 0 : .35)); nd.position.set(0, 0, z * .55); piv.add(nd); o.nad.push({ piv, z, x });
+        for (const [x, z, c] of [[.7, 1, 1], [.7, -1, 1], [-.85, 1, .55], [-.85, -1, .55]]) {
+          const piv = new T.Group(); piv.position.set(x, -.02, z * .95); tu.add(piv);
+          const nd = peca(G.bola, 0xB5C96B); nd.scale.set(.5 * c + .35, .1, 1.5 * c); nd.position.set(0, 0, z * .75 * c); nd.rotation.y = z * -.25; piv.add(nd); o.nad.push({ piv, z, x });
         }
+        const rabo = peca(G.cone, 0xB5C96B, { contorno: false }); rabo.rotation.z = Math.PI / 2; rabo.scale.set(.2, .5, .2); rabo.position.set(-1.6, 0, 0); tu.add(rabo);
         o.tu = tu; o.vz = 3.2; o.prof = 1.9;
-        o.anim = t => { tu.position.y = 1.15 + Math.sin(t * 1.6 + o.f) * .12; tu.rotation.z = Math.sin(t * 1.6 + o.f) * .05; o.nad.forEach(c => { c.piv.rotation.x = -c.z * Math.sin(t * 3 + o.f + (c.x > 0 ? 0 : 1.2)) * .55; }); };
+        o.anim = t => { tu.position.y = 1.15 + Math.sin(t * 1.6 + o.f) * .12; tu.rotation.z = Math.sin(t * 1.6 + o.f) * .05; o.nad.forEach(c => { c.piv.rotation.x = -c.z * Math.sin(t * 3 + o.f + (c.x > 0 ? 0 : 1.2)) * (c.x > 0 ? .7 : .35); }); };
       } else if (tipo === 'baiacu') {
         const bg = new T.Group(); bg.position.y = 1.1; bg.rotation.y = -Math.PI / 2; g.add(bg);
         const corpo = peca(G.bola, 0xF2C230); corpo.scale.set(1.3, 1.2, 1.2); bg.add(corpo);
@@ -2887,10 +2917,14 @@ addEventListener('DOMContentLoaded', () => {
         o.anim = t => { const e = 1 + Math.sin(t * 2.2 + o.f) * .08; corpo.scale.set(1.3 * e, 1.2 * e, 1.2 * e); cauda.rotation.y = Math.sin(t * 10 + o.f) * .5; bg.position.y = 1.1 + Math.sin(t * 2 + o.f) * .1; lat.forEach(c => { c.f.rotation.x = c.z * (1.2 + Math.sin(t * 9) * .3); }); };
       } else if (tipo === 'viva') {
         const flut = new T.Group(); flut.position.y = 2.7; g.add(flut);
-        const cup = new T.Mesh(G.cupula, new T.MeshBasicMaterial({ color: 0xE9A6FF, transparent: true, opacity: .85 })); cup.scale.set(1.25, 1, 1.25); flut.add(cup);
-        const miolo = new T.Mesh(G.bola, new T.MeshBasicMaterial({ color: 0xFFD6F5, transparent: true, opacity: .8 })); miolo.scale.set(.7, .4, .7); miolo.position.y = .08; flut.add(miolo);
-        for (let k = 0; k < 7; k++) { const a = k / 7 * Math.PI * 2; const t = peca(G.poste, 0xD58CF2, { contorno: false }); t.scale.set(1.5, 1.5 + (k % 3) * .35, 1.5); t.position.set(Math.cos(a) * .55, -.75, Math.sin(a) * .45); flut.add(t); }
+        const cup = new T.Mesh(G.cupula, new T.MeshBasicMaterial({ color: 0xE9A6FF, transparent: true, opacity: .82 })); cup.scale.set(1.3, 1.05, 1.3); flut.add(cup);
+        const miolo = new T.Mesh(G.bola, new T.MeshBasicMaterial({ color: 0xFFD6F5, transparent: true, opacity: .75 })); miolo.scale.set(.75, .42, .75); miolo.position.y = .1; flut.add(miolo);
+        for (let k = 0; k < 4; k++) { const a = k * Math.PI / 2 + .4; const m = peca(G.bola, 0xF3B8FF, { contorno: false }); m.scale.set(.2, .1, .2); m.position.set(Math.cos(a) * .25, .55, Math.sin(a) * .25); flut.add(m); }
+        o.tent = [];
+        for (let k = 0; k < 4; k++) { const a = k * Math.PI / 2 + .8, br = cadeia(0xF0B6FF, 1.1, 4, .13, .03); br.raiz.position.set(Math.cos(a) * .25, -.05, Math.sin(a) * .22); flut.add(br.raiz); o.tent.push({ br, a, ph: k }); }
+        for (let k = 0; k < 12; k++) { const a = k / 12 * Math.PI * 2, tt = cadeia(k % 2 ? 0xD58CF2 : 0xE6A8FF, 1.55, 5, .035, .012); tt.raiz.position.set(Math.cos(a) * .88, -.02, Math.sin(a) * .88); flut.add(tt.raiz); o.tent.push({ br: tt, a, ph: k * .6 }); }
         o.flut = flut; o.y0 = 1.3; o.prof = .9;
+        o.anim = t => { o.tent.forEach(c => c.br.segs.forEach((sg, i) => { sg.rotation.z = Math.sin(t * 3 + c.ph + i * .8) * .16; sg.rotation.x = Math.cos(t * 2.6 + c.ph + i * .7) * .14; })); };
       } else if (tipo === 'rede') {
         for (const x of [-1.05, 1.05]) { const p = peca(G.poste, 0x5B3A1E); p.scale.y = 4; p.position.set(x, 2, 0); g.add(p); }
         const corda = peca(G.poste, 0xE8EFEC, { k: 1.3 }); corda.scale.y = 2.2; corda.rotation.z = Math.PI / 2; corda.position.y = 3.9; g.add(corda);
@@ -2906,6 +2940,17 @@ addEventListener('DOMContentLoaded', () => {
       g.scale.setScalar(.01);
       return o;
     }
+
+    // corais enormes nas laterais: povoam as áreas vazias e dão sensação de recife (só decoração, sem colisão)
+    function povoarRecife() {
+    for (let i = 0; i < 26; i++) {
+      const lado = i % 2 ? 1 : -1, perto = i % 3 !== 0, x = lado * (perto ? 6.9 + Math.random() * 3 : 10.5 + Math.random() * 6);
+      const o = fazerObstaculo('coral'), g = o.g, e = perto ? 1.6 + Math.random() * 1.2 : 3.2 + Math.random() * 2.2;
+      g.scale.setScalar(e); g.rotation.y = Math.random() * 6.28; recife.push({ g, f: Math.random() * 6, e });
+      rolante(g, x, (Math.abs(x) - 4) * .38 - .15, LONGE + (i / 26) * faixaRolagem + Math.random() * 2);
+    }
+    }
+    povoarRecife();
 
     /* ---------- estado ---------- */
     const ui = {
@@ -3435,6 +3480,7 @@ addEventListener('DOMContentLoaded', () => {
 
       // cenário e partículas
       rolantes.forEach(g => { g.position.z += dz; if (g.position.z > PERTO) g.position.z -= faixaRolagem; });
+      recife.forEach(c => { c.g.rotation.z = Math.sin(t * .9 + c.f) * .025; });
       algasJ.forEach(a => a.segs.forEach((s, i) => { s.rotation.z = Math.sin(t * 1.4 + a.fase + i * .55) * .12; }));
       causticas.forEach((c, k) => { const m = c.material.map; m.offset.y += dz / 230 * m.repeat.y; m.offset.x = Math.sin(t * (.25 + k * .1) + k) * .08; });
       feixes.forEach((f, i) => { f.material.opacity = .035 + .03 * (.5 + .5 * Math.sin(t * .5 + i * 1.7)); });
