@@ -1033,7 +1033,7 @@
 <section id="jogo">
   <div class="envoltorio">
     <h2 class="sec-titulo">Missão: limpar o oceano</h2>
-    <div class="prosa"><p>Corra pelo fundo do mar recolhendo plástico antes que ele se quebre em microplásticos. Desvie dos corais, pule as pedras e os pneus, mergulhe sob as redes fantasma e as águas-vivas e não bata nos peixes.</p></div>
+    <div class="prosa"><p>Corra pelo fundo do mar recolhendo plástico antes que ele se quebre em microplásticos. Desvie dos corais, pule pedras, caranguejos e ouriços, mergulhe sob as redes fantasma e as águas-vivas, e fuja de polvos, tartarugas e peixes. Recolha o que solta microplástico: garrafas, sacolas, pneus e copos.</p></div>
     <div class="arena" id="arena" tabindex="0" aria-label="Minijogo de corrida. Setas para trocar de faixa, pular e mergulhar. Esc para pausar.">
       <canvas id="jogo3d" aria-hidden="true"></canvas>
       <div class="vinheta" aria-hidden="true"></div>
@@ -1075,7 +1075,7 @@
             <h3>Como jogar</h3>
             <ul>
               <li><span><kbd>←</kbd><kbd>→</kbd></span><span><b>Trocar de faixa</b> para desviar de corais e peixes</span></li>
-              <li><span><kbd>↑</kbd></span><span><b>Pular</b> pedras e pneus</span></li>
+              <li><span><kbd>↑</kbd></span><span><b>Pular</b> pedras e bichinhos do fundo</span></li>
               <li><span><kbd>↓</kbd></span><span><b>Mergulhar</b> sob redes e águas-vivas</span></li>
               <li><span><svg width="44" height="22" viewBox="0 0 44 22" aria-hidden="true"><path d="M4 9l5-4 4 5-5 4z" fill="#D9366B"/><path d="M18 7h4v3l2 2v8h-8v-8l2-2z" fill="#7CC8E8" stroke="#0F2733" stroke-width="1.2"/><circle cx="36" cy="11" r="6" fill="#9FE6F5" stroke="#0F2733" stroke-width="1.2"/></svg></span><span><b>Fragmentos</b> valem 10, <b>itens grandes</b> 30. Pegue <b>ímãs e bolhas</b> para ajudar.</span></li>
             </ul>
@@ -2591,7 +2591,7 @@ addEventListener('DOMContentLoaded', () => {
       alca: new T.TorusGeometry(.12, .03, 6, 12, Math.PI), canudo: new T.CylinderGeometry(.06, .06, 1.1, 8),
       rede: new T.TorusKnotGeometry(.26, .055, 48, 6, 2, 3), ima: new T.TorusGeometry(.28, .1, 8, 18, Math.PI),
       ponta: new T.CylinderGeometry(.1, .1, .16, 10), bolhaP: new T.SphereGeometry(.55, 18, 12), bolinha: new T.SphereGeometry(.3, 16, 12),
-      cone: new T.ConeGeometry(.5, 1, 10), pneu: new T.TorusGeometry(.62, .3, 10, 20), cupula: new T.SphereGeometry(.75, 18, 10, 0, Math.PI * 2, 0, Math.PI * .55), bolhinha: new T.SphereGeometry(.08, 8, 6), aura: new T.TorusGeometry(.55, .04, 6, 28), brilho: new T.OctahedronGeometry(.09, 0),
+      copo: new T.CylinderGeometry(.24, .16, .52, 14, 1, true), copoFaixa: new T.CylinderGeometry(.215, .19, .15, 14, 1, true), cone: new T.ConeGeometry(.5, 1, 10), pneu: new T.TorusGeometry(.62, .3, 10, 20), cupula: new T.SphereGeometry(.75, 18, 10, 0, Math.PI * 2, 0, Math.PI * .55), bolhinha: new T.SphereGeometry(.08, 8, 6), aura: new T.TorusGeometry(.55, .04, 6, 28), brilho: new T.OctahedronGeometry(.09, 0),
     };
     const CORES = [0xD9366B, 0x1C9CC0, 0xE3A821, 0x7A55C9, 0x2EA36B];
     const FAIXA = 2.2, BASE_Y = .8, LONGE = -82, PERTO = 12, faixaRolagem = PERTO - LONGE;
@@ -2715,6 +2715,9 @@ addEventListener('DOMContentLoaded', () => {
       garrafa: { fato: '<b>Garrafa PET.</b> Com sol, calor e atrito, o plástico se quebra em pedaços cada vez menores.' },
       sacola: { fato: '<b>Sacola.</b> É de polietileno, um dos plásticos mais encontrados no sangue humano.' },
       canudo: { fato: '<b>Canudo.</b> É de polipropileno, o plástico mais comum nos estudos da USP com pulmão e cérebro.' },
+      pneu: { fato: '<b>Pneu.</b> Pneus se desgastam e soltam partículas de borracha sintética, uma das maiores fontes de microplástico.' },
+      copo: { fato: '<b>Copo descartável.</b> Muitos são de poliestireno ou polipropileno e se quebram em pedaços pequenos.' },
+      escova: { fato: '<b>Escova de dentes.</b> Cerdas de náilon e cabo de plástico se desgastam e soltam fragmentos.' },
       rede: { fato: '<b>Pedaço de rede.</b> Redes abandonadas soltam fibras de náilon que viram microplástico.' },
     };
     const TIPOS_G = Object.keys(GRANDES);
@@ -2727,6 +2730,9 @@ addEventListener('DOMContentLoaded', () => {
         else if (tipo === 'sacola') { const c = peca(G.sacola, 0xF4F1E6, { mat: { side: T.DoubleSide } }); c.rotation.x = Math.PI; corpo.add(c); for (const x of [-.16, .16]) { const a = peca(G.alca, 0xF4F1E6); a.position.set(x, .4, 0); corpo.add(a); } cor = 0xffffff; }
         else if (tipo === 'canudo') { const c = peca(G.canudo, 0xD9366B); c.rotation.z = .9; corpo.add(c); cor = 0xD9366B; }
         else if (tipo === 'rede') { corpo.add(peca(G.rede, 0x2EA36B, { k: 1.12 })); cor = 0x2EA36B; }
+        else if (tipo === 'pneu') { const t = peca(G.pneu, 0x26343B); t.scale.setScalar(.6); t.rotation.x = Math.PI / 2; corpo.add(t); const r = peca(G.pneu, 0x4A5F6A, { contorno: false }); r.scale.set(.42, .42, .3); r.rotation.x = Math.PI / 2; r.position.y = .02; corpo.add(r); cor = 0x6F8591; }
+        else if (tipo === 'copo') { const c = peca(G.copo, 0xF4F1E6, { mat: { side: T.DoubleSide } }); corpo.add(c); const f = peca(G.copoFaixa, 0xD9366B, { contorno: false, mat: { side: T.DoubleSide } }); f.position.y = .02; corpo.add(f); corpo.rotation.z = .35; cor = 0xF4F1E6; }
+        else if (tipo === 'escova') { const c = peca(G.poste, 0x1C9CC0); c.scale.set(2.6, .95, 1.3); c.position.y = -.1; corpo.add(c); const h = peca(G.bola, 0x1C9CC0); h.scale.set(.2, .3, .1); h.position.y = .5; corpo.add(h); for (let k = 0; k < 4; k++) { const b = peca(G.bola, 0xFFFFFF, { contorno: false }); b.scale.set(.07, .14, .07); b.position.set(-.06 + k * .04, .72, 0); corpo.add(b); } corpo.rotation.z = .8; cor = 0x1C9CC0; }
         const aura = new T.Mesh(G.aura, new T.MeshBasicMaterial({ color: 0xFFE08A, transparent: true, opacity: .8 })); aura.rotation.x = Math.PI / 2; aura.position.y = -.35; g.add(aura); g.userData.aura = aura;
       }
       g.userData.corpo = corpo; g.userData.cor = cor;
@@ -2777,10 +2783,108 @@ addEventListener('DOMContentLoaded', () => {
         const p = peca(G.pedra, cinza); p.scale.set(.9 + Math.random() * .3, .5 + Math.random() * .15, .65 + Math.random() * .25); p.position.y = .4; p.rotation.y = Math.random() * 3; g.add(p); o.y1 = .9;
         if (Math.random() < .55) { const q = peca(G.pedra, cinza); q.scale.set(.42, .3, .38); q.position.set((Math.random() < .5 ? -1 : 1) * .62, .2, .25); q.rotation.y = Math.random() * 3; g.add(q); }
         if (Math.random() < .5) { const alga = peca(G.cone, 0x2EA36B, { k: 1.1 }); alga.scale.set(.22, .9, .22); alga.position.set(-.1, .95, 0); g.add(alga); }
-      } else if (tipo === 'pneu') {
-        for (let k = 0; k < 2; k++) { const t = peca(G.pneu, 0x26343B); t.rotation.x = Math.PI / 2; t.position.set(k ? .12 : 0, .3 + k * .52, 0); t.rotation.z = k ? .3 : 0; g.add(t); }
-        const alga = peca(G.cone, 0x2EA36B, { k: 1.1 }); alga.scale.set(.2, .7, .2); alga.position.set(.55, 1.0, 0); alga.rotation.z = -.5; g.add(alga);
-        o.y1 = 1.15; o.prof = 1.5;
+      } else if (tipo === 'caranguejo') {
+        const cr = new T.Group(); g.add(cr);
+        const corpo = peca(G.bola, 0xE8553A); corpo.scale.set(1.5, .8, 1.1); corpo.position.y = .5; cr.add(corpo);
+        for (const sx of [-1, 1]) {
+          const hs = peca(G.poste, 0xE8553A, { contorno: false }); hs.scale.set(1.6, .32, 1.6); hs.position.set(sx * .3, .98, .32); cr.add(hs);
+          const olho = K.olho(.15); olho.position.set(sx * .3, 1.18, .36); cr.add(olho);
+        }
+        o.pinca = [];
+        for (const sx of [-1, 1]) {
+          const piv = new T.Group(); piv.position.set(sx * .62, .6, .35); cr.add(piv);
+          const braco = peca(G.poste, 0xE8553A, { contorno: false }); braco.scale.set(2, .42, 2); braco.position.set(sx * .12, .2, .1); braco.rotation.z = -sx * .5; piv.add(braco);
+          const pin = peca(G.bola, 0xF0694A); pin.scale.set(.5, .42, .34); pin.position.set(sx * .3, .5, .15); piv.add(pin);
+          const dedo = peca(G.cone, 0xF0694A, { contorno: false }); dedo.scale.set(.2, .3, .12); dedo.position.set(sx * .3, .75, .15); piv.add(dedo);
+          o.pinca.push({ piv, sx });
+        }
+        o.pernas = [];
+        for (const sx of [-1, 1]) for (let k = 0; k < 3; k++) { const l = peca(G.poste, 0xC9422B, { contorno: false }); l.scale.set(1.4, .6, 1.4); l.position.set(sx * .8, .26, -.2 + k * .26); l.rotation.z = sx * 1.1; cr.add(l); o.pernas.push({ l, sx, k }); }
+        o.cr = cr; o.y1 = .95; o.prof = 1.0;
+        o.anim = t => {
+          cr.position.x = Math.sin(t * 2.2 + o.f) * .32; cr.position.y = Math.abs(Math.sin(t * 8 + o.f)) * .05; cr.rotation.y = Math.cos(t * 2.2 + o.f) * .15;
+          o.pinca.forEach(c => { c.piv.rotation.z = c.sx * (.25 + Math.sin(t * 5 + o.f) * .3); });
+          o.pernas.forEach(c => { c.l.rotation.z = c.sx * (1.1 + Math.sin(t * 12 + c.k + (c.sx > 0 ? 1.5 : 0)) * .22); });
+        };
+      } else if (tipo === 'estrela') {
+        const cor = [0xF08A3C, 0xE8553A, 0xF2C230][Math.floor(Math.random() * 3)], est = new T.Group(); est.position.y = .2; g.add(est);
+        const meio = peca(G.bola, cor); meio.scale.set(.7, .3, .7); meio.position.y = .08; est.add(meio);
+        for (let k = 0; k < 5; k++) {
+          const piv = new T.Group(); piv.rotation.y = k * Math.PI * 2 / 5; est.add(piv);
+          const braco = peca(G.cone, cor); braco.rotation.z = -Math.PI / 2; braco.scale.set(.5, 1.15, .3); braco.position.set(.55, .08, 0); piv.add(braco);
+          const pinta = peca(G.bola, 0xFFE3B0, { contorno: false }); pinta.scale.set(.12, .08, .12); pinta.position.set(.5, .22, 0); piv.add(pinta);
+        }
+        o.est = est; o.y1 = .5; o.prof = 1.4;
+        o.anim = t => { est.rotation.y = Math.sin(t * .8 + o.f) * .35; est.position.y = .2 + Math.sin(t * 2 + o.f) * .02; };
+      } else if (tipo === 'ourico') {
+        const ou = new T.Group(); ou.position.y = .55; g.add(ou);
+        const corpo = peca(G.bola, 0x4B2A6B); corpo.scale.setScalar(.95); ou.add(corpo);
+        o.espinhos = [];
+        for (let k = 0; k < 26; k++) {
+          const y = 1 - (k / 25) * 2, r = Math.sqrt(1 - y * y), a = k * 2.399963, dir = new T.Vector3(Math.cos(a) * r, y, Math.sin(a) * r);
+          if (y < -.55) continue;
+          const sp = peca(G.cone, k % 3 ? 0x7A55C9 : 0xB59BEA, { contorno: false }); sp.scale.set(.12, .75, .12);
+          sp.quaternion.setFromUnitVectors(new T.Vector3(0, 1, 0), dir); sp.position.copy(dir).multiplyScalar(.55); ou.add(sp); o.espinhos.push({ sp, k });
+        }
+        o.ou = ou; o.y1 = 1.15; o.prof = 1.1;
+        o.anim = t => { const e = 1 + Math.sin(t * 3 + o.f) * .06; ou.scale.setScalar(e); ou.rotation.y = Math.sin(t * .9 + o.f) * .3; };
+      } else if (tipo === 'anemona') {
+        const base = peca(G.coluna, 0xC94F7C); base.scale.set(.9, .5, .9); base.position.y = .25; g.add(base);
+        o.tent = [];
+        for (let k = 0; k < 20; k++) {
+          const a = k / 20 * Math.PI * 2, rr = .25 + (k % 2) * .2, piv = new T.Group(); piv.position.set(Math.cos(a) * rr, .45, Math.sin(a) * rr * .8); g.add(piv);
+          const ten = peca(G.poste, k % 2 ? 0xF07CA8 : 0xB57AE8, { contorno: false }); ten.scale.set(2.4, .5 + (k % 3) * .08, 2.4); ten.position.y = .27; piv.add(ten);
+          const ponta = peca(G.bola, k % 2 ? 0xFFD3E3 : 0xE0C6FF, { contorno: false }); ponta.scale.setScalar(.14); ponta.position.y = .52 + (k % 3) * .08; piv.add(ponta);
+          piv.rotation.z = Math.cos(a) * .35; piv.rotation.x = -Math.sin(a) * .35; o.tent.push({ piv, a });
+        }
+        const palhaco = fazerPeixe(K, { cor: 0xF57A1F, cauda: 0xF57A1F, listras: true }); palhaco.g.scale.setScalar(.2); palhaco.g.position.y = 1.05; g.add(palhaco.g); o.palhaco = palhaco;
+        o.y1 = 1.2; o.prof = 1.3;
+        o.anim = t => {
+          o.tent.forEach(c => { c.piv.rotation.z = Math.cos(c.a) * .35 + Math.sin(t * 2.4 + c.a * 2) * .22; c.piv.rotation.x = -Math.sin(c.a) * .35 + Math.cos(t * 2.1 + c.a * 2) * .22; });
+          const a = t * 1.6 + o.f; palhaco.g.position.set(Math.cos(a) * .6, 1.0 + Math.sin(a * 2) * .08, Math.sin(a) * .5); palhaco.g.rotation.y = -a - Math.PI / 2; palhaco.cauda.rotation.y = Math.sin(t * 14) * .5;
+        };
+      } else if (tipo === 'polvo') {
+        const cab = peca(G.bola, 0xE0553C); cab.scale.set(1.15, 1.4, 1.1); cab.position.y = 2.45; g.add(cab);
+        const manchas = peca(G.bola, 0xF08A6E, { contorno: false }); manchas.scale.set(.4, .3, .2); manchas.position.set(.25, 2.9, .5); g.add(manchas);
+        for (const sx of [-1, 1]) { const olho = K.olho(.3); olho.position.set(sx * .4, 2.3, .52); if (sx < 0) olho.scale.x = -1; g.add(olho); }
+        o.tent = [];
+        for (let k = 0; k < 8; k++) {
+          const a = k / 8 * Math.PI * 2, piv = new T.Group(); piv.position.set(Math.cos(a) * .5, 2.0, Math.sin(a) * .42); g.add(piv);
+          const t1 = peca(G.poste, k % 2 ? 0xE0553C : 0xC9442D, { contorno: false }); t1.scale.set(3, 1.0, 3); t1.position.y = -.5; piv.add(t1);
+          const seg = new T.Group(); seg.position.y = -1.0; piv.add(seg);
+          const t2 = peca(G.poste, k % 2 ? 0xE0553C : 0xC9442D, { contorno: false }); t2.scale.set(2.2, .9, 2.2); t2.position.y = -.45; seg.add(t2);
+          const pt = peca(G.bola, 0xF08A6E, { contorno: false }); pt.scale.setScalar(.12); pt.position.y = -.92; seg.add(pt);
+          piv.rotation.z = Math.cos(a) * .55; piv.rotation.x = -Math.sin(a) * .55; o.tent.push({ piv, seg, a });
+        }
+        o.cab = cab; o.prof = 1.4;
+        o.anim = t => {
+          cab.scale.set(1.15 + Math.sin(t * 2.6 + o.f) * .05, 1.4 - Math.sin(t * 2.6 + o.f) * .06, 1.1);
+          o.tent.forEach(c => { c.piv.rotation.z = Math.cos(c.a) * .55 + Math.sin(t * 3 + c.a * 3) * .25; c.piv.rotation.x = -Math.sin(c.a) * .55 + Math.cos(t * 2.6 + c.a * 3) * .25; c.seg.rotation.z = Math.sin(t * 3.6 + c.a * 2) * .45; });
+        };
+      } else if (tipo === 'tartaruga') {
+        const tu = new T.Group(); tu.position.y = 1.15; tu.rotation.y = -Math.PI / 2; g.add(tu);
+        const casco = peca(G.bola, 0x4E9E5E); casco.scale.set(2.2, .95, 1.8); tu.add(casco);
+        for (const [x, z] of [[0, 0], [.55, 0], [-.55, 0], [0, .5], [0, -.5]]) { const pl = peca(G.bola, 0x8FD18A, { contorno: false }); pl.scale.set(.6, .2, .55); pl.position.set(x, .45, z); tu.add(pl); }
+        const cabeca = peca(G.bola, 0xB5C96B); cabeca.scale.set(.6, .5, .5); cabeca.position.set(1.25, .1, 0); tu.add(cabeca);
+        for (const z of [-1, 1]) { const o2 = K.olho(.16); o2.position.set(1.42, .22, .2 * z); if (z < 0) o2.scale.z = -1; tu.add(o2); }
+        o.nad = [];
+        for (const [x, z] of [[.6, 1], [.6, -1], [-.7, 1], [-.7, -1]]) {
+          const piv = new T.Group(); piv.position.set(x, -.1, z * .8); tu.add(piv);
+          const nd = peca(G.bola, 0xB5C96B); nd.scale.set(.5 + (x > 0 ? .4 : -.15) , .12, 1.0 - (x > 0 ? 0 : .35)); nd.position.set(0, 0, z * .55); piv.add(nd); o.nad.push({ piv, z, x });
+        }
+        o.tu = tu; o.vz = 3.2; o.prof = 1.9;
+        o.anim = t => { tu.position.y = 1.15 + Math.sin(t * 1.6 + o.f) * .12; tu.rotation.z = Math.sin(t * 1.6 + o.f) * .05; o.nad.forEach(c => { c.piv.rotation.x = -c.z * Math.sin(t * 3 + o.f + (c.x > 0 ? 0 : 1.2)) * .55; }); };
+      } else if (tipo === 'baiacu') {
+        const bg = new T.Group(); bg.position.y = 1.1; bg.rotation.y = -Math.PI / 2; g.add(bg);
+        const corpo = peca(G.bola, 0xF2C230); corpo.scale.set(1.3, 1.2, 1.2); bg.add(corpo);
+        const barriga = peca(G.bola, 0xFFF1B0, { contorno: false }); barriga.scale.set(1.15, .7, 1.05); barriga.position.y = -.2; bg.add(barriga);
+        for (let k = 0; k < 18; k++) { const y = 1 - (k / 17) * 2, r = Math.sqrt(1 - y * y), a = k * 2.399963, dir = new T.Vector3(Math.cos(a) * r, y, Math.sin(a) * r); const sp = peca(G.cone, 0xFFF1B0, { contorno: false }); sp.scale.set(.1, .28, .1); sp.quaternion.setFromUnitVectors(new T.Vector3(0, 1, 0), dir); sp.position.set(dir.x * .66, dir.y * .6, dir.z * .6); bg.add(sp); }
+        for (const z of [-1, 1]) { const ol = K.olho(.22); ol.position.set(.58, .22, .45 * z); if (z < 0) ol.scale.z = -1; bg.add(ol); }
+        const cauda = new T.Group(); cauda.position.x = -.62; bg.add(cauda);
+        const nad = peca(G.cone, 0xE0A020, { contorno: false }); nad.rotation.z = -Math.PI / 2; nad.scale.set(.7, .7, .2); nad.position.x = -.35; cauda.add(nad);
+        const lat = []; for (const z of [-1, 1]) { const f = peca(G.cone, 0xE0A020, { contorno: false }); f.scale.set(.3, .4, .1); f.position.set(.1, -.1, z * .75); f.rotation.x = z * 1.2; bg.add(f); lat.push({ f, z }); }
+        o.bg = bg; o.vz = 4.5; o.prof = 1.2;
+        o.anim = t => { const e = 1 + Math.sin(t * 2.2 + o.f) * .08; corpo.scale.set(1.3 * e, 1.2 * e, 1.2 * e); cauda.rotation.y = Math.sin(t * 10 + o.f) * .5; bg.position.y = 1.1 + Math.sin(t * 2 + o.f) * .1; lat.forEach(c => { c.f.rotation.x = c.z * (1.2 + Math.sin(t * 9) * .3); }); };
       } else if (tipo === 'viva') {
         const flut = new T.Group(); flut.position.y = 2.7; g.add(flut);
         const cup = new T.Mesh(G.cupula, new T.MeshBasicMaterial({ color: 0xE9A6FF, transparent: true, opacity: .85 })); cup.scale.set(1.25, 1, 1.25); flut.add(cup);
@@ -2795,7 +2899,7 @@ addEventListener('DOMContentLoaded', () => {
         for (let k = 0; k < 4; k++) { const b = peca(G.bola, 0xF2A65A); b.scale.setScalar(.3); b.position.set(-.8 + k * .53, 3.9, 0); g.add(b); }
         o.y0 = 1.3; o.prof = .7; o.malha = malha;
       } else if (tipo === 'peixe') {
-        const p = fazerPeixe(K, Math.random() < .5 ? { cor: 0x2F6FD6, cauda: 0xF2C230 } : { cor: 0xF57A1F, cauda: 0xF57A1F, listras: true });
+        const v = [{ cor: 0x2F6FD6, cauda: 0xF2C230 }, { cor: 0xF57A1F, cauda: 0xF57A1F, listras: true }, { cor: 0x1FA6C9, cauda: 0xF2C230, listras: true }][Math.floor(Math.random() * 3)]; const p = fazerPeixe(K, v);
         p.g.rotation.y = -Math.PI / 2; p.g.scale.setScalar(.72); p.g.position.y = 1.0; g.add(p.g);
         o.cauda = p.cauda; o.peixe = p.g; o.vz = 6; o.prof = 1.2;
       }
@@ -2814,8 +2918,14 @@ addEventListener('DOMContentLoaded', () => {
       coral: 'Você bateu em um coral. Dica: troque de faixa com ← e →.',
       pedra: 'Você bateu em uma pedra. Dica: pule com ↑.',
       rede: 'Você ficou preso numa <b>rede fantasma</b>, uma rede de pesca abandonada que continua no mar e solta fibras de náilon. Dica: mergulhe com ↓.',
-      pneu: 'Você bateu em um <b>pneu</b>. Pneus velhos no mar se desgastam e soltam partículas de borracha sintética, outra fonte de microplástico. Dica: pule com ↑.',
-      viva: 'Você bateu em uma <b>água-viva</b>. Tartarugas confundem sacolas plásticas com águas-vivas e as engolem. Dica: mergulhe com ↓.',
+      caranguejo: 'Você bateu em um <b>caranguejo</b>. Estudos já encontraram microplástico no corpo de caranguejos, que o engolem junto com a comida. Dica: pule com ↑.',
+      estrela: 'Você pisou numa <b>estrela-do-mar</b>. Animais que vivem no fundo, como estrelas e ouriços, também ingerem microplástico. Dica: pule com ↑.',
+      ourico: 'Você bateu em um <b>ouriço-do-mar</b>. Ouriços raspam o fundo e podem engolir fragmentos de plástico. Dica: pule com ↑.',
+      anemona: 'Você bateu em uma <b>anêmona</b>. Anêmonas e corais capturam microplástico como se fosse comida. Dica: pule com ↑.',
+      polvo: 'Você bateu em um <b>polvo</b>. Já foi encontrado microplástico em polvos, que o recebem pela cadeia alimentar. Dica: troque de faixa.',
+      tartaruga: 'Você bateu em uma <b>tartaruga</b>. Tartarugas confundem sacolas plásticas com águas-vivas e as engolem. Dica: troque de faixa.',
+      baiacu: 'Você bateu em um <b>baiacu</b>. Peixes pequenos confundem fragmentos de plástico com comida. Dica: troque de faixa.',
+      viva: 'Você bateu em uma <b>água-viva</b>. Ela é comida de tartarugas, que confundem sacolas plásticas com águas-vivas. Dica: mergulhe com ↓.',
       peixe: 'Você bateu em um peixe. Peixes também engolem plástico por engano. Dica: troque de faixa.',
     };
     let estado = 'menu', antesDaPausa = 'jogando', voltarPara = 'principal', obst = [], itens = [], poderes = [];
@@ -3213,19 +3323,20 @@ addEventListener('DOMContentLoaded', () => {
     addEventListener('pointerup', () => { toque = null; });
 
     /* ---------- geração de fileiras ---------- */
+    const BAIXOS = ['pedra', 'caranguejo', 'estrela', 'ourico', 'anemona']; // obstáculos de pular: o arco de plástico passa por cima
     function novaFileira() {
       const z = LONGE, livres = [0, 1, 2].sort(() => Math.random() - .5);
       const dif = Math.min(1, tJogo / 60);
       const nBloq = Math.random() < .2 - dif * .1 ? 0 : Math.random() < .55 - dif * .2 ? 1 : 2;
       const bloqueadas = livres.splice(0, nBloq);
-      const tiposOk = ['coral', 'coral', 'pedra'].concat(tJogo > 5 ? ['pneu'] : [], tJogo > 8 ? ['rede'] : [], tJogo > 13 ? ['viva'] : [], tJogo > 18 ? ['peixe'] : []);
+      const tiposOk = ['coral', 'pedra'].concat(tJogo > 4 ? ['caranguejo', 'estrela'] : [], tJogo > 8 ? ['rede', 'anemona', 'ourico'] : [], tJogo > 12 ? ['viva', 'polvo'] : [], tJogo > 16 ? ['peixe', 'baiacu'] : [], tJogo > 22 ? ['tartaruga'] : []);
       const linhasF = {};
       bloqueadas.forEach(f => {
         const tipo = tiposOk[Math.floor(Math.random() * tiposOk.length)];
-        const o = fazerObstaculo(tipo); o.x = (f - 1) * FAIXA; o.g.position.set(o.x, 0, tipo === 'peixe' ? z - 20 : z); cena.add(o.g); obst.push(o);
+        const o = fazerObstaculo(tipo); o.x = (f - 1) * FAIXA; o.g.position.set(o.x, 0, ['peixe', 'baiacu', 'tartaruga'].includes(tipo) ? z - 20 : z); cena.add(o.g); obst.push(o);
         linhasF[f] = tipo;
       });
-      const alvo = Object.keys(linhasF).find(f => (linhasF[f] === 'pedra' || linhasF[f] === 'pneu') && Math.random() < .5);
+      const alvo = Object.keys(linhasF).find(f => BAIXOS.includes(linhasF[f]) && Math.random() < .5);
       const fItens = alvo !== undefined ? +alvo : livres[0];
       if (fItens !== undefined) {
         const arco = alvo !== undefined, n = arco ? 7 : 5 + Math.floor(Math.random() * 4);
@@ -3372,6 +3483,7 @@ addEventListener('DOMContentLoaded', () => {
         o.g.position.z += dz + (jogando ? o.vz * dt : 0);
         o.nasc += dt; o.g.scale.setScalar(Math.max(.01, easeBack(Math.min(1, o.nasc / .4))));
         if (o.cauda) { o.cauda.rotation.y = Math.sin(t * 12 + o.f) * .5; o.peixe.position.x = Math.sin(t * 3 + o.f) * .12; }
+        if (o.anim) o.anim(t);
         if (o.malha) o.malha.rotation.y = Math.sin(t * 1.5 + o.f) * .1;
         if (o.flut) { o.flut.position.y = 2.7 + Math.sin(t * 2.2 + o.f) * .14; o.flut.scale.y = 1 + Math.sin(t * 4.4 + o.f) * .06; }
         if (o.tipo === 'coral') o.g.rotation.z = Math.sin(t * 1.2 + o.f) * .03;
@@ -3407,7 +3519,8 @@ addEventListener('DOMContentLoaded', () => {
           if (m > multi) { multi = m; maiorMulti = Math.max(maiorMulti, m); pular(ui.multi); grito('Combo x' + m); som.poder(); fovExtra = 4; }
           const ganho = (it.tipo === 'frag' ? 10 : 30) * multi; pontosPlast += ganho; pular(ui.plastico);
           popTexto('+' + ganho, g.position, it.tipo !== 'frag');
-          soltarBrilho(g.position, g.userData.cor, it.tipo === 'frag' ? 6 : 14);
+          soltarBrilho(g.position, g.userData.cor, it.tipo === 'frag' ? 6 : 10);
+          if (it.tipo !== 'frag') { soltarBrilho(g.position, 0xD9366B, 5, 4.2); soltarBrilho(g.position, 0x1C9CC0, 5, 4.2); soltarBrilho(g.position, 0xE3A821, 5, 4.2); } // o objeto se quebra em microplástico
           if (it.tipo === 'frag') som.coleta(combo); else { som.grande(); vibrar(15); }
           if (it.tipo !== 'frag' && !vistos.has(it.tipo) && opc.dicas) { vistos.add(it.tipo); aviso(GRANDES[it.tipo].fato, 4); }
           continue;
