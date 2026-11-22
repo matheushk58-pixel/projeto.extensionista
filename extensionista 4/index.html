@@ -1033,7 +1033,7 @@
 <section id="jogo">
   <div class="envoltorio">
     <h2 class="sec-titulo">Missão: limpar o oceano</h2>
-    <div class="prosa"><p>Corra pelo fundo do mar recolhendo plástico antes que ele se quebre em microplásticos. Desvie dos corais, pule as pedras, mergulhe sob as redes fantasma e não bata nos peixes.</p></div>
+    <div class="prosa"><p>Corra pelo fundo do mar recolhendo plástico antes que ele se quebre em microplásticos. Desvie dos corais, pule as pedras e os pneus, mergulhe sob as redes fantasma e as águas-vivas e não bata nos peixes.</p></div>
     <div class="arena" id="arena" tabindex="0" aria-label="Minijogo de corrida. Setas para trocar de faixa, pular e mergulhar. Esc para pausar.">
       <canvas id="jogo3d" aria-hidden="true"></canvas>
       <div class="vinheta" aria-hidden="true"></div>
@@ -1075,8 +1075,8 @@
             <h3>Como jogar</h3>
             <ul>
               <li><span><kbd>←</kbd><kbd>→</kbd></span><span><b>Trocar de faixa</b> para desviar de corais e peixes</span></li>
-              <li><span><kbd>↑</kbd></span><span><b>Pular</b> pedras</span></li>
-              <li><span><kbd>↓</kbd></span><span><b>Mergulhar</b> sob redes fantasma</span></li>
+              <li><span><kbd>↑</kbd></span><span><b>Pular</b> pedras e pneus</span></li>
+              <li><span><kbd>↓</kbd></span><span><b>Mergulhar</b> sob redes e águas-vivas</span></li>
               <li><span><svg width="44" height="22" viewBox="0 0 44 22" aria-hidden="true"><path d="M4 9l5-4 4 5-5 4z" fill="#D9366B"/><path d="M18 7h4v3l2 2v8h-8v-8l2-2z" fill="#7CC8E8" stroke="#0F2733" stroke-width="1.2"/><circle cx="36" cy="11" r="6" fill="#9FE6F5" stroke="#0F2733" stroke-width="1.2"/></svg></span><span><b>Fragmentos</b> valem 10, <b>itens grandes</b> 30. Pegue <b>ímãs e bolhas</b> para ajudar.</span></li>
             </ul>
             <p class="teclas" id="dicaTeclas">Também funciona com W, A, S, D e barra de espaço. Esc pausa.</p>
@@ -2591,7 +2591,7 @@ addEventListener('DOMContentLoaded', () => {
       alca: new T.TorusGeometry(.12, .03, 6, 12, Math.PI), canudo: new T.CylinderGeometry(.06, .06, 1.1, 8),
       rede: new T.TorusKnotGeometry(.26, .055, 48, 6, 2, 3), ima: new T.TorusGeometry(.28, .1, 8, 18, Math.PI),
       ponta: new T.CylinderGeometry(.1, .1, .16, 10), bolhaP: new T.SphereGeometry(.55, 18, 12), bolinha: new T.SphereGeometry(.3, 16, 12),
-      bolhinha: new T.SphereGeometry(.08, 8, 6), aura: new T.TorusGeometry(.55, .04, 6, 28), brilho: new T.OctahedronGeometry(.09, 0),
+      cone: new T.ConeGeometry(.5, 1, 10), pneu: new T.TorusGeometry(.62, .3, 10, 20), cupula: new T.SphereGeometry(.75, 18, 10, 0, Math.PI * 2, 0, Math.PI * .55), bolhinha: new T.SphereGeometry(.08, 8, 6), aura: new T.TorusGeometry(.55, .04, 6, 28), brilho: new T.OctahedronGeometry(.09, 0),
     };
     const CORES = [0xD9366B, 0x1C9CC0, 0xE3A821, 0x7A55C9, 0x2EA36B];
     const FAIXA = 2.2, BASE_Y = .8, LONGE = -82, PERTO = 12, faixaRolagem = PERTO - LONGE;
@@ -2747,10 +2747,46 @@ addEventListener('DOMContentLoaded', () => {
     function fazerObstaculo(tipo) {
       const g = new T.Group(); const o = { tipo, g, y0: 0, y1: 9, prof: 1.5, vz: 0, nasc: 0, f: Math.random() * 6 };
       if (tipo === 'coral') {
-        const c = peca(G.coluna, 0xF07CA8); c.scale.set(1, 3, 1); c.position.y = 1.5; g.add(c);
-        for (let k = 0; k < 3; k++) { const b = peca(G.bola, 0xF07CA8); b.scale.setScalar(.75); b.position.set((k - 1) * .45, 3.1 + (k % 2) * .3, 0); g.add(b); }
+        const var_ = Math.floor(Math.random() * 4), cl = [[0xF07CA8, 0xFFB3CC], [0xF2A65A, 0xFFD3A0], [0x7A55C9, 0xB59BEA], [0xE05A4F, 0xFF9C8F]][Math.floor(Math.random() * 4)];
+        const ram = (x, z, alt, inc, cor) => { const r = peca(G.poste, cor); r.scale.set(2.2, alt, 2.2); r.position.set(x, alt / 2, z); r.rotation.z = inc; g.add(r); return r; };
+        if (var_ === 0) { // ramificado (chifre de veado)
+          const tronco = peca(G.coluna, cl[0]); tronco.scale.set(.55, 2.2, .55); tronco.position.y = 1.1; g.add(tronco);
+          [[-.55, -.5, 1.9], [.55, .5, 2.2], [-.25, .45, 2.5], [.4, -.4, 1.7]].forEach(([x, inc, alt], k) => {
+            const r = peca(G.poste, cl[k % 2], { k: 1.14 }); r.scale.set(5.5, alt, 5.5); r.position.set(x * .6, 1.3 + alt / 2 * Math.cos(inc), 0); r.rotation.z = -inc; g.add(r);
+            const t = peca(G.bola, cl[1]); t.scale.setScalar(.34); t.position.set(x * .6 - Math.sin(inc) * alt / 2 * .96, 1.3 + alt * Math.cos(inc) * .98, 0); g.add(t);
+          });
+        } else if (var_ === 1) { // cérebro, montes empilhados
+          [[1.0, .9, 0, 1.0], [.78, 2.0, .05, .85], [.52, 2.9, -.05, .7]].forEach(([r, y, x, e]) => {
+            const m = peca(G.bola, cl[0]); m.scale.set(r * 2.1, r * 1.5, r * 1.8); m.position.set(x, y, 0); g.add(m);
+            const sulco = peca(G.aura, cl[1], { contorno: false }); sulco.scale.setScalar(r * 1.2); sulco.rotation.x = Math.PI / 2; sulco.position.set(x, y + r * .55, 0); g.add(sulco);
+          });
+        } else if (var_ === 2) { // tubos em cacho
+          [[-.55, 2.4, .26], [-.1, 3.6, .32], [.45, 2.9, .28], [.15, 1.9, .22], [-.3, 1.6, .2], [.62, 1.5, .2]].forEach(([x, alt, r], k) => {
+            const t = peca(G.coluna, cl[k % 2 ? 0 : 1]); t.scale.set(r * 1.7, alt, r * 1.7); t.position.set(x, alt / 2, (k % 3 - 1) * .25); g.add(t);
+            const boca = peca(G.aura, 0x2A1236, { contorno: false }); boca.scale.setScalar(r * 1.3); boca.rotation.x = Math.PI / 2; boca.position.set(x, alt + .02, (k % 3 - 1) * .25); g.add(boca);
+          });
+        } else { // leque (gorgônia) em haste
+          const haste = peca(G.poste, 0x5B3A1E); haste.scale.set(1.6, 1.4, 1.6); haste.position.y = .7; g.add(haste);
+          const leque = peca(G.bola, cl[0]); leque.scale.set(2.0, 2.6, .16); leque.position.y = 2.7; g.add(leque);
+          const rede = new T.Mesh(new T.PlaneGeometry(1.9, 2.5, 7, 9), new T.MeshBasicMaterial({ color: cl[1], wireframe: true, transparent: true, opacity: .75 })); rede.position.set(0, 2.7, .14); g.add(rede);
+          const rede2 = rede.clone(); rede2.position.z = -.14; g.add(rede2);
+        }
+        g.rotation.y = (Math.random() - .5) * .8;
       } else if (tipo === 'pedra') {
-        const p = peca(G.pedra, 0x3E5A66); p.scale.set(1.0, .55, .75); p.position.y = .4; g.add(p); o.y1 = .9;
+        const cinza = [0x3E5A66, 0x4A5F5A, 0x55606B][Math.floor(Math.random() * 3)];
+        const p = peca(G.pedra, cinza); p.scale.set(.9 + Math.random() * .3, .5 + Math.random() * .15, .65 + Math.random() * .25); p.position.y = .4; p.rotation.y = Math.random() * 3; g.add(p); o.y1 = .9;
+        if (Math.random() < .55) { const q = peca(G.pedra, cinza); q.scale.set(.42, .3, .38); q.position.set((Math.random() < .5 ? -1 : 1) * .62, .2, .25); q.rotation.y = Math.random() * 3; g.add(q); }
+        if (Math.random() < .5) { const alga = peca(G.cone, 0x2EA36B, { k: 1.1 }); alga.scale.set(.22, .9, .22); alga.position.set(-.1, .95, 0); g.add(alga); }
+      } else if (tipo === 'pneu') {
+        for (let k = 0; k < 2; k++) { const t = peca(G.pneu, 0x26343B); t.rotation.x = Math.PI / 2; t.position.set(k ? .12 : 0, .3 + k * .52, 0); t.rotation.z = k ? .3 : 0; g.add(t); }
+        const alga = peca(G.cone, 0x2EA36B, { k: 1.1 }); alga.scale.set(.2, .7, .2); alga.position.set(.55, 1.0, 0); alga.rotation.z = -.5; g.add(alga);
+        o.y1 = 1.15; o.prof = 1.5;
+      } else if (tipo === 'viva') {
+        const flut = new T.Group(); flut.position.y = 2.7; g.add(flut);
+        const cup = new T.Mesh(G.cupula, new T.MeshBasicMaterial({ color: 0xE9A6FF, transparent: true, opacity: .85 })); cup.scale.set(1.25, 1, 1.25); flut.add(cup);
+        const miolo = new T.Mesh(G.bola, new T.MeshBasicMaterial({ color: 0xFFD6F5, transparent: true, opacity: .8 })); miolo.scale.set(.7, .4, .7); miolo.position.y = .08; flut.add(miolo);
+        for (let k = 0; k < 7; k++) { const a = k / 7 * Math.PI * 2; const t = peca(G.poste, 0xD58CF2, { contorno: false }); t.scale.set(1.5, 1.5 + (k % 3) * .35, 1.5); t.position.set(Math.cos(a) * .55, -.75, Math.sin(a) * .45); flut.add(t); }
+        o.flut = flut; o.y0 = 1.3; o.prof = .9;
       } else if (tipo === 'rede') {
         for (const x of [-1.05, 1.05]) { const p = peca(G.poste, 0x5B3A1E); p.scale.y = 4; p.position.set(x, 2, 0); g.add(p); }
         const corda = peca(G.poste, 0xE8EFEC, { k: 1.3 }); corda.scale.y = 2.2; corda.rotation.z = Math.PI / 2; corda.position.y = 3.9; g.add(corda);
@@ -2778,6 +2814,8 @@ addEventListener('DOMContentLoaded', () => {
       coral: 'Você bateu em um coral. Dica: troque de faixa com ← e →.',
       pedra: 'Você bateu em uma pedra. Dica: pule com ↑.',
       rede: 'Você ficou preso numa <b>rede fantasma</b>, uma rede de pesca abandonada que continua no mar e solta fibras de náilon. Dica: mergulhe com ↓.',
+      pneu: 'Você bateu em um <b>pneu</b>. Pneus velhos no mar se desgastam e soltam partículas de borracha sintética, outra fonte de microplástico. Dica: pule com ↑.',
+      viva: 'Você bateu em uma <b>água-viva</b>. Tartarugas confundem sacolas plásticas com águas-vivas e as engolem. Dica: mergulhe com ↓.',
       peixe: 'Você bateu em um peixe. Peixes também engolem plástico por engano. Dica: troque de faixa.',
     };
     let estado = 'menu', antesDaPausa = 'jogando', voltarPara = 'principal', obst = [], itens = [], poderes = [];
@@ -3180,14 +3218,14 @@ addEventListener('DOMContentLoaded', () => {
       const dif = Math.min(1, tJogo / 60);
       const nBloq = Math.random() < .2 - dif * .1 ? 0 : Math.random() < .55 - dif * .2 ? 1 : 2;
       const bloqueadas = livres.splice(0, nBloq);
-      const tiposOk = ['coral', 'pedra'].concat(tJogo > 8 ? ['rede'] : [], tJogo > 18 ? ['peixe'] : []);
+      const tiposOk = ['coral', 'coral', 'pedra'].concat(tJogo > 5 ? ['pneu'] : [], tJogo > 8 ? ['rede'] : [], tJogo > 13 ? ['viva'] : [], tJogo > 18 ? ['peixe'] : []);
       const linhasF = {};
       bloqueadas.forEach(f => {
         const tipo = tiposOk[Math.floor(Math.random() * tiposOk.length)];
         const o = fazerObstaculo(tipo); o.x = (f - 1) * FAIXA; o.g.position.set(o.x, 0, tipo === 'peixe' ? z - 20 : z); cena.add(o.g); obst.push(o);
         linhasF[f] = tipo;
       });
-      const alvo = Object.keys(linhasF).find(f => linhasF[f] === 'pedra' && Math.random() < .5);
+      const alvo = Object.keys(linhasF).find(f => (linhasF[f] === 'pedra' || linhasF[f] === 'pneu') && Math.random() < .5);
       const fItens = alvo !== undefined ? +alvo : livres[0];
       if (fItens !== undefined) {
         const arco = alvo !== undefined, n = arco ? 7 : 5 + Math.floor(Math.random() * 4);
@@ -3335,6 +3373,7 @@ addEventListener('DOMContentLoaded', () => {
         o.nasc += dt; o.g.scale.setScalar(Math.max(.01, easeBack(Math.min(1, o.nasc / .4))));
         if (o.cauda) { o.cauda.rotation.y = Math.sin(t * 12 + o.f) * .5; o.peixe.position.x = Math.sin(t * 3 + o.f) * .12; }
         if (o.malha) o.malha.rotation.y = Math.sin(t * 1.5 + o.f) * .1;
+        if (o.flut) { o.flut.position.y = 2.7 + Math.sin(t * 2.2 + o.f) * .14; o.flut.scale.y = 1 + Math.sin(t * 4.4 + o.f) * .06; }
         if (o.tipo === 'coral') o.g.rotation.z = Math.sin(t * 1.2 + o.f) * .03;
         if (jogando && invul <= 0 && Math.abs(o.x - px) < 1.05 && Math.abs(o.g.position.z) < o.prof / 2 + .55 && base < o.y1 && topo > o.y0) {
           if (escudo) {
