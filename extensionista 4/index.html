@@ -3631,7 +3631,7 @@ addEventListener('DOMContentLoaded', () => {
     function modoCamera(contagem, yDesenho) {
       const alt = py - BASE_Y;
       switch (opc.camera) {
-        case 'perto': alvoCam.set(px * .7, 2.25 + alt * .25, 5.3); if (!contagem) alvoOlhar.set(px * .7, 1.1 + alt * .1, -9); break;
+        case 'perto': alvoCam.set(px * .7, 2.25 + alt * .25, arena.clientHeight > arena.clientWidth ? 6.8 : 5.3); if (!contagem) alvoOlhar.set(px * .7, 1.1 + alt * .1, -9); break;
         case 'alto': alvoCam.set(px * .5, 6.9 + alt * .3, 7.6); if (!contagem) alvoOlhar.set(px * .6, .4, -7); break;
         case 'cabine': alvoCam.set(px, yDesenho + .42, -1.15); if (!contagem) alvoOlhar.set(px * .92, yDesenho + .32 + alt * .05, -14); break;
         default: alvoCam.set(px * .55, 3.8 + alt * .3, 8.6); if (!contagem) alvoOlhar.set(px * .65, 1.3 + alt * .15, -9);
