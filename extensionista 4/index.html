@@ -1124,7 +1124,7 @@
               <span class="segmento"><button type="button" data-qualidade="alta" aria-pressed="true">Alta</button><button type="button" data-qualidade="leve" aria-pressed="false">Leve</button></span>
             </div>
             <div class="opc-linha" role="group" aria-labelledby="rotCamera"><span id="rotCamera">Câmera</span>
-              <span class="segmento"><button type="button" data-camera="tras" aria-pressed="true">Atrás</button><button type="button" data-camera="perto" aria-pressed="false">Perto</button><button type="button" data-camera="alto" aria-pressed="false">Alto</button><button type="button" data-camera="cabine" aria-pressed="false">Cabine</button></span>
+              <span class="segmento"><button type="button" data-camera="tras" aria-pressed="true">Atrás</button><button type="button" data-camera="perto" aria-pressed="false">Perto</button><button type="button" data-camera="alto" aria-pressed="false">Alto</button><button type="button" data-camera="proa" aria-pressed="false">Proa</button><button type="button" data-camera="cabine" aria-pressed="false">Cabine</button></span>
             </div>
             <p class="opc-dica">Use “Leve” se o jogo ficar lento no celular.</p>
             <button class="btn-sec voltar" type="button" data-ir="voltar">Voltar</button>
@@ -3169,7 +3169,7 @@ addEventListener('DOMContentLoaded', () => {
       else if (acao === 'menu') irMenu();
       else if (acao === 'opcoes-pausa') { voltarPara = 'pausa'; mostrarTela(ui.menu, 'opcoes'); }
     });
-    const CAMS = ['tras', 'perto', 'alto', 'cabine'], NOMES_CAM = { tras: 'Atrás', perto: 'Perto', alto: 'Alto', cabine: 'Cabine (1ª pessoa)' };
+    const CAMS = ['tras', 'perto', 'alto', 'proa', 'cabine'], NOMES_CAM = { tras: 'Atrás', perto: 'Perto', alto: 'Alto', proa: 'Proa (frente do submarino)', cabine: 'Cabine (1ª pessoa)' };
     function trocarCamera() { opc.camera = CAMS[(CAMS.indexOf(opc.camera) + 1) % CAMS.length]; salvarOpc(); sincronizarOpcoes(); aviso('Câmera: <b>' + NOMES_CAM[opc.camera] + '</b>', 1.4); som.clique(); }
     ui.camBtn.addEventListener('click', e => { e.stopPropagation(); trocarCamera(); arena.focus({ preventScroll: true }); });
     ui.pausa.addEventListener('click', e => { e.stopPropagation(); pausar(); });
@@ -3633,6 +3633,7 @@ addEventListener('DOMContentLoaded', () => {
       switch (opc.camera) {
         case 'perto': alvoCam.set(px * .7, 2.25 + alt * .25, arena.clientHeight > arena.clientWidth ? 6.8 : 5.3); if (!contagem) alvoOlhar.set(px * .7, 1.1 + alt * .1, -9); break;
         case 'alto': alvoCam.set(px * .5, 6.9 + alt * .3, 7.6); if (!contagem) alvoOlhar.set(px * .6, .4, -7); break;
+        case 'proa': alvoCam.set(px, yDesenho + .98, -.15); if (!contagem) alvoOlhar.set(px * .9, yDesenho + .15 + alt * .05, -14); break;
         case 'cabine': alvoCam.set(px, yDesenho + .42, -1.15); if (!contagem) alvoOlhar.set(px * .92, yDesenho + .32 + alt * .05, -14); break;
         default: alvoCam.set(px * .55, 3.8 + alt * .3, 8.6); if (!contagem) alvoOlhar.set(px * .65, 1.3 + alt * .15, -9);
       }
@@ -3844,8 +3845,8 @@ addEventListener('DOMContentLoaded', () => {
       if (opc.tremor && !ocioso) cam.rotateZ(-vx * .006);
       fovExtra = Math.max(0, fovExtra - dtReal * 8);
       const cabAtiva = opc.camera === 'cabine' && (estado === 'contagem' || estado === 'jogando' || estado === 'pausado' || estado === 'batida');
-      subPartes.forEach(m => { m.visible = !cabAtiva; }); farol.visible = brilhoFarol.visible = !cabAtiva; ui.cabine.classList.toggle('ativa', cabAtiva);
-      const fovAlvo = (cabAtiva ? 70 : opc.camera === 'alto' ? 58 : 54) + (jogando ? (vel - 12) * .4 : 0) + fovExtra + (ima > 0 ? 2 : 0);
+      subPartes.forEach(m => { m.visible = !cabAtiva; }); farol.visible = brilhoFarol.visible = !cabAtiva; if (opc.camera === 'proa') { aroRede.visible = malhaRede.visible = false; } ui.cabine.classList.toggle('ativa', cabAtiva);
+      const fovAlvo = (cabAtiva ? 70 : opc.camera === 'proa' ? 66 : opc.camera === 'alto' ? 58 : 54) + (jogando ? (vel - 12) * .4 : 0) + fovExtra + (ima > 0 ? 2 : 0);
       cam.fov += (fovAlvo - cam.fov) * suave(dtReal, 4); cam.updateProjectionMatrix();
 
       if (jogando) hud();
