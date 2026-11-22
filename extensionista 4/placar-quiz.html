@@ -214,7 +214,7 @@
     const de = contaAnt; contaAnt = ate;
     if (reduz || de === ate) { b.textContent = ate.toLocaleString('pt-BR'); return; }
     const t0 = performance.now();
-    (function passo(t) { const k = Math.min(1, (t - t0) / 900); b.textContent = Math.round(de + (ate - de) * (1 - Math.pow(1 - k, 3))).toLocaleString('pt-BR'); if (k < 1) requestAnimationFrame(passo); })(t0);
+    (function passo(t) { const k = Math.max(0, Math.min(1, (t - t0) / 900)); b.textContent = Math.round(de + (ate - de) * (1 - Math.pow(1 - k, 3))).toLocaleString('pt-BR'); if (k < 1) requestAnimationFrame(passo); })(t0);
   }
   function render(d) {
     contar(document.querySelector('[data-conta]'), CFG.total(d));
