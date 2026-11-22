@@ -501,6 +501,23 @@
   .poder i b { display: block; height: 100%; background: #6FD0EA; transform-origin: 0 50%; }
   .pausa-btn { position: absolute; top: 10px; right: 10px; width: 44px; height: 44px; border-radius: 50%; border: 0; background: rgba(7,22,29,.74); cursor: pointer; display: grid; place-items: center; transition: transform .15s; }
   .pausa-btn:hover { transform: scale(1.08); }
+  .camera-btn { top: 62px; right: 10px; }
+  .cabine { position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity .25s; z-index: 1; }
+  .arena .hud, .arena .pausa-btn { z-index: 4; }
+  .cabine.ativa { opacity: 1; }
+  .cab-vidro { position: absolute; inset: 0; background:
+    radial-gradient(ellipse 74% 70% at 50% 46%, transparent 62%, rgba(6,20,26,.92) 63.5%, #0a1a22 100%),
+    linear-gradient(115deg, transparent 38%, rgba(255,255,255,.07) 41%, transparent 47%); }
+  .cab-vidro::after { content: ""; position: absolute; inset: 7% 5% 24% 5%; border-radius: 46%/50%; box-shadow: inset 0 0 0 3px rgba(227,168,33,.55), inset 0 0 40px rgba(159,230,245,.14); }
+  .cab-painel { position: absolute; left: 0; right: 0; bottom: 0; height: 19%; background: linear-gradient(180deg, #16323f, #0a1a22); border-top: 4px solid #E3A821; display: flex; align-items: center; justify-content: center; gap: clamp(10px, 3vw, 28px); }
+  .cab-lamp { width: 14px; height: 14px; border-radius: 50%; background: #3FBF74; box-shadow: 0 0 10px #3FBF74; animation: pisca 1.6s ease-in-out infinite; }
+  .cab-lamp.b { background: #E3A821; box-shadow: 0 0 10px #E3A821; animation-delay: .5s; } .cab-lamp.c { background: #D9366B; box-shadow: 0 0 10px #D9366B; animation-delay: 1s; }
+  @keyframes pisca { 50% { opacity: .35; } }
+  .cab-medidor { width: clamp(46px, 9vw, 74px); aspect-ratio: 1; border-radius: 50%; border: 3px solid #5C7480; background: radial-gradient(circle, #0f2733 55%, #1c3a48); position: relative; }
+  .cab-medidor b { position: absolute; left: 50%; bottom: 50%; width: 3px; height: 38%; background: #FF7BA5; transform-origin: bottom center; border-radius: 2px; animation: ponteiro 3.4s ease-in-out infinite alternate; }
+  .cab-medidor + .cab-medidor b { background: #9FE6F5; animation-duration: 2.6s; }
+  @keyframes ponteiro { from { transform: rotate(-60deg); } to { transform: rotate(58deg); } }
+  @media (prefers-reduced-motion: reduce) { .cab-lamp, .cab-medidor b { animation: none; } }
   .pausa-btn[hidden] { display: none; }
   .toast {
     position: absolute; left: 50%; bottom: 16px; transform: translate(-50%, 8px); width: max-content; max-width: min(560px, calc(100% - 24px));
@@ -1051,6 +1068,8 @@
         <span><b id="hudDist">0</b> m</span>
       </div>
       <div class="poder" id="hudPoder" hidden aria-hidden="true"><span id="poderNome">Ímã</span><i><b id="poderBarra"></b></i></div>
+      <button class="pausa-btn camera-btn" id="btnCamera" type="button" aria-label="Trocar a câmera (C)" hidden><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l1.6-2.4h6.8L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z" fill="none" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/><circle cx="12" cy="13.2" r="3.4" fill="none" stroke="#fff" stroke-width="1.8"/></svg></button>
+      <div class="cabine" id="cabine" aria-hidden="true"><i class="cab-vidro"></i><div class="cab-painel"><span class="cab-lamp a"></span><span class="cab-lamp b"></span><span class="cab-medidor"><b></b></span><span class="cab-medidor"><b></b></span><span class="cab-lamp c"></span></div></div>
       <button class="pausa-btn" id="btnPausa" type="button" aria-label="Pausar" hidden><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><rect x="3" y="2" width="3.5" height="12" rx="1" fill="#fff"/><rect x="9.5" y="2" width="3.5" height="12" rx="1" fill="#fff"/></svg></button>
       <div class="aviso-centro" id="avisoCentro" aria-hidden="true"></div>
       <button class="sair-cheia" id="sairCheia" type="button" hidden><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 1v5H1M10 1v5h5M6 15v-5H1M10 15v-5h5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Sair da tela cheia</span></button>
@@ -1103,6 +1122,9 @@
             <button class="opc-linha" type="button" role="switch" aria-checked="true" data-opc="vibrar" id="opcVibrar" hidden><span>Vibração</span><i class="chave"></i></button>
             <div class="opc-linha" role="group" aria-labelledby="rotQualidade"><span id="rotQualidade">Gráficos</span>
               <span class="segmento"><button type="button" data-qualidade="alta" aria-pressed="true">Alta</button><button type="button" data-qualidade="leve" aria-pressed="false">Leve</button></span>
+            </div>
+            <div class="opc-linha" role="group" aria-labelledby="rotCamera"><span id="rotCamera">Câmera</span>
+              <span class="segmento"><button type="button" data-camera="tras" aria-pressed="true">Atrás</button><button type="button" data-camera="perto" aria-pressed="false">Perto</button><button type="button" data-camera="alto" aria-pressed="false">Alto</button><button type="button" data-camera="proa" aria-pressed="false">Proa</button><button type="button" data-camera="cabine" aria-pressed="false">Cabine</button></span>
             </div>
             <p class="opc-dica">Use “Leve” se o jogo ficar lento no celular.</p>
             <button class="btn-sec voltar" type="button" data-ir="voltar">Voltar</button>
@@ -2261,6 +2283,9 @@ addEventListener('DOMContentLoaded', () => {
         p.g.rotation.y = -Math.PI / 2; p.g.scale.setScalar(.72); p.g.position.y = 1.0; g.add(p.g);
         o.cauda = p.cauda; o.peixe = p.g; o.vz = 6; o.prof = 1.2;
       }
+      // proporção entre os bichos (o submarino tem ~2,7 de comprimento)
+      const ESC = { polvo: .78, tartaruga: .85, caranguejo: 1.12, ourico: 1.15, anemona: 1.1, baiacu: 1.05, viva: .9 }[tipo];
+      if (ESC) { const miolo = new T.Group(); while (g.children.length) miolo.add(g.children[0]); miolo.scale.setScalar(ESC); g.add(miolo); }
       return o;
     }
     return { cm, contorno, peca, G, afilado, cadeia, criar };
@@ -2773,7 +2798,7 @@ addEventListener('DOMContentLoaded', () => {
     const toqueTela = matchMedia('(hover: none)').matches;
 
     /* ---------- opções do jogador ---------- */
-    const opc = { som: true, vibrar: true, dicas: true, tremor: !reduz, qualidade: toqueTela ? 'leve' : 'alta' };
+    const opc = { som: true, vibrar: true, dicas: true, tremor: !reduz, qualidade: toqueTela ? 'leve' : 'alta', camera: 'tras' };
     try { Object.assign(opc, JSON.parse(localStorage.getItem('opcoes-corrida') || '{}')); } catch (e) {}
     const salvarOpc = () => { try { localStorage.setItem('opcoes-corrida', JSON.stringify(opc)); } catch (e) {} };
 
@@ -2929,19 +2954,38 @@ addEventListener('DOMContentLoaded', () => {
     const jog = new T.Group(); cena.add(jog);
     const giro = new T.Group(); jog.add(giro);
     const sub = new T.Group(); sub.rotation.y = Math.PI / 2; giro.add(sub);
-    const casco = K.malha(new T.SphereGeometry(1, 28, 18), 0xF2C230); casco.scale.set(1.3, .72, .72); sub.add(casco);
-    const torre = K.malha(new T.CylinderGeometry(.28, .34, .42, 18), 0xF2C230); torre.position.set(-.35, .72, 0); sub.add(torre);
-    for (const z of [1, -1]) {
-      const zz = .72 * Math.sqrt(1 - (.1 / 1.3) ** 2) + .02;
-      const vid = new T.Mesh(new T.CircleGeometry(.17, 18), cm(0x9FE6F5)); vid.position.set(-.1, -.02, zz * z); if (z < 0) vid.rotation.y = Math.PI; sub.add(vid);
-      const aro = new T.Mesh(new T.TorusGeometry(.17, .045, 8, 18), cm(0xE3A821)); aro.position.copy(vid.position); sub.add(aro);
+    const AM = 0xF2C230, ROSA = 0xD9366B, CINZA = 0x7A8C94;
+    const corpo = K.malha(new T.CylinderGeometry(.62, .62, 1.5, 28), AM); corpo.rotation.z = Math.PI / 2; sub.add(corpo);
+    const proa = K.malha(new T.SphereGeometry(.62, 28, 16), AM); proa.position.x = .75; sub.add(proa);
+    const popa = K.malha(new T.ConeGeometry(.6, .72, 24), AM); popa.rotation.z = Math.PI / 2; popa.position.x = -1.1; sub.add(popa);
+    const faixaSub = peca(new T.CylinderGeometry(.635, .635, .2, 28), 0xFFF3D0, { contorno: false }); faixaSub.rotation.z = Math.PI / 2; faixaSub.position.x = .12; sub.add(faixaSub);
+    const faixaSub2 = peca(new T.CylinderGeometry(.632, .632, .07, 28), ROSA, { contorno: false }); faixaSub2.rotation.z = Math.PI / 2; faixaSub2.position.x = -.16; sub.add(faixaSub2);
+    for (let k = 0; k < 12; k++) { const an = k / 12 * Math.PI * 2, r = peca(G.bola, 0xE3A821, { contorno: false }); r.scale.setScalar(.07); r.position.set(.12 + (k % 2 ? .06 : -.06), Math.cos(an) * .645, Math.sin(an) * .645); sub.add(r); }
+    const torre = K.malha(new T.CylinderGeometry(.27, .34, .44, 18), AM); torre.position.set(-.32, .8, 0); sub.add(torre);
+    const tampa = peca(new T.CylinderGeometry(.3, .3, .06, 18), ROSA, { contorno: false }); tampa.position.set(-.32, 1.04, 0); sub.add(tampa);
+    const peri = peca(G.poste, CINZA); peri.scale.set(1.7, .6, 1.7); peri.position.set(-.42, 1.33, 0); sub.add(peri);
+    const periT = peca(G.poste, CINZA); periT.scale.set(1.7, .28, 1.7); periT.rotation.z = Math.PI / 2; periT.position.set(-.3, 1.62, 0); sub.add(periT);
+    const lente = peca(G.bola, 0x9FE6F5, { contorno: false }); lente.scale.setScalar(.11); lente.position.set(-.15, 1.62, 0); sub.add(lente);
+    const ant = peca(G.poste, CINZA, { contorno: false }); ant.scale.set(1, .5, 1); ant.position.set(-.5, 1.28, .12); sub.add(ant);
+    const luzAntena = new T.Mesh(G.bola, new T.MeshBasicMaterial({ color: 0xFF4D6D })); luzAntena.scale.setScalar(.1); luzAntena.position.set(-.5, 1.55, .12); sub.add(luzAntena);
+    for (const [px_, r] of [[-.1, .17], [-.5, .12]]) for (const z of [1, -1]) {
+      const vid = new T.Mesh(new T.CircleGeometry(r, 18), cm(0x9FE6F5)); vid.position.set(px_, -.02, .631 * z); if (z < 0) vid.rotation.y = Math.PI; sub.add(vid);
+      const aro = new T.Mesh(new T.TorusGeometry(r, r * .27, 8, 18), cm(0xE3A821)); aro.position.copy(vid.position); sub.add(aro);
     }
     for (const z of [1, -1]) { const o = K.olho(.18); o.position.set(1.1, .2, .26 * z); if (z < 0) o.scale.z = -1; sub.add(o); }
-    const helice = new T.Group(); helice.position.set(-1.36, 0, 0); sub.add(helice);
-    for (let i = 0; i < 2; i++) { const p = peca(new T.BoxGeometry(.06, .55, .14), 0xD9366B); p.rotation.x = i * Math.PI / 2; helice.add(p); }
+    const lamp = new T.Mesh(G.bola, new T.MeshBasicMaterial({ color: 0xFFF3B0 })); lamp.scale.set(.16, .16, .16); lamp.position.set(1.28, -.12, 0); sub.add(lamp);
+    const leme = peca(new T.BoxGeometry(.5, .62, .05), ROSA); leme.position.set(-1.12, .58, 0); leme.rotation.z = .5; sub.add(leme);
+    for (const z of [1, -1]) { const ft = peca(new T.BoxGeometry(.46, .045, .4), ROSA); ft.position.set(-1.05, 0, z * .6); ft.rotation.y = -z * .45; sub.add(ft); }
+    for (const z of [1, -1]) { const hp = peca(new T.BoxGeometry(.34, .04, .42), ROSA); hp.position.set(.5, -.12, z * .78); hp.rotation.z = .18; sub.add(hp); }
+    const quilha = peca(G.bola, ROSA); quilha.scale.set(1.6, .2, .55); quilha.position.set(-.05, -.6, 0); sub.add(quilha);
+    const aroH = peca(new T.TorusGeometry(.34, .03, 6, 20), CINZA, { contorno: false }); aroH.rotation.y = Math.PI / 2; aroH.position.set(-1.4, 0, 0); sub.add(aroH);
+    const helice = new T.Group(); helice.position.set(-1.42, 0, 0); sub.add(helice);
+    const cubo = peca(G.bola, CINZA, { contorno: false }); cubo.scale.setScalar(.2); helice.add(cubo);
+    for (let i = 0; i < 2; i++) { const p = peca(new T.BoxGeometry(.05, .62, .14), ROSA, { contorno: false }); p.rotation.x = i * Math.PI / 2; helice.add(p); }
     const aroRede = K.malha(new T.TorusGeometry(.62, .06, 10, 28), 0xffffff, { k: 1.15 }); aroRede.position.set(.95, .55, 0); aroRede.rotation.y = Math.PI / 2; sub.add(aroRede);
     const malhaRede = new T.Mesh(new T.ConeGeometry(.62, .9, 12, 3, true), new T.MeshBasicMaterial({ color: 0xffffff, wireframe: true, transparent: true, opacity: .5 }));
     malhaRede.rotation.z = Math.PI / 2; malhaRede.position.set(.5, .55, 0); sub.add(malhaRede);
+    const subPartes = [...sub.children];
     const sombraJ = sombra(1.9, 1.5); cena.add(sombraJ);
     const farol = new T.Mesh(new T.ConeGeometry(1.1, 4.2, 18, 1, true), new T.MeshBasicMaterial({ color: 0xFFF3B0, transparent: true, opacity: .1, blending: T.AdditiveBlending, depthWrite: false, side: T.DoubleSide }));
     farol.rotation.x = Math.PI / 2; farol.position.set(0, .2, -2.3); jog.add(farol);
@@ -3044,7 +3088,7 @@ addEventListener('DOMContentLoaded', () => {
     const ui = {
       hud: $('hud'), pontos: $('hudPontos'), plastico: $('hudPlastico'), multi: $('hudMulti'), multiN: $('hudMultiN'), combo: $('hudCombo'), dist: $('hudDist'),
       poder: $('hudPoder'), poderNome: $('poderNome'), poderBarra: $('poderBarra'),
-      toast: $('toast'), centro: $('avisoCentro'), pausa: $('btnPausa'), flash: $('flash'),
+      toast: $('toast'), centro: $('avisoCentro'), pausa: $('btnPausa'), camBtn: $('btnCamera'), cabine: $('cabine'), flash: $('flash'),
       menu: $('telaMenu'), telaPausa: $('telaPausa'), fim: $('telaFim'), registro: $('telaRegistro'),
     };
     const MOTIVOS = {
@@ -3095,6 +3139,7 @@ addEventListener('DOMContentLoaded', () => {
     function sincronizarOpcoes() {
       document.querySelectorAll('[data-opc]').forEach(b => b.setAttribute('aria-checked', String(!!opc[b.dataset.opc])));
       document.querySelectorAll('[data-qualidade]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.qualidade === opc.qualidade)));
+      document.querySelectorAll('[data-camera]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.camera === opc.camera)));
     }
     function aplicarQualidade() {
       const alta = opc.qualidade === 'alta'; arena.dataset.qualidade = opc.qualidade;
@@ -3109,6 +3154,7 @@ addEventListener('DOMContentLoaded', () => {
     arena.addEventListener('click', e => {
       const b = e.target.closest('button'); if (!b || !arena.contains(b)) return;
       if (b.dataset.opc) { opc[b.dataset.opc] = !opc[b.dataset.opc]; salvarOpc(); sincronizarOpcoes(); som.clique(); return; }
+      if (b.dataset.camera) { opc.camera = b.dataset.camera; salvarOpc(); sincronizarOpcoes(); som.clique(); return; }
       if (b.dataset.qualidade) { opc.qualidade = b.dataset.qualidade; salvarOpc(); sincronizarOpcoes(); aplicarQualidade(); som.clique(); return; }
       if (b.dataset.ir) {
         som.clique();
@@ -3123,6 +3169,9 @@ addEventListener('DOMContentLoaded', () => {
       else if (acao === 'menu') irMenu();
       else if (acao === 'opcoes-pausa') { voltarPara = 'pausa'; mostrarTela(ui.menu, 'opcoes'); }
     });
+    const CAMS = ['tras', 'perto', 'alto', 'proa', 'cabine'], NOMES_CAM = { tras: 'Atrás', perto: 'Perto', alto: 'Alto', proa: 'Proa (frente do submarino)', cabine: 'Cabine (1ª pessoa)' };
+    function trocarCamera() { opc.camera = CAMS[(CAMS.indexOf(opc.camera) + 1) % CAMS.length]; salvarOpc(); sincronizarOpcoes(); aviso('Câmera: <b>' + NOMES_CAM[opc.camera] + '</b>', 1.4); som.clique(); }
+    ui.camBtn.addEventListener('click', e => { e.stopPropagation(); trocarCamera(); arena.focus({ preventScroll: true }); });
     ui.pausa.addEventListener('click', e => { e.stopPropagation(); pausar(); });
     /* ---------- tela cheia ---------- */
     const btnSairCheia = $('sairCheia');
@@ -3189,7 +3238,7 @@ addEventListener('DOMContentLoaded', () => {
     }
     function tocarHistoria() {
       som.garantir(); limpar(); zerarJogador();
-      estado = 'historia'; mostrarTela(null); ui.hud.hidden = true; ui.pausa.hidden = true;
+      estado = 'historia'; mostrarTela(null); ui.hud.hidden = true; ui.pausa.hidden = true; ui.camBtn.hidden = true;
       hist.el.hidden = false; hAtiva = true; medirHist(); frags = []; peixes = [];
       irCena(0); hUltimo = performance.now(); requestAnimationFrame(quadroHist);
       setTimeout(() => hist.pular.focus({ preventScroll: true }), 50);
@@ -3428,7 +3477,7 @@ addEventListener('DOMContentLoaded', () => {
       tJogo = 0; vel = 12; dist = 0; pontosPlast = 0; plastico = 0; escapou = 0; combo = 0; multi = 1; maiorMulti = 1; ima = 0; escudo = false; invul = 0;
       acum = 0; vistos = new Set(); ui.poder.hidden = true; ultHud = ''; hud();
       estado = 'contagem'; contagemT = 0; ultNum = -1; camDe.copy(cam.position);
-      mostrarTela(null); ui.hud.hidden = false; ui.pausa.hidden = false;
+      mostrarTela(null); ui.hud.hidden = false; ui.pausa.hidden = false; ui.camBtn.hidden = false;
       arena.focus({ preventScroll: true });
     }
     function pausar() {
@@ -3441,11 +3490,11 @@ addEventListener('DOMContentLoaded', () => {
       if (estado === 'jogando') grito('Vai!');
     }
     function irMenu() {
-      limpar(); zerarJogador(); estado = 'menu'; ui.hud.hidden = true; ui.pausa.hidden = true; ui.poder.hidden = true;
+      limpar(); zerarJogador(); estado = 'menu'; ui.hud.hidden = true; ui.pausa.hidden = true; ui.camBtn.hidden = true; ui.poder.hidden = true;
       ui.toast.classList.remove('visivel'); voltarPara = 'principal'; mostrarTela(ui.menu, 'principal');
     }
     function terminar() {
-      estado = 'fim'; ui.pausa.hidden = true; ui.poder.hidden = true; ui.hud.hidden = true; ui.toast.classList.remove('visivel');
+      estado = 'fim'; ui.pausa.hidden = true; ui.camBtn.hidden = true; ui.poder.hidden = true; ui.hud.hidden = true; ui.toast.classList.remove('visivel');
       const p = pontos(), novo = p > recorde;
       if (novo) { recorde = p; try { localStorage.setItem('recorde-corrida', recorde); } catch (e) {} $('menuRecorde').textContent = recorde.toLocaleString('pt-BR'); }
       $('fimPontos').textContent = p.toLocaleString('pt-BR'); $('fimDist').textContent = Math.floor(dist); $('fimRecorde').textContent = recorde.toLocaleString('pt-BR');
@@ -3515,7 +3564,7 @@ addEventListener('DOMContentLoaded', () => {
       const k = e.key.toLowerCase();
       if (estado === 'pausado' && (k === 'p' || k === 'escape')) { e.preventDefault(); continuar(); return; }
       if (estado !== 'jogando' && estado !== 'contagem') return;
-      const mapa = { arrowleft: () => mover(-1), a: () => mover(-1), arrowright: () => mover(1), d: () => mover(1), arrowup: saltar, w: saltar, ' ': saltar, arrowdown: mergulhar, s: mergulhar, p: pausar, escape: pausar };
+      const mapa = { c: () => { if (estado === 'jogando') trocarCamera(); }, arrowleft: () => mover(-1), a: () => mover(-1), arrowright: () => mover(1), d: () => mover(1), arrowup: saltar, w: saltar, ' ': saltar, arrowdown: mergulhar, s: mergulhar, p: pausar, escape: pausar };
       if (mapa[k]) { e.preventDefault(); if (!e.repeat || k === 'arrowup' || k === 'w' || k === ' ') mapa[k](); }
     });
     let toque = null;
@@ -3578,6 +3627,17 @@ addEventListener('DOMContentLoaded', () => {
     document.addEventListener('visibilitychange', () => { if (document.hidden) pausar(); });
 
     const aux = new T.Object3D(), mundo = new T.Vector3(), alvoCam = new T.Vector3(), olhar = new T.Vector3(0, 1.3, -9), alvoOlhar = new T.Vector3();
+    // posições da câmera: atrás (padrão), perto, alto e cabine (1ª pessoa, dentro da cúpula do submarino)
+    function modoCamera(contagem, yDesenho) {
+      const alt = py - BASE_Y;
+      switch (opc.camera) {
+        case 'perto': alvoCam.set(px * .7, 2.25 + alt * .25, arena.clientHeight > arena.clientWidth ? 6.8 : 5.3); if (!contagem) alvoOlhar.set(px * .7, 1.1 + alt * .1, -9); break;
+        case 'alto': alvoCam.set(px * .5, 6.9 + alt * .3, 7.6); if (!contagem) alvoOlhar.set(px * .6, .4, -7); break;
+        case 'proa': alvoCam.set(px, yDesenho + .98, -.15); if (!contagem) alvoOlhar.set(px * .9, yDesenho + .15 + alt * .05, -14); break;
+        case 'cabine': alvoCam.set(px, yDesenho + .42, -1.15); if (!contagem) alvoOlhar.set(px * .92, yDesenho + .32 + alt * .05, -14); break;
+        default: alvoCam.set(px * .55, 3.8 + alt * .3, 8.6); if (!contagem) alvoOlhar.set(px * .65, 1.3 + alt * .15, -9);
+      }
+    }
     const suave = (x, k) => 1 - Math.exp(-k * x);
     const easeIO = x => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
     const easeBack = x => { const c = 1.7; return 1 + (c + 1) * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2); };
@@ -3637,6 +3697,7 @@ addEventListener('DOMContentLoaded', () => {
         giro.rotation.z = abaixado ? easeIO(rolo) * Math.PI * 2 : 0;
       }
       helice.rotation.x += dt * (6 + rolagem * 1.3);
+      luzAntena.material.color.setHex(Math.sin(performance.now() / 260) > .2 ? 0xFF4D6D : 0x5A1F2B);
       escudoM.visible = escudo; if (escudo) { escudoM.scale.setScalar(1 + Math.sin(t * 6) * .05); escudoM.rotation.y += dt; }
       campoIma.visible = ima > 0; if (ima > 0) { campoIma.scale.setScalar(1 + Math.sin(t * 8) * .08); campoIma.material.opacity = .35 + Math.sin(t * 8) * .25; }
       const base = yDesenho - .45, topo = yDesenho + (abaixado ? .3 : 1.05);
@@ -3701,7 +3762,7 @@ addEventListener('DOMContentLoaded', () => {
             escudo = false; invul = .8; mundo.set(px, yDesenho, 0); soltarBrilho(mundo, 0x9FE6F5, 18, 5); soltarBrilho(mundo, 0xffffff, 10, 4);
             cena.remove(o.g); obst.splice(i, 1); grito('Salvo pela bolha!'); som.bolha(); vibrar(40); continue;
           }
-          estado = 'batida'; batidaT = 0; motivo = o.tipo; tremor = opc.tremor ? .7 : 0; ui.pausa.hidden = true;
+          estado = 'batida'; batidaT = 0; motivo = o.tipo; tremor = opc.tremor ? .7 : 0; ui.pausa.hidden = true; ui.camBtn.hidden = true;
           som.batida(); vibrar([70, 40, 140]); ui.flash.classList.remove('ativo'); void ui.flash.offsetWidth; ui.flash.classList.add('ativo');
           mundo.set(px, yDesenho + .4, -.6); soltarBrilho(mundo, 0xffffff, 14, 5); soltarPoeira(px, .2, -.4, 8, 2);
         }
@@ -3770,13 +3831,12 @@ addEventListener('DOMContentLoaded', () => {
         cam.position.lerp(alvoCam, suave(dtReal, 2));
       } else if (estado === 'contagem') {
         const k = easeIO(Math.min(1, contagemT / 2.4));
-        alvoCam.set(px * .55, 3.8, 8.6);
+        modoCamera(true, yDesenho);
         cam.position.lerpVectors(camDe, alvoCam, k); cam.position.y += Math.sin(k * Math.PI) * 1.2;
         alvoOlhar.set(px * .65 * k, 1.3 * k + (yDesenho + .4) * (1 - k), -9 * k);
       } else {
-        alvoCam.set(px * .55, 3.8 + (py - BASE_Y) * .3, 8.6);
-        cam.position.lerp(alvoCam, suave(dtReal, 9));
-        alvoOlhar.set(px * .65, 1.3 + (py - BASE_Y) * .15, -9);
+        modoCamera(false, yDesenho);
+        cam.position.lerp(alvoCam, suave(dtReal, opc.camera === 'cabine' ? 22 : 9));
       }
       olhar.lerp(alvoOlhar, suave(dtReal, estado === 'contagem' ? 30 : 10));
       tremor = Math.max(0, tremor - dtReal);
@@ -3784,7 +3844,9 @@ addEventListener('DOMContentLoaded', () => {
       cam.lookAt(olhar);
       if (opc.tremor && !ocioso) cam.rotateZ(-vx * .006);
       fovExtra = Math.max(0, fovExtra - dtReal * 8);
-      const fovAlvo = 54 + (jogando ? (vel - 12) * .4 : 0) + fovExtra + (ima > 0 ? 2 : 0);
+      const cabAtiva = opc.camera === 'cabine' && (estado === 'contagem' || estado === 'jogando' || estado === 'pausado' || estado === 'batida');
+      subPartes.forEach(m => { m.visible = !cabAtiva; }); farol.visible = brilhoFarol.visible = !cabAtiva; if (opc.camera === 'proa') { aroRede.visible = malhaRede.visible = false; } ui.cabine.classList.toggle('ativa', cabAtiva);
+      const fovAlvo = (cabAtiva ? 70 : opc.camera === 'proa' ? 66 : opc.camera === 'alto' ? 58 : 54) + (jogando ? (vel - 12) * .4 : 0) + fovExtra + (ima > 0 ? 2 : 0);
       cam.fov += (fovAlvo - cam.fov) * suave(dtReal, 4); cam.updateProjectionMatrix();
 
       if (jogando) hud();
